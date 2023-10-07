@@ -9,7 +9,7 @@ subject_names_df = pd.read_excel('./data/testData/SSG_SUBJECT_NAMES.xlsx')
 subjects_df = pd.read_excel('./data/testData/SSG_SUBJECTS.xlsx')
 teachers_df = pd.read_excel('./data/testData/SSG_TEACHERS.xlsx')
 
-tables = [classes, classrooms, lesson_hours, subject_names, subjects, teachers]
+tables = [classes_df, classrooms_df, lesson_hours_df, subject_names_df, subjects_df, teachers_df]
 
 # -------------------------------------------------------------------------------------
 # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
