@@ -55,7 +55,7 @@ def generate_schedule():
 
         school_schedule.append(schedule)
 
-    if settings.DEBUG:
+    if False:
         print_school_schedule(school_schedule, classes_id, days, print_subjects=True)
 
 generate_schedule()

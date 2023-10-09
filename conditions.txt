@@ -1,1 +1,1 @@
-.max_lessons_per_day: 7
+s:

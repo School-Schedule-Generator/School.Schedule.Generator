@@ -15,7 +15,9 @@ class ScheduleConditions:
         if self.conditions_list:
             valid_conditions = self.load_conditions_list()
             self.valid = valid_conditions
-        elif len(self.conditions_list) > 0:
+        elif type(self.conditions_list) is bool: # if there is an unusual occurrence
+            self.valid = self.conditions_list
+        elif type(self.conditions_list) is dict and len(self.conditions_list) > 0: #if file is empty
             self.valid = False
 
     @staticmethod
@@ -31,15 +33,18 @@ class ScheduleConditions:
             line = raw_line.strip().replace(' ', '').lower()
             condition = line.split(':')
             try:
+                if condition[1] == '':
+                    raise IndexError
+
                 conditions_list.append({
                     'arg': condition[0],
                     'value': condition[1],
-                    'line_number': i,
-                    'line': raw_line
+                    'line_num': i,
+                    'line': repr(raw_line)
                 })
             except IndexError:
-                print(f"Error at line {i}: {raw_line}")
-                print("Passed in argument is not fully defined")
+                print(f"""Error at line {i}:\n\t{repr(raw_line)}\n""")
+                print(f"""Passed in condition: {repr(raw_line)} is not fully defined""")
                 return False
         condition_raw.close()
         return conditions_list
@@ -60,12 +65,12 @@ class ScheduleConditions:
             elif condition['value'] in ['True', 'False']:
                 self.general[condition['arg']] = strtobool(condition['value'])
             else:
-                print(f"Error at line {condition['arg']}: {condition['value']}")
-                print("Cannot convert general conditon into type string")
+                print(f"""Error at line {condition['line_num']}:\n\t"{condition['arg']}: {condition['value']}"\n""")
+                print(f"""Cannot convert general condition argument into type string""")
                 return False
         else:
-            print(f"Error at line {condition['arg']}: {condition['value']}")
-            print("Passed in argument doesn't exist")
+            print(f"""Error at line {condition['line_num']}:\n\t"{condition['arg']}: {condition['value']}"\n""")
+            print(f"""Passed in argument: "{condition['arg']}" doesn't exist""")
             return False
         return True
 
