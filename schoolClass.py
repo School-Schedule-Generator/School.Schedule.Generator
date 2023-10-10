@@ -15,3 +15,20 @@ class SchoolClass:
         :return: list of classes ids
         """
         return df['Class_ID'].to_numpy()
+
+    @staticmethod
+    def get_school_classes(class_df, classes_id):
+        """
+        :param class_df: dataframe of all classes
+        :param classes_id: list of classes ids
+        :return: returns dict of every class
+        """
+        school_classes = [SchoolClass(
+                class_id=class_df.loc[i, 'Class_ID'],
+                grade=class_df.loc[i, 'grade'],
+                class_signature=class_df.loc[i, 'class_sygnature'],
+                supervising_teacher=class_df.loc[i, 'supervising_teacher']
+            )
+            for i, class_id in enumerate(classes_id)
+        ]
+        return school_classes
