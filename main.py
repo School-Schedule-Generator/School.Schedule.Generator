@@ -68,8 +68,11 @@ def generate_schedule(data, days, conditions_file_path):
     if settings.DEBUG:
         school_schedule.print(school_schedule, classes_id, days, print_subjects=False)
 
-generate_schedule(
-    data = loadData(),
-    days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-    conditions_file_path = './conditions.txt'
+    return school_schedule
+
+
+ss = generate_schedule(
+    data=load_data(),
+    days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    conditions_file_path='./conditions.txt'
 )
