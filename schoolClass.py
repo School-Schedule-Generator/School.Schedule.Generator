@@ -7,3 +7,11 @@ class SchoolClass:
         self.grade = grade
         self.class_signature = class_signature
         self.supervising_teacher = supervising_teacher
+
+    @staticmethod
+    def get_classes_id(df):
+        """
+        :param df: dataframe of classes
+        :return: list of classes ids
+        """
+        return df['Class_ID'].to_numpy()

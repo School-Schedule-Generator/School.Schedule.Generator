@@ -1,4 +1,5 @@
 from distutils.util import strtobool
+from enum import Enum
 
 class ScheduleConditions:
     """
@@ -8,6 +9,22 @@ class ScheduleConditions:
         self.general = {
             'min_lessons_per_day': min_lessons_per_day,
             'max_lessons_per_day': max_lessons_per_day,
+        }
+        self.Types = Enum('Types', ['string', 'int', 'bool', 'strict', 'loose', 'none'])
+        self.speciffic = {
+            'stack': {
+                'desc': 'for stacking the same type of subject in a row',
+                'types': [self.Types['strict'], self.Types['loose'], self.Types['none']]
+            },
+            'max_stack': {
+                'desc': 'decides how long can a stack be (if not defined stack will be as long as it can)',
+                'types': [self.Types['int']]
+            }
+        }
+        self.speciffic_in_use = {
+            'max-stack': {
+                'range': 'all' # range defines the reach of condition (on what collumns has it effect)
+            }
         }
         self.valid = True
 
@@ -55,8 +72,15 @@ class ScheduleConditions:
                 condition['arg'] = condition['arg'][1:]
                 if not self.update_general_condition(condition):
                     return False
-
+            elif not self.add_speciffic_condition():
+                return False
         return True
+
+    def add_speciffic_condition(self, condition):
+        # TODO
+        #  split up condition to accual condition and specified range and type
+        #  check if condition is in speciffic.keys() if not return False and show error
+        pass
 
     def update_general_condition(self, condition):
         if condition['arg'] in self.general.keys():
