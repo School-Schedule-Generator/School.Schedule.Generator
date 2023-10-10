@@ -23,7 +23,8 @@ class ScheduleConditions:
         }
         self.speciffic_in_use = {
             'max-stack': {
-                'range': 'all' # range defines the reach of condition (on what collumns has it effect)
+                'range': 'all', # range defines the reach of condition (on what collumns has it effect)
+                'value': '1'
             }
         }
         self.valid = True
