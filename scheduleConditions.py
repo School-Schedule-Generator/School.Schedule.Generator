@@ -54,6 +54,9 @@ class ScheduleConditions:
                 if condition[1] == '':
                     raise IndexError
 
+                if raw_line in ['\n', '']:
+                    continue
+
                 conditions_list.append({
                     'arg': condition[0],
                     'value': condition[1],

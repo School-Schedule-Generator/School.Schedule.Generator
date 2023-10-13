@@ -23,8 +23,6 @@ import random
 # zamiana używania classes_id na używanie listy klas z pełnymi informacjami
 # ---------------------------------------------------------------------------------------------------------------------
 
-# read data
-
 
 def generate_schedule(data, days, conditions_file_path):
     """
@@ -38,38 +36,34 @@ def generate_schedule(data, days, conditions_file_path):
     [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df] = data
 
     classes_id = SchoolClass.get_classes_id(classes_df)
+    school_classes = SchoolClass.get_school_classes(classes_df, classes_id)
 
-    subject_per_class_df = {}
-    for class_id in classes_id:
-        subject_per_class_df[class_id] = subjects_df.loc[subjects_df['class_ID'] == class_id]
-
-    subject_per_class = split_subject_per_class(subjects_df, subject_per_class_df)
-
+    subject_per_class = split_subject_per_class(subjects_df, school_classes)
 
     if not conditions.valid:
         return -1
 
-    school_schedule = Schedule()
+    school_schedule = Schedule().create(
+        classes_id=classes_id,
+        conditions=conditions,
+        days=days,
+        subject_per_class=subject_per_class
+    )
 
     for class_id in classes_id:
-
-        new_class_schedule = school_schedule.create_class_schedule(days)
-        for subject in subject_per_class[class_id]:
-            for i in range(subject.subject_count_in_week):
-                day = random.choice(days)
-                while len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
-                    day = random.choice(days)
-
-                subject.lesson_hours_id = len(new_class_schedule[day])
-                new_class_schedule[day].append(subject)
-
-        school_schedule.add_class_schedule(new_class_schedule)
+        for day in days:
+            #z tą pętlą jest błąd : 'Schedule' object is not subscriptable
+            while len(school_schedule[class_id][day]) < conditions.general['min_lessons_per_day']:
+                pass
 
     if settings.DEBUG:
-        school_schedule.print(school_schedule, classes_id, days, print_subjects=False)
+        school_schedule.print(classes_id, days, print_subjects=False)
 
-generate_schedule(
-    data = loadData(),
-    days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-    conditions_file_path = './conditions.txt'
+    return school_schedule
+
+
+ss = generate_schedule(
+    data=load_data(),
+    days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    conditions_file_path='./conditions.txt'
 )

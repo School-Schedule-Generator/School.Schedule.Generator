@@ -5,7 +5,7 @@ import sqlite3
 from subject import *
 
 
-def loadData(
+def load_data(
         path='.',
         tables=settings.DF_NAMES,
         file_type='xlsx',
@@ -25,23 +25,23 @@ def loadData(
     dataframes = []
     if settings.DEBUG:
         for file in tables:
-            if file_type=='xlsx':
-                dataframes.append(pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file+'.'+file_type)))
-            if file_type=='csv':
+            if file_type == 'xlsx':
+                dataframes.append(pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type)))
+            if file_type == 'csv':
                 dataframes.append(pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type)))
-            elif file_type=='mdf':
-                table_name=file
+            elif file_type == 'mdf':
+                table_name = file
                 con = sqlite3.connect(settings.DATABASE_PATH)
                 sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
                 dataframes.append(pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name]))
     else:
         for file in tables:
-            if file_type=='xlsx':
-                dataframes.append(pd.read_excel(os.path.join(path, file+'.'+file_type)))
-            if file_type=='csv':
+            if file_type == 'xlsx':
+                dataframes.append(pd.read_excel(os.path.join(path, file + '.' + file_type)))
+            if file_type == 'csv':
                 dataframes.append(pd.read_csv(os.path.join(path, file + '.' + file_type)))
-            elif file_type=='mdf':
-                table_name=file
+            elif file_type == 'mdf':
+                table_name = file
                 con = sqlite3.connect(path)
                 sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
                 dataframes.append(pd.DataFrame(sql_query, columns=sql_tables[table_name]))
@@ -49,24 +49,28 @@ def loadData(
     return dataframes
 
 
-def split_subject_per_class(subjects_df, subject_per_class_df):
+def split_subject_per_class(subjects_df, school_classes):
     """
     :param subjects_df: dataframe of all subjects
-    :param subject_per_class_df: list of dataframes of subjects per class
+    :param school_classes: list of school_classes
     :return: returns splitet into classes lists of subjects
     """
     subject_per_class = {}
-    for class_df_id in subject_per_class_df:
-        class_df = subject_per_class_df[class_df_id]
-        subject_per_class[class_df_id] = [Subject(
-            subject_id=subjects_df.loc[i, 'subject_ID'],
-            subject_name_id=subjects_df.loc[i, 'subject_name_ID'],
-            class_id=subjects_df.loc[i, 'class_ID'],
-            subject_count_in_week=subjects_df.loc[i, 'subject_count_in_week'],
-            number_of_groups=subjects_df.loc[i, 'number_of_groups'],
-            teacher_id=subjects_df.loc[i, 'teacher_ID'],
-            classroom_id=subjects_df.loc[i, 'classroom_ID'],
-            subject_length=subjects_df.loc[i, 'subject_length'],
-            lesson_hours_id=subjects_df.loc[i, 'lesson_hours_ID']
-        ) for i in range(len(class_df))]
+    for school_class in school_classes:
+        class_id = school_class.class_id
+        subject_per_class_df = subjects_df.loc[subjects_df['class_ID'] == class_id]
+
+        subject_per_class[class_id] = [
+            Subject(
+                subject_id=row['subject_ID'].astype(int),
+                subject_name_id=row['subject_name_ID'].astype(int),
+                class_id=row['class_ID'].astype(int),
+                subject_count_in_week=row['subject_count_in_week'].astype(int),
+                number_of_groups=row['number_of_groups'].astype(int),
+                teacher_id=row['teacher_ID'].astype(int),
+                classroom_id=row['classroom_ID'].astype(int),
+                subject_length=row['subject_length'].astype(int),
+                lesson_hours_id=row['lesson_hours_ID'].astype(int)
+            ) for index, row in subject_per_class_df.iterrows()
+        ]
     return subject_per_class
