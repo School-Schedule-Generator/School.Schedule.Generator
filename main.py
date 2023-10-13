@@ -40,7 +40,7 @@ def generate_schedule(data, days, conditions_file_path):
 
     classes_id = SchoolClass.get_classes_id(classes_df)
     school_classes = SchoolClass.get_school_classes(classes_df, classes_id)
-
+    subjects_num = len(subjects_df)
     subject_per_class = split_subject_per_class(subjects_df, school_classes)
 
     if not conditions.valid:

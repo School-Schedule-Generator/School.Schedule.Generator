@@ -14,9 +14,6 @@ class Schedule:
                 for i in range(subject.subject_count_in_week):
                     day = random.choice(days)
 
-                    # while len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
-                    #     day = random.choice(days)
-
                     for class_schedule in self.school_schedule:
                         other_class_day = class_schedule[days[days.index(day)]]
                         if not len(other_class_day) == len(new_class_schedule[day]):
