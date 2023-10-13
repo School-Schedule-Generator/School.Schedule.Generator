@@ -6,6 +6,9 @@ from common import *
 import pandas as pd
 from schedule import *
 import random
+from tkinter_schedule_vis import *
+
+import tkinter_schedule_vis
 
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
@@ -52,8 +55,14 @@ def generate_schedule(data, days, conditions_file_path):
 
     conditions.update_min_day_len(schedule=new_school_schedule_object, days=days)
 
-    if settings.DEBUG:
-        new_school_schedule_object.print(classes_id, days, print_subjects=False)
+    tkinter_schedule_vis.tkinter_schedule_vis(
+        schedule=new_school_schedule_object.school_schedule,
+        days=days,
+        subjects_num=subjects_num
+    )
+
+    # if settings.DEBUG:
+    #     new_school_schedule_object.print(classes_id, days, print_subjects=True)
 
     return new_school_schedule_object
 
