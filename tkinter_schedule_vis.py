@@ -22,10 +22,24 @@ def tkinter_schedule_vis(schedule, days, subjects_num):
         for j, class_schedule in enumerate(schedule):   # j -> class id
             for k in range(len(class_schedule[day])):    # k -> subject id
                 subject = class_schedule[day][k]
+
+                same_time_subjects = []
+                for x, other_class_schedule in enumerate(schedule):
+                    if other_class_schedule != class_schedule:
+                        try:
+                            same_time_subjects.append(other_class_schedule[day][k])
+                        except IndexError:
+                            pass
+
+                color = colors[subject.subject_id - 1]
+                for other_subject in same_time_subjects:
+                    if other_subject.teacher_id == subject.teacher_id:
+                        color = rgb(255, 0, 0)
+
                 b = tk.Label(
                     root,
                     text=f"subject_name_id:{subject.subject_name_id}\nteacher: {subject.teacher_id}",
-                    bg=colors[subject.subject_id-1]
+                    bg=color
                 )
                 b.grid(row=k+1, column=i * len(schedule) + j)
 
