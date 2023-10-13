@@ -44,6 +44,11 @@ class Schedule:
                 print('\n')
             print('-' * 10)
 
+    def move_subject_to_day(self, class_id, day_to, day_from, subject_position):
+        self.school_schedule[class_id][day_to].append(
+            self.school_schedule[class_id][day_from].pop(subject_position)
+        )
+
     def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
         (
             self.school_schedule[class_id][day_x][subject_x_position],

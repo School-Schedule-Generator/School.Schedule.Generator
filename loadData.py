@@ -68,9 +68,9 @@ def split_subject_per_class(subjects_df, school_classes):
                 subject_count_in_week=row['subject_count_in_week'].astype(int),
                 number_of_groups=row['number_of_groups'].astype(int),
                 teacher_id=row['teacher_ID'].astype(int),
-                classroom_id=row['classroom_ID'].astype(int),
+                classroom_id=row['classroom_ID'],
                 subject_length=row['subject_length'].astype(int),
-                lesson_hours_id=row['lesson_hours_ID'].astype(int)
+                lesson_hours_id=row['lesson_hours_ID']
             ) for index, row in subject_per_class_df.iterrows()
         ]
     return subject_per_class

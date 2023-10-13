@@ -53,7 +53,7 @@ def generate_schedule(data, days, conditions_file_path):
     conditions.update_min_day_len(schedule=new_school_schedule_object, days=days)
 
     if settings.DEBUG:
-        school_schedule.print(classes_id, days, print_subjects=False)
+        new_school_schedule_object.print(classes_id, days, print_subjects=False)
 
     return new_school_schedule_object
 

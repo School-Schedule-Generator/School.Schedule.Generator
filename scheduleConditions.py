@@ -1,17 +1,19 @@
 from distutils.util import strtobool
 from enum import Enum
 
+
 class ScheduleConditions:
     """
     class for conditionalising a schedule
     """
+
     def __init__(self, file_path, min_lessons_per_day=5, max_lessons_per_day=9):
         self.general = {
             'min_lessons_per_day': min_lessons_per_day,
             'max_lessons_per_day': max_lessons_per_day,
         }
         self.Types = Enum('Types', ['string', 'int', 'bool', 'strict', 'loose', 'none'])
-        self.speciffic = {
+        self.specific = {
             'stack': {
                 'desc': 'for stacking the same type of subject in a row',
                 'types': [self.Types['strict'], self.Types['loose'], self.Types['none']]
@@ -23,7 +25,7 @@ class ScheduleConditions:
         }
         self.specific_in_use = {
             'max-stack': {
-                'range': 'all' # range defines the reach of condition (on what collumns has it effect)
+                'range': 'all'  # range defines the reach of condition (on what columns has it effect)
             }
         }
         self.valid = True
@@ -32,9 +34,9 @@ class ScheduleConditions:
         if self.conditions_list:
             valid_conditions = self.load_conditions_list()
             self.valid = valid_conditions
-        elif type(self.conditions_list) is bool: # if there is an unusual occurrence
+        elif type(self.conditions_list) is bool:  # if there is an unusual occurrence
             self.valid = self.conditions_list
-        elif type(self.conditions_list) is dict and len(self.conditions_list) > 0: #if file is empty
+        elif type(self.conditions_list) is dict and len(self.conditions_list) > 0:  # if file is empty
             self.valid = False
 
     @staticmethod
@@ -79,7 +81,7 @@ class ScheduleConditions:
                 return False
         return True
 
-    def add_speciffic_condition(self, condition):
+    def add_specific_condition(self, condition):
         # TODO
         #  split up condition to actual condition and specified range and type
         #  check if condition is in specific.keys() if not return False and show error
