@@ -21,7 +21,7 @@ class ScheduleConditions:
                 'types': [self.Types['int']]
             }
         }
-        self.speciffic_in_use = {
+        self.specific_in_use = {
             'max-stack': {
                 'range': 'all' # range defines the reach of condition (on what collumns has it effect)
             }
@@ -75,14 +75,14 @@ class ScheduleConditions:
                 condition['arg'] = condition['arg'][1:]
                 if not self.update_general_condition(condition):
                     return False
-            elif not self.add_speciffic_condition():
+            elif not self.add_specific_condition(condition):
                 return False
         return True
 
     def add_speciffic_condition(self, condition):
         # TODO
-        #  split up condition to accual condition and specified range and type
-        #  check if condition is in speciffic.keys() if not return False and show error
+        #  split up condition to actual condition and specified range and type
+        #  check if condition is in specific.keys() if not return False and show error
         pass
 
     def update_general_condition(self, condition):
@@ -101,9 +101,39 @@ class ScheduleConditions:
             return False
         return True
 
-    def format_schedule(self, schedule):
-        """
-        :param schedule: schedule for all school classes
-        :return: returns conditionalized schedule
-        """
-        pass
+    # May not be in use!
+    def update_max_day_len(self, schedule, days):
+        for i, class_schedule in enumerate(schedule.school_schedule):
+            for j in range(len(class_schedule)):
+                class_schedule_list = list(class_schedule.values())
+                min_len_day_i = class_schedule_list.index(min(class_schedule.values(), key=len))
+                day = class_schedule[days[j]]
+                while len(day) > self.general['max_lessons_per_day']:
+                    schedule.move_subject_to_day(
+                        class_id=i,
+                        day_to=days[j],
+                        day_from=days[min_len_day_i],
+                        subject_position=-1
+                    )
+
+    def update_min_day_len(self, schedule, days):
+        for i, class_schedule in enumerate(schedule.school_schedule):
+            for j in range(len(class_schedule)):
+                class_schedule_list = list(class_schedule.values())
+                max_len_day_i = class_schedule_list.index(max(class_schedule.values(), key=len))
+
+                day = class_schedule[days[j]]
+                while len(day) < self.general['min_lessons_per_day']:
+                    schedule.move_subject_to_day(
+                        class_id=i,
+                        day_to=days[j],
+                        day_from=days[max_len_day_i],
+                        subject_position=-1
+                    )
+
+    def format_schedule(self, schedule, days):
+        for condition in self.general:
+            pass
+
+        for condition in self.specific_in_use:
+            pass

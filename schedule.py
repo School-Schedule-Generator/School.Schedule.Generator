@@ -33,12 +33,6 @@ class Schedule:
             new_class_schedule[day] = []
         return new_class_schedule
 
-    def move_from_bottom(self, class_id, day_from, day_to):
-        pass
-
-    def move_from_top(self, class_id, day_from, day_to):
-        pass
-
     def print(self, classes_id, days, print_subjects=False):
         for i, class_schedule in enumerate(self.school_schedule):
             print(f'class {classes_id[i]}')
@@ -50,5 +44,11 @@ class Schedule:
                 print('\n')
             print('-' * 10)
 
-    def swap(self):
-        pass
+    def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
+        (
+            self.school_schedule[class_id][day_x][subject_x_position],
+            self.school_schedule[class_id][day_y][subject_y_position]
+        ) = (
+            self.school_schedule[class_id][day_y][subject_y_position],
+            self.school_schedule[class_id][day_x][subject_x_position]
+        )

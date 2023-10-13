@@ -43,23 +43,19 @@ def generate_schedule(data, days, conditions_file_path):
     if not conditions.valid:
         return -1
 
-    school_schedule = Schedule().create(
+    new_school_schedule_object = Schedule().create(
         classes_id=classes_id,
         conditions=conditions,
         days=days,
         subject_per_class=subject_per_class
     )
 
-    for class_id in classes_id:
-        for day in days:
-            #z tą pętlą jest błąd : 'Schedule' object is not subscriptable
-            while len(school_schedule[class_id][day]) < conditions.general['min_lessons_per_day']:
-                pass
+    conditions.update_min_day_len(schedule=new_school_schedule_object, days=days)
 
     if settings.DEBUG:
         school_schedule.print(classes_id, days, print_subjects=False)
 
-    return school_schedule
+    return new_school_schedule_object
 
 
 ss = generate_schedule(
