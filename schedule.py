@@ -1,34 +1,65 @@
 import random
+from tkinter_schedule_vis import tkinter_schedule_vis
+import datetime
+import settings
 
 class Schedule:
     def __init__(self):
-        self.school_schedule = []
+        self.school_schedule = {}
 
-    def add_class_schedule(self, class_schedule):
-        self.school_schedule.append(class_schedule)
+    def add_class_schedule(self, class_id, class_schedule):
+        self.school_schedule[class_id] = class_schedule
 
     def create(self, classes_id, conditions, days, subject_per_class):
+        now = datetime.datetime.now()
+        current_time = now.strftime("%H-%M-%S")
+
         for class_id in classes_id:
             new_class_schedule = self.create_class_schedule(days)
-            for subject in subject_per_class[class_id]:
-                for i in range(subject.subject_count_in_week):
-                    day = random.choice(days)
+            self.add_class_schedule(class_id, new_class_schedule)
 
-                    for class_schedule in self.school_schedule:
-                        other_class_day = class_schedule[days[days.index(day)]]
-                        if not len(other_class_day) == len(new_class_schedule[day]):
+            for subject_num, subject in enumerate(subject_per_class[class_id]):
+                for i in range(subject.subject_count_in_week):
+
+                    while True:
+                        day = random.choice(days)
+                        next_lesson_index = len(new_class_schedule[day])
+
+                        same_time_subjects = []
+                        for other_class_schedule_id in self.school_schedule:
+                            other_class_schedule_day = self.school_schedule[other_class_schedule_id][day]
+                            try:
+                                other_class_subject = other_class_schedule_day[next_lesson_index]
+                                same_time_subjects.append(other_class_subject)
+                            except IndexError:
+                                pass
+
+                        interfierence = False
+                        for same_time_subject in same_time_subjects:
+                            if same_time_subject.teacher_id == subject.teacher_id:
+                                if settings.DEBUG:
+                                    print(
+                                        "INTERFIERENCE",
+                                        f"teacher_id: {subject.teacher_id}, subject_id: {subject.subject_id}, other subject_id: {same_time_subject.subject_id}\n"
+                                        f"day: {day}, class: {class_id} subject_num: {subject_num} subject_iteration: {i}\n"
+                                    )
+                                interfierence = True
+                                break
+
+                            if settings.DEBUG:
+                                print(f"teacher_id: {subject.teacher_id}, subject_id: {subject.subject_id}, other subject_id: {same_time_subject.subject_id}\n"
+                                      f"day: {day}, class: {class_id} subject_num: {subject_num} subject_iteration: {i}\n")
+
+                        if interfierence:
                             continue
 
-                        while (subject.teacher_id
-                               == other_class_day[
-                                   len(new_class_schedule[day])-1
-                               ]) or \
-                                len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
-                            day = random.choice(days)
-
-                    subject.lesson_hours_id = len(new_class_schedule[day])
-                    new_class_schedule[day].append(subject)
-            self.add_class_schedule(new_class_schedule)
+                        if len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
+                            pass
+                        else:
+                            subject.lesson_hours_id = next_lesson_index
+                            new_class_schedule[day].append(subject)
+                            tkinter_schedule_vis(self.school_schedule, days, capture_name=f'{class_id}_{subject_num}_{i}', dir_name=current_time)
+                            break
 
         return self
 

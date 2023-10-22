@@ -55,10 +55,14 @@ def generate_schedule(data, days, conditions_file_path):
 
     conditions.update_min_day_len(schedule=new_school_schedule_object, days=days)
 
+    now = datetime.datetime.now()
+    current_time = now.strftime("%H-%M-%S")
+
     tkinter_schedule_vis.tkinter_schedule_vis(
         schedule=new_school_schedule_object.school_schedule,
         days=days,
-        subjects_num=subjects_num
+        subjects_num=subjects_num,
+        dir_name=f'{current_time}_final'
     )
 
     # if settings.DEBUG:

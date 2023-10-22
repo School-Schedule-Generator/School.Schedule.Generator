@@ -119,16 +119,17 @@ class ScheduleConditions:
                     )
 
     def update_min_day_len(self, schedule, days):
-        for i, class_schedule in enumerate(schedule.school_schedule):
-            for j in range(len(class_schedule)):
+        for class_schedule_id in schedule.school_schedule:
+            class_schedule = schedule.school_schedule[class_schedule_id]
+            for i in range(len(class_schedule)):
                 class_schedule_list = list(class_schedule.values())
                 max_len_day_i = class_schedule_list.index(max(class_schedule.values(), key=len))
 
-                day = class_schedule[days[j]]
+                day = class_schedule[days[i]]
                 while len(day) < self.general['min_lessons_per_day']:
                     schedule.move_subject_to_day(
-                        class_id=i,
-                        day_to=days[j],
+                        class_id=class_schedule_id,
+                        day_to=days[i],
                         day_from=days[max_len_day_i],
                         subject_position=-1
                     )
