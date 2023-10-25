@@ -2,6 +2,7 @@ import tkinter as tk
 import tkcap
 import os
 
+
 def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='catures_1'):
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
@@ -55,6 +56,6 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
     cap = tkcap.CAP(root)
     cap.capture(f'tkCaptures/{dir_name}/{capture_name}.jpg')
 
-    root.after(0,lambda:root.destroy())
+    root.after(0, lambda: root.destroy())
     root.mainloop()
 
