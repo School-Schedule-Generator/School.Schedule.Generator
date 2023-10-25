@@ -53,7 +53,7 @@ def generate_schedule(data, days, conditions_file_path):
         subject_per_class=subject_per_class
     )
 
-    conditions.update_min_day_len(schedule=new_school_schedule_object, days=days)
+    conditions.format_schedule(schedule=new_school_schedule_object, days=days)
 
     now = datetime.datetime.now()
     current_time = now.strftime("%H-%M-%S")
@@ -66,7 +66,7 @@ def generate_schedule(data, days, conditions_file_path):
     )
 
     # if settings.DEBUG:
-    #     new_school_schedule_object.print(classes_id, days, print_subjects=True)
+    #     new_school_schedule_object.print_debug(classes_id, days, print_subjects=True)
 
     return new_school_schedule_object
 

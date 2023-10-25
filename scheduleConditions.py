@@ -6,30 +6,13 @@ class ScheduleConditions:
     """
     class for conditionalising a schedule
     """
-
     def __init__(self, file_path, min_lessons_per_day=5, max_lessons_per_day=9):
         self.general = {
             'min_lessons_per_day': min_lessons_per_day,
             'max_lessons_per_day': max_lessons_per_day,
         }
-        self.Types = Enum('Types', ['string', 'int', 'bool', 'strict', 'loose', 'none'])
-        self.specific = {
-            'stack': {
-                'desc': 'for stacking the same type of subject in a row',
-                'types': [self.Types['strict'], self.Types['loose'], self.Types['none']]
-            },
-            'max_stack': {
-                'desc': 'decides how long can a stack be (if not defined stack will be as long as it can)',
-                'types': [self.Types['int']]
-            }
-        }
-        self.specific_in_use = {
-            'max-stack': {
-                'range': 'all'  # range defines the reach of condition (on what columns has it effect)
-            }
-        }
-        self.valid = True
 
+        self.valid = True
         self.conditions_list = self.get_condition_list(file_path)
         if self.conditions_list:
             valid_conditions = self.load_conditions_list()
@@ -103,22 +86,8 @@ class ScheduleConditions:
             return False
         return True
 
-    # May not be in use!
-    def update_max_day_len(self, schedule, days):
-        for i, class_schedule in enumerate(schedule.school_schedule):
-            for j in range(len(class_schedule)):
-                class_schedule_list = list(class_schedule.values())
-                min_len_day_i = class_schedule_list.index(min(class_schedule.values(), key=len))
-                day = class_schedule[days[j]]
-                while len(day) > self.general['max_lessons_per_day']:
-                    schedule.move_subject_to_day(
-                        class_id=i,
-                        day_to=days[j],
-                        day_from=days[min_len_day_i],
-                        subject_position=-1
-                    )
-
     def update_min_day_len(self, schedule, days):
+
         for class_schedule_id in schedule.school_schedule:
             class_schedule = schedule.school_schedule[class_schedule_id]
             for i in range(len(class_schedule)):
@@ -127,16 +96,32 @@ class ScheduleConditions:
 
                 day = class_schedule[days[i]]
                 while len(day) < self.general['min_lessons_per_day']:
-                    schedule.move_subject_to_day(
-                        class_id=class_schedule_id,
-                        day_to=days[i],
-                        day_from=days[max_len_day_i],
-                        subject_position=-1
-                    )
+                    while True:
+                        if not schedule.is_teacher_taken():
+
+                            schedule.move_subject_to_day(
+                                class_id=class_schedule_id,
+                                day_to=days[i],
+                                day_from=days[max_len_day_i],
+                                subject_position=-1
+                            )
+                            break
+                        else:
+                            # TODO
+                            # find new max len day
+                            # znaleść inną lekcje ktorą można przenieść do tego dnia
+                            # jeśli żaden dzień na 1 lub -1 lekcji nie
+                            # jest w stanie dodać do tego dnia też na 1 lub -1
+                            # lekcji to staramy się wsadzić tą lekcje w środek dnia,
+                            # jeśli i to nie zadziała to musimy wygenerować plan na nowo lub wyrzucić error
+                            pass
 
     def format_schedule(self, schedule, days):
+        condition_func = {
+            'min_lessons_per_day': self.update_min_day_len(schedule, days),
+        }
         for condition in self.general:
-            pass
-
-        for condition in self.specific_in_use:
-            pass
+            try:
+                condition_func[condition]
+            except KeyError:
+                continue
