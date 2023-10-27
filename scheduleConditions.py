@@ -114,6 +114,7 @@ class ScheduleConditions:
                             # jest w stanie dodać do tego dnia też na 1 lub -1
                             # lekcji to staramy się wsadzić tą lekcje w środek dnia,
                             # jeśli i to nie zadziała to musimy wygenerować plan na nowo lub wyrzucić error
+                            #
                             pass
 
     def format_schedule(self, schedule, days):
