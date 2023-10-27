@@ -3,7 +3,7 @@ import tkcap
 import os
 
 
-def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='catures_1'):
+def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='log_0', capture=True):
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
 
@@ -39,23 +39,36 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
                     if other_subject.teacher_id == subject.teacher_id:
                         color = rgb(255, 0, 0)
 
-                b = tk.Label(
-                    root,
-                    text=f"subject_id:{subject.subject_id}\nsubject_name_id:{subject.subject_name_id}\nteacher: {subject.teacher_id}",
-                    font=("Arial", 8),
-                    bg=color
-                )
-                b.grid(row=k + 1, column=i * len(schedule) + j)
+                if subject.is_empty:
+                    label = tk.Label(
+                        root,
+                        text="empty",
+                        font=("Arial", 8),
+                        bg=color
+                    )
+                else:
+                    label = tk.Label(
+                        root,
+                        text=
+                        # f"subject_id:{subject.subject_id}\n"
+                        #  f"subject_name_id:{subject.subject_name_id}\n"
+                        f"teacher: {subject.teacher_id}\n"
+                        f"lesson_hours_id: {subject.lesson_hours_id}",
+                        font=("Arial", 8),
+                        bg=color
+                    )
 
-    if not os.path.exists('tkCaptures'):
-        os.mkdir('./tkCaptures')
+                label.grid(row=k + 1, column=i * len(schedule) + j)
 
-    if not os.path.exists(f'./tkCaptures/{dir_name}'):
-        os.mkdir(f'./tkCaptures/{dir_name}')
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
 
-    cap = tkcap.CAP(root)
-    cap.capture(f'tkCaptures/{dir_name}/{capture_name}.jpg')
+    if not os.path.exists(f'logs/{dir_name}'):
+        os.mkdir(f'logs/{dir_name}')
 
-    root.after(0, lambda: root.destroy())
-    root.mainloop()
+    if capture:
+        cap = tkcap.CAP(root)
+        cap.capture(f'logs/{dir_name}/{capture_name}.jpg')
 
+        root.after(0, lambda: root.destroy())
+        root.mainloop()
