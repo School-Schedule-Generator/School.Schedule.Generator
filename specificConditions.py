@@ -11,8 +11,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
             days_with_conflict = set()
             set_days = set(days)
 
-            # TODO:
-            # when takeing from first lesson there occurs a bug when teacher is not checked correctly and it can sometimes result in invalid day moving
             while schedule.get_num_of_lessons(schedule_at_day, log_file_name) < conditions.general['min_lessons_per_day']:
                 class_schedule_list = list(class_schedule.values())
                 max_len_day_i = class_schedule_list.index(max(class_schedule.values(), key=len))
@@ -37,7 +35,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                 if not schedule.is_teacher_taken(
                         teacher=schedule.school_schedule[class_schedule_id][days[max_len_day_i]][-1].teacher_id,
                         day=current_day,
-                        lesson_index=-1
+                        lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
                 ):
                     if not schedule.move_subject_to_day(
                         class_id=class_schedule_id,
@@ -61,16 +59,10 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
                         dir_name=log_file_name
                     )
-                    debug_log(
-                        log_file_name,
-                        f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change\n'
-                        f'same time teachers: {schedule.get_same_time_teacher(current_day, -1)}\n'
-                        f'this teacher: {schedule.school_schedule[class_schedule_id][days[max_len_day_i]][-1].teacher_id}'
-                    )
                 elif not schedule.is_teacher_taken(
                         teacher=schedule.school_schedule[class_schedule_id][days[max_len_day_i]][first_lesson_index].teacher_id,
                         day=current_day,
-                        lesson_index=first_lesson_index
+                        lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
                 ):
                     if not schedule.move_subject_to_day(
                         class_id=class_schedule_id,
@@ -91,14 +83,8 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                     tkinter_schedule_vis(
                         schedule.school_schedule,
                         days,
-                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_move',
                         dir_name=log_file_name
-                    )
-                    debug_log(
-                        log_file_name,
-                        f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change\n'
-                        f'same time teachers: {schedule.get_same_time_teacher(current_day, first_lesson_index)}\n'
-                        f'this teacher: {schedule.school_schedule[class_schedule_id][days[max_len_day_i]][first_lesson_index].teacher_id}'
                     )
                 else:
                     days_with_conflict.add(days[max_len_day_i])
@@ -120,7 +106,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         if not schedule.is_teacher_taken(
                                 teacher=schedule_at_other_day[-1].teacher_id,
                                 day=current_day,
-                                lesson_index=-1
+                                lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
                         ):
                             if not schedule.move_subject_to_day(
                                 class_id=class_schedule_id,
@@ -141,19 +127,13 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                             tkinter_schedule_vis(
                                 schedule.school_schedule,
                                 days,
-                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_move',
                                 dir_name=log_file_name
-                            )
-                            debug_log(
-                                log_file_name,
-                                f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change\n'
-                                f'same time teachers: {schedule.get_same_time_teacher(current_day, -1)}\n'
-                                f'this teacher: {schedule.school_schedule[class_schedule_id][days[max_len_day_i]][-1].teacher_id}'
                             )
                         elif not schedule.is_teacher_taken(
                                 teacher=schedule_at_other_day[first_lesson_index].teacher_id,
                                 day=current_day,
-                                lesson_index=first_lesson_index
+                                lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
                         ):
                             if not schedule.move_subject_to_day(
                                 class_id=class_schedule_id,
@@ -174,14 +154,8 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                             tkinter_schedule_vis(
                                 schedule.school_schedule,
                                 days,
-                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_move',
                                 dir_name=log_file_name
-                            )
-                            debug_log(
-                                log_file_name,
-                                f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change\n'
-                                f'same time teachers: {schedule.get_same_time_teacher(current_day, first_lesson_index)}\n'
-                                f'this teacher: {schedule.school_schedule[class_schedule_id][days[max_len_day_i]][first_lesson_index].teacher_id}'
                             )
                         else:
                             days_with_conflict.add(day)

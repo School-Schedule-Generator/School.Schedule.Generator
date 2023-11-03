@@ -35,18 +35,20 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position, log_
     if subject_position == first_lesson:
         self.school_schedule[class_id][day_from][first_lesson] = Subject(is_empty=True, lesson_hours_id=first_lesson)
     elif subject_position == -1:
-        self.school_schedule[class_id][day_from].pop(subject_position)
+        self.school_schedule[class_id][day_from].pop()
     else:
         debug_log(log_file_name, "ERROR: you can only move 1st and last lesson")
         return False
 
     self.school_schedule[class_id][day_to].append(old)
-    if len(self.school_schedule[class_id][day_to]) > 0:
+    if len(self.school_schedule[class_id][day_to]) > 1:
         if subject_position == first_lesson:
             self.school_schedule[class_id][day_to][-1].lesson_hours_id = len(self.school_schedule[class_id][day_to])-1
         else:
             self.school_schedule[class_id][day_to][-1].lesson_hours_id = \
                 self.school_schedule[class_id][day_to][subject_position-1].lesson_hours_id + 1
+    elif len(self.school_schedule[class_id][day_to]) == 1:
+        self.school_schedule[class_id][day_to][subject_position].lesson_hours_id = 1
     else:
         self.school_schedule[class_id][day_to][subject_position].lesson_hours_id = 0
     return True
