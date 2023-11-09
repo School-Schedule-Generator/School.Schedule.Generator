@@ -45,6 +45,9 @@ class Schedule:
 
                     interference = False
                     for same_time_subject in same_time_subjects:
+                        # TODO: change to checking for all teachers in teachers list
+                        # zaminic to na if z funkcja is_teacher_taken linijka (37 - 52)
+                        # pamietac o zostawieniu interference = True i break
                         if same_time_subject.teacher_id == subject.teacher_id:
                             interference = True
                             break
@@ -58,8 +61,6 @@ class Schedule:
                         days_with_teacher_conflict.add(day)
                     else:
                         subject.lesson_hours_id = next_lesson_index
-
-                        # TODO: fix it not working :(((
                         new_class_schedule[day].append(subject)
 
                         if subject_num == len(subject_per_class[class_id]) - 1 and \

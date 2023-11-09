@@ -2,7 +2,7 @@ import tkinter as tk
 import tkcap
 import os
 
-
+# TODO: change to handle lists of subjects and multiple teachers in same time
 def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='log_0', capture=True):
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'

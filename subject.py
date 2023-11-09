@@ -1,3 +1,4 @@
+# TODO: change for holding multiple teachers
 class Subject:
     """
     subject from subjects dataframe turned into an object

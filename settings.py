@@ -10,6 +10,7 @@ class Settings:
             self.COLLUMN_NAMES = {
                 'SSG_LESSON_HOURS': ['lesson_ID', 'start_hour', 'duration'],
                 'SSG_SUBJECT_NAMES': ['subject_name_ID', 'name'],
+                # TODO: change col_name to teachers_id
                 'SSG_SUBJECTS': ['subject_ID', 'subject_name_ID', 'class_ID', 'subject_count_in_week',
                                  'number_of_groups', 'subject_length', 'lesson_hours_ID', 'teacher_ID', 'classroom_ID'],
                 'SSG_TEACHERS': ['teacher_ID', 'name', 'surname', 'possible subjects'],

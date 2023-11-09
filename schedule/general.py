@@ -1,6 +1,7 @@
 from subject import Subject
 from settings import settings
 from debug_log import *
+
 def create_class_schedule(days):
     """
     :param days: list of days that the lessons can be in

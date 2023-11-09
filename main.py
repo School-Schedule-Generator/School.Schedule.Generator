@@ -4,7 +4,6 @@ from subject import *
 from schoolClass import *
 import pandas as pd
 from schedule import *
-import random
 from tkinter_schedule_vis import *
 from debug_log import *
 
@@ -12,18 +11,34 @@ import tkinter_schedule_vis
 
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
-# nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
 
-# przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
-# pozwolenie na dany przedmiot
-# nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
+# WEB
+# ***********
+    # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
 
-# sprawdzic czy jakis dzien ma mniej lekcji niz minimum
-# jesli tak to znalezc dzien z najwieksza iloscia lekcji i przeniesc jeden przedmiot do tego dnia
+    # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
+    # pozwolenie na dany przedmiot
+    # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
+# ***********
 
-# implementacja grup w głównym loopie
+# GUPOWANIE
+# ***********
+    # Zmiana w dodawaniu(append) lekcji w fukcji create:
+    # zamiast schedule.append(subject) dodawac liste schedule.append([subject])
 
-# zamiana używania classes_id na używanie listy klas z pełnymi informacjami
+    # zmienic zmienna z teacher_id na teachers_id jako liste nauczycieli
+    # w trakcie sprawdzania nauczycieli sprawdzic wszystkich nauczycieli z listy
+
+    # Grupowanie lekcji:
+        # po initowaniu planu lekcji trzeba podzielić przedmiot(subject) na odpowiednią ilość grup
+        # żeby podzielić grupy trzeba wiedzieć ilu nauczycieli obsuługuje dany przedmiot
+        # jeśli liczba nauczycieli (ln) == ilość grup (ig) dublujemy lekcje w tym samym miejscu
+            # [subject_id1_gr1, subject_id1_gr2, ...]
+            # jeśli nauczyciel wywołuje konflikt wymieniamy lekcje danej grupy w tym miejscu na inną zgrupowaną lekcje odpowiednią dla tej grupy
+            # jeśli i to nie jest możliwe stawiamy przedmiot dla danej grupy w innym miejscu traktując go jako osobny niezgrupowany przedmiot
+        # jeśli ln == 1 przechodzimy odrazu do traktowania każdej lekcji jako osobny niezgrupowany obiekt pozostawiając tylko 1 grupe na orginalnej pozycji
+# ***********
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
