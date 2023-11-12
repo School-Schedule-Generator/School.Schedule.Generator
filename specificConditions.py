@@ -1,6 +1,7 @@
 from debug_log import *
 from tkinter_schedule_vis import tkinter_schedule_vis
 
+
 def update_min_day_len(conditions, schedule, days, log_file_name):
     for class_schedule_id in schedule.school_schedule:
         class_schedule = schedule.school_schedule[class_schedule_id]
@@ -32,8 +33,10 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                 if first_lesson_index is None:
                     debug_log(log_file_name, 'DEBUG: day at max move to first_lesson_index')
 
-                if not schedule.is_teacher_taken(
-                        teacher=schedule.school_schedule[class_schedule_id][days[max_len_day_i]][-1].teacher_id,
+                max_day_schedule = schedule.school_schedule[class_schedule_id][days[max_len_day_i]]
+
+                if not schedule.are_teachers_taken(
+                        teachers=max_day_schedule[-1][0].teachers_id,
                         day=current_day,
                         lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
                 ):
@@ -133,7 +136,8 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         elif not schedule.is_teacher_taken(
                                 teacher=schedule_at_other_day[first_lesson_index].teacher_id,
                                 day=current_day,
-                                lesson_index=len(schedule.school_schedule[class_schedule_id][current_day])
+                                lesson_index=len(schedule.school_schedule[class_schedule_id][current_day]),
+                                class_id=class_schedule_id
                         ):
                             if not schedule.move_subject_to_day(
                                 class_id=class_schedule_id,

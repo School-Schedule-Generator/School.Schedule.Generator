@@ -2,6 +2,7 @@ from subject import Subject
 from settings import settings
 from debug_log import *
 
+
 def create_class_schedule(days):
     """
     :param days: list of days that the lessons can be in
@@ -84,6 +85,23 @@ def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
         self.school_schedule[class_id][day_x][subject_x_position]
     )
 
+
+def get_same_time_teacher(self, day, lesson_index, class_id):
+    same_time_teachers = []
+    for class_schedule_id in self.school_schedule:
+        if class_id == class_schedule_id:
+            continue
+        class_schedule_day = self.school_schedule[class_schedule_id][day]
+        try:
+            class_subjects = class_schedule_day[lesson_index]
+            for class_subject in class_subjects:
+                for teacher_id in class_subject.teachers_id:
+                    same_time_teachers.append(teacher_id)
+        except IndexError:
+            pass
+    return same_time_teachers
+
+
 def find_first_lesson(schedule_at_day, log_file_name):
     for i, subject in enumerate(schedule_at_day):
         if subject.is_empty:
@@ -91,6 +109,7 @@ def find_first_lesson(schedule_at_day, log_file_name):
         else:
             return i
     return None
+
 
 def get_num_of_lessons(schedule_at_day, log_file_name):
     first_lesson_index = find_first_lesson(schedule_at_day, log_file_name)

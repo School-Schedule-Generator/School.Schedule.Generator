@@ -2,6 +2,7 @@ import tkinter as tk
 import tkcap
 import os
 
+
 # TODO: change to handle lists of subjects and multiple teachers in same time
 def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='log_0', capture=True):
     def rgb(red, green, blue):
@@ -23,7 +24,7 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
         for j, class_schedule_id in enumerate(schedule):  # j -> class id
             class_schedule = schedule[class_schedule_id]
             for k in range(len(class_schedule[day])):  # k -> subject id
-                subject = class_schedule[day][k]
+                subjects = class_schedule[day][k]
 
                 same_time_subjects = []
                 for x, other_class_schedule_id in enumerate(schedule):
@@ -39,21 +40,18 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
                     if other_subject.teacher_id == subject.teacher_id:
                         color = rgb(255, 0, 0)
 
-                if subject.is_empty:
+                if subjects[0].is_empty:
                     label = tk.Label(
                         root,
                         text="empty",
                         font=("Arial", 8),
-                        bg=color
+                        bg=rgb(173, 217, 230)
                     )
                 else:
                     label = tk.Label(
                         root,
-                        text=
-                        # f"subject_id:{subject.subject_id}\n"
-                        #  f"subject_name_id:{subject.subject_name_id}\n"
-                        f"teacher: {subject.teacher_id}\n"
-                        f"lesson_hours_id: {subject.lesson_hours_id}",
+                        text=f"teacher: {teachers}\n"
+                        f"lesson_hours_id: {subjects[0].lesson_hours_id}",
                         font=("Arial", 8),
                         bg=color
                     )

@@ -85,7 +85,6 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     tkinter_schedule_vis.tkinter_schedule_vis(
         schedule=new_school_schedule_object.school_schedule,
         days=days,
-        subjects_num=subjects_num,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture'
     )
