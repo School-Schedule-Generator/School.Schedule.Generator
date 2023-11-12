@@ -1,4 +1,6 @@
 from settings import settings
+
+
 def debug_log(file_name, *args, **kwargs):
     if not settings.DEBUG:
         return

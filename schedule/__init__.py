@@ -8,8 +8,9 @@ class Schedule:
     def __init__(self):
         self.school_schedule = {}
 
-    from .general import create_class_schedule, print_debug, move_subject_to_day, swap, get_same_time_teacher, find_first_lesson, get_num_of_lessons
-    from .returncondition import is_teacher_taken
+    from .general import (create_class_schedule, print_debug, move_subject_to_day, swap, get_same_time_teacher,
+                          find_first_lesson, get_num_of_lessons)
+    from .returncondition import are_teachers_taken
     from .formatschedule import format_schedule
 
     create_class_schedule = staticmethod(create_class_schedule)
@@ -34,39 +35,20 @@ class Schedule:
                     day = random.choice(days)
                     next_lesson_index = len(new_class_schedule[day])
 
-                    same_time_subjects = []
-                    for other_class_schedule_id in self.school_schedule:
-                        other_class_schedule_day = self.school_schedule[other_class_schedule_id][day]
-                        try:
-                            other_class_subject = other_class_schedule_day[next_lesson_index]
-                            same_time_subjects.append(other_class_subject)
-                        except IndexError:
-                            pass
-
-                    interference = False
-                    for same_time_subject in same_time_subjects:
-                        # TODO: change to checking for all teachers in teachers list
-                        # zaminic to na if z funkcja is_teacher_taken linijka (37 - 52)
-                        # pamietac o zostawieniu interference = True i break
-                        if same_time_subject.teacher_id == subject.teacher_id:
-                            interference = True
-                            break
-
-                    if interference:
+                    if self.are_teachers_taken(subject.teachers_id, day, next_lesson_index, class_id):
                         days_with_teacher_conflict.add(day)
                         continue
 
-                    new_class_schedule_copy = new_class_schedule.copy()
                     if len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
                         days_with_teacher_conflict.add(day)
                     else:
                         subject.lesson_hours_id = next_lesson_index
-                        new_class_schedule[day].append(subject)
+                        new_class_schedule[day].append([subject])
 
                         if subject_num == len(subject_per_class[class_id]) - 1 and \
                                 class_id_index == len(classes_id) - 1:
                             tkinter_schedule_vis(
-                                self.school_schedule,
+                                self,
                                 days,
                                 capture_name=f'LastInitCapture',
                                 dir_name=log_file_name,

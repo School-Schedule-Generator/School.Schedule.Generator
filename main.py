@@ -83,7 +83,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     )
 
     tkinter_schedule_vis.tkinter_schedule_vis(
-        schedule=new_school_schedule_object.school_schedule,
+        schedule_obj=new_school_schedule_object,
         days=days,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture'
@@ -92,6 +92,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     # new_school_schedule_object.print_debug(classes_id, days, print_subjects=True)
 
     return new_school_schedule_object
+
 
 now = datetime.datetime.now()
 time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")

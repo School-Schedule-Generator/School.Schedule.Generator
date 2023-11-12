@@ -1,10 +1,12 @@
-def is_teacher_taken(self, teacher, day, lesson_index):
-    same_time_subjects = self.get_same_time_teacher(
+def are_teachers_taken(self, teachers, day, lesson_index, class_id):
+    same_time_teachers = self.get_same_time_teacher(
         day=day,
-        lesson_index=lesson_index
+        lesson_index=lesson_index,
+        class_id=class_id
     )
 
-    for same_time_teacher in same_time_subjects:
-        if same_time_teacher == teacher:
-            return True
+    for teacher in teachers:
+        for same_time_teacher in same_time_teachers:
+            if same_time_teacher == teacher:
+                return True
     return False

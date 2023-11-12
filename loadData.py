@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import sqlite3
 from subject import *
+import ast
 
 
 def load_data(
@@ -22,31 +23,32 @@ def load_data(
         }
     :return: list of pandas dataframes
     """
-    dataframes = []
+    dataframes = {}
     if settings.DEBUG:
         for file in tables:
             if file_type == 'xlsx':
-                dataframes.append(pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type)))
+                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
             if file_type == 'csv':
-                dataframes.append(pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type)))
+                dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
             elif file_type == 'mdf':
                 table_name = file
                 con = sqlite3.connect(settings.DATABASE_PATH)
                 sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
-                dataframes.append(pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name]))
+                dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
+        dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
     else:
         for file in tables:
             if file_type == 'xlsx':
-                dataframes.append(pd.read_excel(os.path.join(path, file + '.' + file_type)))
+                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + file_type))
             if file_type == 'csv':
-                dataframes.append(pd.read_csv(os.path.join(path, file + '.' + file_type)))
+                dataframes[file] = pd.read_csv(os.path.join(path, file + '.' + file_type))
             elif file_type == 'mdf':
                 table_name = file
                 con = sqlite3.connect(path)
                 sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
-                dataframes.append(pd.DataFrame(sql_query, columns=sql_tables[table_name]))
+                dataframes[file] = pd.DataFrame(sql_query, columns=sql_tables[table_name])
 
-    return dataframes
+    return list(dataframes.values())
 
 
 def split_subject_per_class(subjects_df, school_classes):

@@ -4,20 +4,17 @@ import os
 
 
 # TODO: change to handle lists of subjects and multiple teachers in same time
-def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapture', dir_name='log_0', capture=True):
+def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name='log_0', capture=True):
+
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
 
-    root = tk.Tk()
-    colors = []
-    for i in range(subjects_num):
-        colors.append(rgb(
-            min(max(100, (i * 10) % 255), 200),
-            max(100, (i * 20) % 255),
-            max(100, (i * 30) % 255))
-        )
+    def get_digits(number):
+        return [int(d) for d in str(number)]
 
-    grid = {}
+    root = tk.Tk()
+    schedule = schedule_obj.school_schedule
+
     for i, day in enumerate(days):  # i -> day id
         week_day = tk.Label(root, text=day, font=("Arial", 14))
         week_day.grid(row=0, column=i * len(schedule), columnspan=len(schedule))
@@ -35,11 +32,6 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
                         except IndexError:
                             pass
 
-                color = colors[subject.subject_id - 1]
-                for other_subject in same_time_subjects:
-                    if other_subject.teacher_id == subject.teacher_id:
-                        color = rgb(255, 0, 0)
-
                 if subjects[0].is_empty:
                     label = tk.Label(
                         root,
@@ -48,6 +40,36 @@ def tkinter_schedule_vis(schedule, days, subjects_num=1000, capture_name='tkCapt
                         bg=rgb(173, 217, 230)
                     )
                 else:
+                    color = [27, 58, 19]
+                    last_digit = 1
+                    for subject in subjects:
+                        if schedule_obj.are_teachers_taken(
+                                subject.teachers_id,
+                                day,
+                                subject.lesson_hours_id,
+                                class_schedule_id
+                        ):
+                            color = [255, 0, 0]
+                            break
+                        for teacher_id in subject.teachers_id:
+                            for digit in get_digits(teacher_id):
+                                color[1] *= digit + 1
+                            color[1] = color[1] % 255
+
+                            for digit in reversed(get_digits(teacher_id)):
+                                color[2] *= digit + 1
+                                last_digit = digit
+                            color[2] = color[2] % 255
+
+                        color[0] *= last_digit + 1
+                        color[0] = color[0] % 255
+
+                    color = rgb(*color)
+
+                    teachers = []
+                    for subject in subjects:
+                        teachers.append(subject.teachers_id)
+
                     label = tk.Label(
                         root,
                         text=f"teacher: {teachers}\n"
