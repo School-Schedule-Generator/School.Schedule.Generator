@@ -12,6 +12,11 @@ import tkinter_schedule_vis
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
 
+# CREATE
+# ***********
+    # implementacja subject_length -> lekcja ma się powtarzać tyle razy ile podane
+# ***********
+
 # WEB
 # ***********
     # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
@@ -55,6 +60,8 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         os.makedirs(f'logs/{log_file_name}')
     with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
         pass
+    with open(f'logs/{log_file_name}/{log_file_name}_schedule.txt', 'w') as f:
+        pass
 
     conditions = ScheduleConditions(file_path=conditions_file_path, log_file_name=log_file_name)
     [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df] = data
@@ -89,7 +96,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         capture_name='FinalCapture'
     )
 
-    # new_school_schedule_object.print_debug(classes_id, days, print_subjects=True)
+    new_school_schedule_object.log_schedule(days, log_file_name+'_schedule')
 
     return new_school_schedule_object
 

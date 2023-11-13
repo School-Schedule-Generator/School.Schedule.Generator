@@ -162,4 +162,3 @@ cython_debug/
 
 # ignore debug images
 logs/
-tkCaptures/

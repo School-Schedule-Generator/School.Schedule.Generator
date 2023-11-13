@@ -13,22 +13,36 @@ def create_class_schedule(days):
     return new_class_schedule
 
 
-def print_debug(log_file_name, self, classes_id, days, print_subjects=False):
-    for i, class_schedule in enumerate(self.school_schedule):
-        debug_log(log_file_name, f'class {classes_id[i]}')
-        for j in range(len(class_schedule)):
-            debug_log(log_file_name, f'\t{days[j]}\n\t\tlen={len(class_schedule[days[j]])}')
-            if print_subjects:
-                for subject in class_schedule[days[j]]:
-                    debug_log(log_file_name, f'\t\t{subject.subject_name_id} teacher:{subject.teacher_id}')
-            debug_log(log_file_name, '\n')
-        debug_log(log_file_name, '-' * 10)
+def log_schedule(self, days, log_file_name):
+    schedule_by_hour_id = {}
+    lesson_hours = set()
+    for class_id in self.school_schedule:
+        class_schedule = self.school_schedule[class_id]
+        for day in days:
+            class_schedule_at_day = class_schedule[day]
+            for subjects in class_schedule_at_day:
+                try:
+                    schedule_by_hour_id[subjects[0].lesson_hours_id].append(subjects)
+                except KeyError:
+                    schedule_by_hour_id[subjects[0].lesson_hours_id] = [subjects]
+                lesson_hours.add(subjects[0].lesson_hours_id)
+
+    for lesson_hour in sorted(list(lesson_hours)):
+        debug_log(log_file_name, '{0:>7}'.format(f'|{lesson_hour}. |'), end='')
+        for subjects in schedule_by_hour_id[lesson_hour]:
+            debug_log(log_file_name, ':', end='')
+            for subject in subjects:
+                debug_log(log_file_name, '{0:>10}'.format(f'{subject.teachers_id}, '))
+            else:
+                debug_log(log_file_name, '{0:>10}'.format(''))
+            debug_log(log_file_name, ':', end='')
+        debug_log(log_file_name, '|\n')
 
 
 def move_subject_to_day(self, class_id, day_to, day_from, subject_position, log_file_name):
     old = self.school_schedule[class_id][day_from][subject_position]
     if old[0].is_empty:
-        debug_log(log_file_name, "DEBUG: can't move empty space")
+        debug_log(log_file_name, "ERROR: can't move empty space")
         return False
 
     first_lesson = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
