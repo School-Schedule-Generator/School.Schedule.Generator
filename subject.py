@@ -14,3 +14,4 @@ class Subject:
         self.teachers_id = teachers_id
         self.classroom_id = classroom_id
         self.is_empty = is_empty
+        self.group = group

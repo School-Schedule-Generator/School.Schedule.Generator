@@ -1,10 +1,13 @@
 import tkinter as tk
 import tkcap
 import os
+from settings import settings
 
 
 # TODO: change to handle lists of subjects and multiple teachers in same time
 def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name='log_0', capture=True):
+    if not settings.TKCAPTURE:
+        return
 
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
@@ -66,9 +69,10 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
 
                     color = rgb(*color)
 
-                    teachers = []
+                    teachers = ''
                     for subject in subjects:
-                        teachers.append(subject.teachers_id)
+                        for teacher in subject.teachers_id:
+                            teachers += str(teacher) + ' '
 
                     label = tk.Label(
                         root,
