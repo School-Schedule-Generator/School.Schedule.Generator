@@ -12,6 +12,11 @@ import tkinter_schedule_vis
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
 
+# GENERAL:
+# ***********
+    # fix schedule text logging
+# ***********
+
 # CREATE
 # ***********
     # implementacja subject_length -> lekcja ma się powtarzać tyle razy ile podane
@@ -96,7 +101,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         capture_name='FinalCapture'
     )
 
-    new_school_schedule_object.log_schedule(days, log_file_name+'_schedule')
+    # new_school_schedule_object.log_schedule(days, log_file_name+'_schedule')
 
     return new_school_schedule_object
 

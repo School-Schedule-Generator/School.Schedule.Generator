@@ -1,7 +1,7 @@
 class Settings:
     def __init__(self):
         self.DEBUG = True
-        self.TKCAPTURE = False
+        self.TKCAPTURE = True
 
         if self.DEBUG:
             self.TEST_DATA_PATH = './data/testData'

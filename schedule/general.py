@@ -1,5 +1,6 @@
 from subject import Subject
 from debug_log import *
+from tkinter_schedule_vis import tkinter_schedule_vis
 
 
 def create_class_schedule(days):
@@ -48,7 +49,11 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position, log_
     first_lesson = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
 
     if subject_position == first_lesson:
-        self.school_schedule[class_id][day_from][first_lesson] = [Subject(is_empty=True, lesson_hours_id=first_lesson)]
+        self.school_schedule[class_id][day_from][first_lesson] = [Subject(
+            is_empty=True,
+            lesson_hours_id=first_lesson,
+            log_file_name=log_file_name
+        )]
     elif subject_position == -1:
         self.school_schedule[class_id][day_from].pop()
     else:
@@ -93,6 +98,47 @@ def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
         self.school_schedule[class_id][day_y][subject_y_position],
         self.school_schedule[class_id][day_x][subject_x_position]
     )
+
+
+def safe_move(self, teachers_id, day_from, day_to, subject_position, class_id, days, tk_capture_count,
+              log_file_name):
+
+    if subject_position == 0:
+        subject_position = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
+    elif subject_position != -1:
+        debug_log(log_file_name, "ERROR: you can only move 1st and last lesson")
+        raise BaseException
+
+    if not self.are_teachers_taken(
+            teachers=teachers_id,
+            day=day_to,
+            lesson_index=len(self.school_schedule[class_id][day_to]),
+            class_id=class_id
+    ):
+        if not self.move_subject_to_day(
+                class_id=class_id,
+                day_to=day_to,
+                day_from=day_from,
+                subject_position=subject_position,
+                log_file_name=log_file_name
+        ):
+            debug_log(
+                log_file_name,
+                f'While 1: class_schedule_id: '
+                f'{class_id} '
+                f'lesson_index={-1} '
+                f'day_to: {day_to} day_from: '
+                f'{day_from}'
+            )
+            raise BaseException
+        tkinter_schedule_vis(
+            self,
+            days,
+            capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_post_change',
+            dir_name=log_file_name
+        )
+        return True
+    return False
 
 
 def get_same_time_teacher(self, day, lesson_index, class_id):

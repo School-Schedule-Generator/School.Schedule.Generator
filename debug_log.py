@@ -15,4 +15,4 @@ def debug_log(file_name, *args, **kwargs):
         for arg in args:
             f.write(str(arg)+' ')
         if '_schedule' not in file_name:
-            f.write('------------------------------------\n')
+            f.write('\n------------------------------------\n')
