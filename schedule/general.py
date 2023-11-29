@@ -40,13 +40,22 @@ def log_schedule(self, days, log_file_name):
         debug_log(log_file_name, '|\n')
 
 
-def move_subject_to_day(self, class_id, day_to, day_from, subject_position, log_file_name):
-    old = self.school_schedule[class_id][day_from][subject_position]
+def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
+                        subject_to_position=-1, group=None, log_file_name=''):
+
+    try:
+        old = self.school_schedule[class_id][day_from][subject_position]
+    except IndexError:
+        # TODO: For some reason subject position is compleatly wrong - day is smaller than index we want to enter
+        debug_log(log_file_name, f'subject pos: {subject_position}, '
+                                 f'len of day: {len(self.school_schedule[class_id][day_from])}')
+        raise BaseException
+
     if old[0].is_empty:
         debug_log(log_file_name, "ERROR: can't move empty space")
         return False
 
-    first_lesson = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
+    first_lesson = find_first_lesson_index(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
 
     if subject_position == first_lesson:
         self.school_schedule[class_id][day_from][first_lesson] = [Subject(
@@ -57,32 +66,70 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position, log_
     elif subject_position == -1:
         self.school_schedule[class_id][day_from].pop()
     else:
-        debug_log(log_file_name, "ERROR: you can only move 1st and last lesson")
-        return False
+        if group is None:
+            debug_log(log_file_name, 
+                      "ERROR: if you want to move lesson in between other, "
+                      "specify group so ther is no empty space in schedule")
+            return False
+        debug_log(log_file_name, "DEBUG: moved lesson at index diffrent than 0 or -1")
 
-    self.school_schedule[class_id][day_to].append(old)
-    if len(self.school_schedule[class_id][day_to]) > 1:
-        if subject_position == first_lesson:
+        old = self.school_schedule[class_id][day_from][subject_position][group-1]
+        try:
+            self.school_schedule[class_id][day_from][subject_position][group-1] = Subject(
+                is_empty=True,
+                lesson_hours_id=subject_position,
+                log_file_name=log_file_name,
+                group=group
+            )
+        except IndexError:
+            debug_log(log_file_name, f'ERROR: index error '
+                                     f'while trying to pop subject from subjects position at:{subject_position},'
+                                     f'check if subject exists')
+            return False
+
+    if subject_to_position == -1:
+        self.school_schedule[class_id][day_to].append(old)
+        
+        if len(self.school_schedule[class_id][day_to]) > 1:
+            if subject_position == first_lesson:
+                for subject in self.school_schedule[class_id][day_to][-1]:
+                    subject.lesson_hours_id = (len(self.school_schedule[class_id][day_to])-1)
+    
+            else:
+                for subject in self.school_schedule[class_id][day_to][-1]:
+                    subject.lesson_hours_id = \
+                        self.school_schedule[class_id][day_to][subject_position - 1][0].lesson_hours_id + 1
+    
+        elif len(self.school_schedule[class_id][day_to]) == 1:
             for subject in self.school_schedule[class_id][day_to][-1]:
-                subject.lesson_hours_id = (len(self.school_schedule[class_id][day_to])-1)
-
+                subject.lesson_hours_id = 1
+    
         else:
             for subject in self.school_schedule[class_id][day_to][-1]:
-                subject.lesson_hours_id = \
-                    self.school_schedule[class_id][day_to][subject_position - 1][0].lesson_hours_id + 1
-
-    elif len(self.school_schedule[class_id][day_to]) == 1:
-        for subject in self.school_schedule[class_id][day_to][-1]:
-            subject.lesson_hours_id = 1
-
+                subject.lesson_hours_id = 0
     else:
-        for subject in self.school_schedule[class_id][day_to][-1]:
-            subject.lesson_hours_id = 0
+        if not len(self.school_schedule[class_id][day_to][subject_to_position]):
+            debug_log(log_file_name, "DEBUG: moved 'old' to 0 len subject space")
+            self.school_schedule[class_id][day_to][subject_to_position] = [old]
+        elif self.school_schedule[class_id][day_to][subject_to_position][0].is_empty:
+            debug_log(log_file_name, "DEBUG: moved 'old' to default empty space")
+            self.school_schedule[class_id][day_to][subject_to_position] = [old]
+        else:
+            debug_log(log_file_name, "DEBUG: moved 'old' to occupied space")
+            self.school_schedule[class_id][day_to][subject_to_position].append(old)
+
+        try:
+            self.school_schedule[class_id][day_to][subject_to_position][-1].lesson_hours_id = subject_to_position
+        except AttributeError:
+            print(
+                self.school_schedule[class_id][day_to][subject_to_position], '\n',
+                self.school_schedule[class_id][day_to][subject_to_position][-1]
+            )
 
     return True
 
 
-def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
+def swap_subject_in_place(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
     (
         self.school_schedule[class_id][day_x][subject_x_position].lesson_hours_id,
         self.school_schedule[class_id][day_y][subject_y_position].lesson_hours_id
@@ -118,23 +165,40 @@ def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_i
     :return: was operation successful
     """
 
-    if subject_position == 0:
-        subject_position = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
-    elif subject_position != -1:
-        debug_log(log_file_name, "ERROR: you can only move 1st and last lesson")
+    if subject_new_position == 0:
+        subject_new_position = find_first_lesson_index(
+            self.school_schedule[class_id][day_from],
+            log_file_name=log_file_name
+        )
+    elif subject_new_position < find_first_lesson_index(
+            self.school_schedule[class_id][day_from],
+            log_file_name=log_file_name
+    ):
+        debug_log(log_file_name, "ERROR: can't move subject before first lesson")
         raise BaseException
+
+    first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
+
+    subject_to_position = -1
+    lesson_index = len(self.school_schedule[class_id][day_to])
+    if first_lesson_index != 0:
+        first_empty_space = first_lesson_index - 1
+        lesson_index = first_empty_space
+        subject_to_position = first_empty_space
 
     if not self.are_teachers_taken(
             teachers=teachers_id,
             day=day_to,
-            lesson_index=len(self.school_schedule[class_id][day_to]),
+            lesson_index=lesson_index,
             class_id=class_id
     ):
         if not self.move_subject_to_day(
                 class_id=class_id,
                 day_to=day_to,
                 day_from=day_from,
-                subject_position=subject_position,
+                subject_position=subject_new_position,
+                subject_to_position=subject_to_position,
+                group=group,
                 log_file_name=log_file_name
         ):
             debug_log(
@@ -172,7 +236,7 @@ def get_same_time_teacher(self, day, lesson_index, class_id):
     return same_time_teachers
 
 
-def find_first_lesson(schedule_at_day, log_file_name):
+def find_first_lesson_index(schedule_at_day, log_file_name):
     for i, subjects in enumerate(schedule_at_day):
         for subject in subjects:
             if subject.is_empty:
@@ -183,5 +247,5 @@ def find_first_lesson(schedule_at_day, log_file_name):
 
 
 def get_num_of_lessons(schedule_at_day, log_file_name):
-    first_lesson_index = find_first_lesson(schedule_at_day, log_file_name)
+    first_lesson_index = find_first_lesson_index(schedule_at_day, log_file_name)
     return len(schedule_at_day[first_lesson_index:])

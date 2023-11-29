@@ -6,7 +6,10 @@ class Subject:
     subject from subjects dataframe turned into an object
     """
     def __init__(self, subject_id=0, subject_name_id=0, class_id=0, number_of_groups=0, subject_length=0,
-                 lesson_hours_id=0, teachers_id=[-1], classroom_id=0, is_empty=False, group=None, log_file_name=''):
+                 lesson_hours_id=0, teachers_id=None, classroom_id=0, is_empty=False, group=None, log_file_name=''):
+
+        if teachers_id is None:
+            teachers_id = [-1]
         self.subject_id = subject_id
         self.subject_name_id = subject_name_id
         self.class_id = class_id

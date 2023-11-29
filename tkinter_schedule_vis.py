@@ -50,6 +50,8 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                     color = [27, 58, 19]
                     last_digit = 1
                     for subject in subjects:
+                        if type(subject) is list:
+                            print(subjects)
                         if schedule_obj.are_teachers_taken(
                                 subject.teachers_id,
                                 day,

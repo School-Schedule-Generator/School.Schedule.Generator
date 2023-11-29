@@ -42,12 +42,19 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                     debug_log(log_file_name, 'Error: days_with_conflict == set_days')
                     return
 
-                first_lesson_index = schedule.find_first_lesson(schedule_at_day, log_file_name)
+                first_lesson_index = schedule.find_first_lesson_index(schedule_at_day, log_file_name)
                 if first_lesson_index is None:
                     debug_log(log_file_name, 'DEBUG: day at max move to first_lesson_index')
 
                 max_day_schedule = schedule.school_schedule[class_schedule_id][days[max_len_day_i]]
 
+                # common pattern to check if we can first add lesson before others and then if we can add it after other
+                #   this is to ensure that schedule stays wich logic of user intentions
+
+                # first (if and elif) check ideal case where program subract from the longest day
+                #   to balance length of days
+                # if not possible program loops trough every other day to find any spot to place the subject
+                #   (if not possible return with error)
                 if schedule.safe_move(
                         teachers_id=max_day_schedule[-1][0].teachers_id,
                         day_from=days[max_len_day_i],
@@ -77,7 +84,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                     for day in set_days.difference(days_with_conflict):
 
                         schedule_at_other_day = schedule.school_schedule[class_schedule_id][day]
-                        first_lesson_index = schedule.find_first_lesson(schedule_at_other_day, log_file_name)
+                        first_lesson_index = schedule.find_first_lesson_index(schedule_at_other_day, log_file_name)
 
                         if first_lesson_index is None:
                             debug_log(log_file_name, 'not max move to first_lesson_index')

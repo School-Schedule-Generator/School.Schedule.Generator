@@ -1,5 +1,6 @@
 class Settings:
     def __init__(self):
+        # Describe mode to run the program on
         self.DEBUG = True
 
         # Take screenshots (True) or log in text to file (False)

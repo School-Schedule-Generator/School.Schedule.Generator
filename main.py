@@ -1,11 +1,9 @@
+from datetime import datetime
 from loadData import *
 from scheduleConditions import *
-from subject import *
 from schoolClass import *
-import pandas as pd
 from schedule import *
 from tkinter_schedule_vis import *
-from debug_log import *
 
 import tkinter_schedule_vis
 
@@ -61,6 +59,8 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     :return: generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
     in the same time
     """
+
+    # Creating directory and log files
     if not os.path.exists(f'logs/{log_file_name}'):
         os.makedirs(f'logs/{log_file_name}')
     with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
@@ -68,16 +68,19 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     with open(f'logs/{log_file_name}/{log_file_name}_schedule.txt', 'w') as f:
         pass
 
+    # Creating global schedule conditions
     conditions = ScheduleConditions(file_path=conditions_file_path, log_file_name=log_file_name)
+    if not conditions.valid:
+        debug_log(log_file_name, 'Error: Passed in conditions had syntax error')
+        return -1
+
+    # splitting data to separate dataframes
     [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df] = data
 
+    # gathering basic information from dataframes
     classes_id = SchoolClass.get_classes_id(classes_df)
     school_classes = SchoolClass.get_school_classes(classes_df, classes_id)
-    subjects_num = len(subjects_df)
     subject_per_class = split_subject_per_class(subjects_df, school_classes)
-
-    if not conditions.valid:
-        return -1
 
     new_school_schedule_object = Schedule().create(
         classes_id=classes_id,
@@ -114,7 +117,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     return new_school_schedule_object
 
 
-now = datetime.datetime.now()
+now = datetime.now()
 time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
 ss = generate_schedule(
     data=load_data(),
