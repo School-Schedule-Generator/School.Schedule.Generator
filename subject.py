@@ -1,4 +1,3 @@
-# TODO: change for holding multiple teachers
 from debug_log import debug_log
 
 

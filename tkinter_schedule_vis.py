@@ -21,11 +21,14 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
     for i, day in enumerate(days):  # i -> day id
         week_day = tk.Label(root, text=day, font=("Arial", 14))
         week_day.grid(row=0, column=i * len(schedule), columnspan=len(schedule))
+
+        # loop through classes and subjects
         for j, class_schedule_id in enumerate(schedule):  # j -> class id
             class_schedule = schedule[class_schedule_id]
             for k in range(len(class_schedule[day])):  # k -> subject id
                 subjects = class_schedule[day][k]
 
+                # check if there is teacher conflict (one teacher has some lessons in the same time)
                 same_time_subjects = []
                 for x, other_class_schedule_id in enumerate(schedule):
                     other_class_schedule = schedule[other_class_schedule_id]
@@ -35,6 +38,7 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                         except IndexError:
                             pass
 
+                # create labels and set colors on red if there is a conflict
                 if subjects[0].is_empty:
                     label = tk.Label(
                         root,

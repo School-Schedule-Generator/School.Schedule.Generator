@@ -3,6 +3,14 @@ from tkinter_schedule_vis import tkinter_schedule_vis
 
 
 def update_min_day_len(conditions, schedule, days, log_file_name):
+    """
+        :param conditions: global conditions of schedule
+        :param schedule: the schedule to operate on
+        :param days: list of days with lessons in
+        :param log_file_name: file name for run information
+        :return: schedule with min 5 lessons at day
+    """
+    # loop through all classes
     for class_schedule_id in schedule.school_schedule:
         class_schedule = schedule.school_schedule[class_schedule_id]
         tk_capture_count = 0
@@ -12,6 +20,9 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
             days_with_conflict = set()
             set_days = set(days)
 
+            # looping until num of lessons is lower than minimum and subject is possible to add with met conditions:
+            # - none of the teachers have two lessons at once
+            # (return with error) if there is no available position to add new subject to
             while schedule.get_num_of_lessons(schedule_at_day, log_file_name) < \
                     conditions.general['min_lessons_per_day']:
                 class_schedule_list = list(class_schedule.values())
@@ -41,7 +52,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         teachers_id=max_day_schedule[-1][0].teachers_id,
                         day_from=days[max_len_day_i],
                         day_to=current_day,
-                        subject_position=-1,
+                        subject_new_position=-1,
                         class_id=class_schedule_id,
                         days=days,
                         tk_capture_count=tk_capture_count,
@@ -52,7 +63,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         teachers_id=max_day_schedule[first_lesson_index][0].teachers_id,
                         day_from=days[max_len_day_i],
                         day_to=current_day,
-                        subject_position=0,
+                        subject_new_position=0,
                         class_id=class_schedule_id,
                         days=days,
                         tk_capture_count=tk_capture_count,
@@ -80,7 +91,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 teachers_id=schedule_at_other_day[-1][0].teachers_id,
                                 day_from=day,
                                 day_to=current_day,
-                                subject_position=-1,
+                                subject_new_position=-1,
                                 class_id=class_schedule_id,
                                 days=days,
                                 tk_capture_count=tk_capture_count,
@@ -91,7 +102,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 teachers_id=schedule_at_other_day[first_lesson_index][0].teachers_id,
                                 day_from=day,
                                 day_to=current_day,
-                                subject_position=0,
+                                subject_new_position=0,
                                 class_id=class_schedule_id,
                                 days=days,
                                 tk_capture_count=tk_capture_count,

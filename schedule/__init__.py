@@ -1,8 +1,6 @@
 import copy
 import random
 from tkinter_schedule_vis import tkinter_schedule_vis
-import datetime
-from settings import settings
 
 
 class Schedule:
@@ -29,6 +27,12 @@ class Schedule:
             for subject_num, subject in enumerate(subject_per_class[class_id]):
 
                 days_with_teacher_conflict = set()
+
+                # looping until subject is possible to add with met conditions:
+                # - none of the teachers have two lessons at once (are_teachers_taken)
+                # - checking if adding subject conflicts max possible length of day
+                # - (return with error) if there is no available position to add new subject to
+
                 while True:
                     if days_with_teacher_conflict == set(days):
                         return self.create(classes_id, conditions, days, subject_per_class, log_file_name)
@@ -58,6 +62,17 @@ class Schedule:
         return self
 
     def split_to_groups(self, days, conditions, log_file_name):
+        """
+        :param days: list of days used in schedule
+        :param conditions: global conditions of schedule
+        :param log_file_name: file name for run information
+        :return: schedule with split subjects
+        """
+
+        # counting number of screenshots to avoid identical names of them
+        tk_capture_count = 0
+
+        # loop through all the classes to create separated schedules for them
         for class_id in self.school_schedule:
             class_schedule = self.school_schedule[class_id]
             for day in days:
@@ -75,15 +90,36 @@ class Schedule:
                             subjects_list.append(new_subject)
                         subject.teachers_id = [subject.teachers_id[0]]
                         subject.group = 1
+                        subjects_list.insert(0, subject)
 
-                        first_lesson_index = self.find_first_lesson(class_schedule_at_day, log_file_name)
+                        # based on subject position we can in some cases simplify for natural look of schedule
+                        #   and avoiding logical issues as for e.g. one group having empty hour in between lessons
+                        first_lesson_index = self.find_first_lesson_index(class_schedule_at_day, log_file_name)
                         if subject.lesson_hours_id == first_lesson_index:
-                            other_days = days
-                            for other_day in other_days:
-                                if class_schedule[other_day] == conditions.general['max_lessons_per_day']:
-                                    continue
-                                other_day_first_lesson_index = self.find_first_lesson(class_schedule[other_day], log_file_name)
-                                if other_day_first_lesson_index.is_empty():
+                            for group in range(1, subject.number_of_groups):
+                                for day_to in days:
+                                    tk_capture_count += 1
+
+                                    # checking if moving group creates conflict with conditions
+                                    #   and if ok trying to move it
+                                    if (self.get_num_of_lessons(self.school_schedule[class_id][day_to], log_file_name)
+                                            >= conditions.general['max_lessons_per_day']):
+                                        continue
+                                    elif self.safe_move(
+                                            teachers_id=subject.teachers_id,
+                                            group=subject.group,
+                                            day_from=day,
+                                            day_to=day_to,
+                                            subject_new_position=subject.lesson_hours_id,
+                                            class_id=class_id,
+                                            days=days,
+                                            tk_capture_count=tk_capture_count,
+                                            log_file_name=log_file_name
+                                    ):
+                                        pass
+                                    else:
+                                        continue
+                                else:
                                     pass
                     else:
                         for group in range(1, subject.number_of_groups):

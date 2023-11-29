@@ -1,8 +1,11 @@
 class Settings:
     def __init__(self):
         self.DEBUG = True
+
+        # Take screenshots (True) or log in text to file (False)
         self.TKCAPTURE = True
 
+        # if debug create default names
         if self.DEBUG:
             self.TEST_DATA_PATH = './data/testData'
             self.DATABASE_PATH = './data'

@@ -100,8 +100,23 @@ def swap(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
     )
 
 
-def safe_move(self, teachers_id, day_from, day_to, subject_position, class_id, days, tk_capture_count,
-              log_file_name):
+def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_id, days, tk_capture_count,
+              group=None, log_file_name=''):
+    """
+    :param self: class schedule
+    :param teachers_id: ids of teachers to check
+    :param day_from: day which we take subject from
+    :param day_to: day which we add subject to
+    :param subject_new_position: new position to add subject to
+    :param class_id:
+    :param days: list of days with lessons in
+    :param tk_capture_count:
+    :param group: class group to move
+    :param log_file_name: file name for run information
+    :description: before trying to move using move_subject_to_day(), function checks if action is possible
+    and notifies program
+    :return: was operation successful
+    """
 
     if subject_position == 0:
         subject_position = find_first_lesson(self.school_schedule[class_id][day_from], log_file_name=log_file_name)

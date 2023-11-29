@@ -87,6 +87,13 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         log_file_name=log_file_name
     )
 
+    new_school_schedule_object.split_to_groups(
+        days,
+        conditions,
+        log_file_name
+    )
+
+    # applay complex conditions to schedule
     new_school_schedule_object.format_schedule(
         conditions,
         schedule=new_school_schedule_object,
@@ -94,6 +101,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         log_file_name=log_file_name
     )
 
+    # schedule visualisation using tkinter
     tkinter_schedule_vis.tkinter_schedule_vis(
         schedule_obj=new_school_schedule_object,
         days=days,
