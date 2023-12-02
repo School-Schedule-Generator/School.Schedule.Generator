@@ -50,8 +50,6 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                     color = [27, 58, 19]
                     last_digit = 1
                     for subject in subjects:
-                        if type(subject) is list:
-                            print(subjects)
                         if schedule_obj.are_teachers_taken(
                                 subject.teachers_id,
                                 day,
@@ -77,8 +75,7 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
 
                     teachers = ''
                     for subject in subjects:
-                        for teacher in subject.teachers_id:
-                            teachers += str(teacher) + ' '
+                        teachers += str(subject.teachers_id[0]) + ' '
 
                     label = tk.Label(
                         root,

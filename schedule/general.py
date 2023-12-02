@@ -46,7 +46,7 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
     try:
         old = self.school_schedule[class_id][day_from][subject_position]
     except IndexError:
-        # TODO: For some reason subject position is compleatly wrong - day is smaller than index we want to enter
+        # TODO: For some reason subject position is completly wrong - day is smaller than index we want to enter
         debug_log(log_file_name, f'subject pos: {subject_position}, '
                                  f'len of day: {len(self.school_schedule[class_id][day_from])}')
         raise BaseException
@@ -129,7 +129,9 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
     return True
 
 
-def swap_subject_in_place(self, class_id, day_x, subject_x_position, day_y, subject_y_position):
+def swap_subject_in_groups(self, class_id, day_x, subject_x_position, day_y, subject_y_position, group):
+    group -= 1
+    print(group)
     (
         self.school_schedule[class_id][day_x][subject_x_position].lesson_hours_id,
         self.school_schedule[class_id][day_y][subject_y_position].lesson_hours_id
