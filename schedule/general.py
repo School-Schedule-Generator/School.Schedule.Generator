@@ -42,7 +42,6 @@ def log_schedule(self, days, log_file_name):
 
 def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
                         subject_to_position=-1, group=None, log_file_name=''):
-
     try:
         old = self.school_schedule[class_id][day_from][subject_position]
     except IndexError:
@@ -67,15 +66,15 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
         self.school_schedule[class_id][day_from].pop()
     else:
         if group is None:
-            debug_log(log_file_name, 
+            debug_log(log_file_name,
                       "ERROR: if you want to move lesson in between other, "
                       "specify group so ther is no empty space in schedule")
             return False
         debug_log(log_file_name, "DEBUG: moved lesson at index diffrent than 0 or -1")
 
-        old = self.school_schedule[class_id][day_from][subject_position][group-1]
+        old = self.school_schedule[class_id][day_from][subject_position][group - 1]
         try:
-            self.school_schedule[class_id][day_from][subject_position][group-1] = Subject(
+            self.school_schedule[class_id][day_from][subject_position][group - 1] = Subject(
                 is_empty=True,
                 lesson_hours_id=subject_position,
                 log_file_name=log_file_name,
@@ -89,21 +88,21 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
 
     if subject_to_position == -1:
         self.school_schedule[class_id][day_to].append(old)
-        
+
         if len(self.school_schedule[class_id][day_to]) > 1:
             if subject_position == first_lesson:
                 for subject in self.school_schedule[class_id][day_to][-1]:
-                    subject.lesson_hours_id = (len(self.school_schedule[class_id][day_to])-1)
-    
+                    subject.lesson_hours_id = (len(self.school_schedule[class_id][day_to]) - 1)
+
             else:
                 for subject in self.school_schedule[class_id][day_to][-1]:
                     subject.lesson_hours_id = \
                         self.school_schedule[class_id][day_to][subject_position - 1][0].lesson_hours_id + 1
-    
+
         elif len(self.school_schedule[class_id][day_to]) == 1:
             for subject in self.school_schedule[class_id][day_to][-1]:
                 subject.lesson_hours_id = 1
-    
+
         else:
             for subject in self.school_schedule[class_id][day_to][-1]:
                 subject.lesson_hours_id = 0
@@ -121,10 +120,10 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
         try:
             self.school_schedule[class_id][day_to][subject_to_position][-1].lesson_hours_id = subject_to_position
         except AttributeError:
-            print(
-                self.school_schedule[class_id][day_to][subject_to_position], '\n',
-                self.school_schedule[class_id][day_to][subject_to_position][-1]
-            )
+            debug_log(log_file_name,
+                      self.school_schedule[class_id][day_to][subject_to_position], '\n',
+                      self.school_schedule[class_id][day_to][subject_to_position][-1]
+                      )
 
     return True
 
@@ -133,19 +132,19 @@ def swap_subject_in_groups(self, class_id, day_x, subject_x_position, day_y, sub
     group -= 1
     print(group)
     (
-        self.school_schedule[class_id][day_x][subject_x_position].lesson_hours_id,
-        self.school_schedule[class_id][day_y][subject_y_position].lesson_hours_id
+        self.school_schedule[class_id][day_x][subject_x_position][group].lesson_hours_id,
+        self.school_schedule[class_id][day_y][subject_y_position][group].lesson_hours_id
     ) = (
-        self.school_schedule[class_id][day_y][subject_y_position].lesson_hours_id,
-        self.school_schedule[class_id][day_x][subject_x_position].lesson_hours_id
+        self.school_schedule[class_id][day_y][subject_y_position][group].lesson_hours_id,
+        self.school_schedule[class_id][day_x][subject_x_position][group].lesson_hours_id
     )
 
     (
-        self.school_schedule[class_id][day_x][subject_x_position],
-        self.school_schedule[class_id][day_y][subject_y_position]
+        self.school_schedule[class_id][day_x][subject_x_position][group],
+        self.school_schedule[class_id][day_y][subject_y_position][group]
     ) = (
-        self.school_schedule[class_id][day_y][subject_y_position],
-        self.school_schedule[class_id][day_x][subject_x_position]
+        self.school_schedule[class_id][day_y][subject_y_position][group],
+        self.school_schedule[class_id][day_x][subject_x_position][group]
     )
 
 
@@ -175,11 +174,11 @@ def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_i
     elif subject_new_position < find_first_lesson_index(
             self.school_schedule[class_id][day_from],
             log_file_name=log_file_name
-    ):
+    ) and subject_new_position != -1:
         debug_log(log_file_name, "ERROR: can't move subject before first lesson")
         raise BaseException
 
-    first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_from], log_file_name=log_file_name)
+    first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_to], log_file_name=log_file_name)
 
     subject_to_position = -1
     lesson_index = len(self.school_schedule[class_id][day_to])
@@ -236,6 +235,27 @@ def get_same_time_teacher(self, day, lesson_index, class_id):
         except IndexError:
             pass
     return same_time_teachers
+
+
+def find_another_grouped_lessons(self, class_id, lesson_day, lesson_index, number_of_groups, days):
+    class_schedule = self.school_schedule[class_id]
+    possibilities = []
+    for day in days:
+        class_schedule_at_day = class_schedule[day]
+        for subjects_list in class_schedule_at_day:
+            if (
+                    (
+                            lesson_day == day
+                            and lesson_index == subjects_list[0].lesson_hours_id
+                            and subjects_list[0].number_of_groups != number_of_groups
+                    )
+                    or len(subjects_list) <= 1
+            ):
+                continue
+            else:
+                possibilities.append([day, subjects_list[0].lesson_hours_id, subjects_list])
+
+    return possibilities
 
 
 def find_first_lesson_index(schedule_at_day, log_file_name):
