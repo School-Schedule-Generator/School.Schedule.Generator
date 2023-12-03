@@ -71,7 +71,7 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                             color[2] = color[2] % 255
 
                         color[0] *= last_digit + 1
-                        color[0] = min(color[0], 0)
+                        color[0] = color[0] % 255
 
                     teachers = ''
                     teachers_list = []
