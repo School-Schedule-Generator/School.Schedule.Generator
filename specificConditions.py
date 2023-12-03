@@ -64,14 +64,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         class_id=class_schedule_id,
                         log_file_name=log_file_name
                 ):
-                    debug_log(log_file_name,
-                        f'1.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                        f'{days[max_len_day_i]}\n'
-                        f'{-1}'
-                        f'Day to\n'
-                        f'{current_day}\n'
-                        f'{-1}'
-                    )
                     tkinter_schedule_vis(
                         schedule,
                         days,
@@ -87,14 +79,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         class_id=class_schedule_id,
                         log_file_name=log_file_name
                 ):
-                    debug_log(log_file_name,
-                        f'2.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                        f'{days[max_len_day_i]}\n'
-                        f'{-1}'
-                        f'Day to\n'
-                        f'{current_day}\n'
-                        f'{-1}'
-                    )
                     tkinter_schedule_vis(
                         schedule,
                         days,
@@ -103,7 +87,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                     )
                 else:
                     days_with_conflict.add(days[max_len_day_i])
-                    debug_log(log_file_name, 'while 2', days_with_conflict != set_days, days_with_conflict, set_days)
 
                     for day in set_days.difference(days_with_conflict):
 
@@ -127,14 +110,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 class_id=class_schedule_id,
                                 log_file_name=log_file_name
                         ):
-                            debug_log(log_file_name,
-                                f'3.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                                f'{day}\n'
-                                f'{-1}'
-                                f'Day to\n'
-                                f'{current_day}\n'
-                                f'{-1}'
-                            )
                             tkinter_schedule_vis(
                                 schedule,
                                 days,
@@ -150,14 +125,6 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 class_id=class_schedule_id,
                                 log_file_name=log_file_name
                         ):
-                            debug_log(log_file_name,
-                                f'4.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                                f'{day}\n'
-                                f'{-1}'
-                                f'Day to\n'
-                                f'{current_day}\n'
-                                f'{-1}'
-                            )
                             tkinter_schedule_vis(
                                 schedule,
                                 days,

@@ -195,13 +195,10 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
         debug_log(log_file_name, f"ERROR: can't move subject before first lesson\n")
         raise BaseException
 
-    debug_log(log_file_name, f'day_to {day_to}, lesson_index {lesson_index}')
-
     if not self.are_teachers_taken(
         teachers=teachers_id,
         day_to=day_to,
         lesson_index=lesson_index,
-        class_id=class_id,
     ):
         if not self.move_subject_to_day(
                 class_id=class_id,
@@ -225,27 +222,16 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
     return False
 
 
-def get_same_time_teacher(self, day_to, lesson_index, class_id, check_groups=False, group=None, log=False, log_file_name=''):
+def get_same_time_teacher(self, day_to, lesson_index):
     same_time_teachers = []
-    if check_groups and group is None:
-        debug_log(log_file_name, f"ERROR: can't check groups without passing in group")
-
     for class_schedule_id in self.school_schedule:
-        if class_id == class_schedule_id and not check_groups:
-            continue
         try:
             subjects_list = self.school_schedule[class_schedule_id][day_to][lesson_index]
-            if log:
-                debug_log(log_file_name, class_id, day_to, lesson_index)
             for subject in subjects_list:
-                if check_groups and subject.group == group:
-                    continue
                 for teacher_id in subject.teachers_id:
                     same_time_teachers.append(teacher_id)
         except IndexError:
             pass
-    if log:
-        debug_log(log_file_name, same_time_teachers)
     return same_time_teachers
 
 

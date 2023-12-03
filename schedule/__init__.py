@@ -65,7 +65,6 @@ class Schedule:
                         teachers=subject.teachers_id,
                         day_to=day,
                         lesson_index=next_lesson_index,
-                        class_id=class_id,
                     ):
                         days_with_teacher_conflict.add(day)
                         continue
@@ -163,8 +162,8 @@ class Schedule:
                             possibilities = self.find_another_grouped_lessons(class_id, day, subject.lesson_hours_id, subject.number_of_groups, days)
 
                             if len(possibilities) == 0:
-                                # TODO: nieparzysta liczba grup
-                                continue
+                                debug_log('ERROR: no possible schedule with this setup')
+                                return
                             else:
                                 for another_day, another_index, another_subjects_list in possibilities:
                                     group_index = subject.group-1
@@ -172,21 +171,11 @@ class Schedule:
                                             base_teacher not in self.get_same_time_teacher(
                                                 day_to=another_day,
                                                 lesson_index=another_index,
-                                                class_id=class_id,
-                                                check_groups=True,
-                                                group=subject.group,
-                                                log=True,
-                                                log_file_name=log_file_name
                                             )
                                             and
                                             another_subjects_list[group_index].teachers_id not in self.get_same_time_teacher(
                                                 day_to=day,
                                                 lesson_index=subject.lesson_hours_id,
-                                                class_id=class_id,
-                                                check_groups=True,
-                                                group=subject.group,
-                                                log=True,
-                                                log_file_name=log_file_name
                                             )
                                     ):
                                         self.swap_subject_in_groups(

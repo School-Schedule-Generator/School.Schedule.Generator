@@ -13,11 +13,14 @@ import tkinter_schedule_vis
 # GENERAL:
 # ***********
     # fix schedule text logging
+    # try to create new schedule when there is no possible one with current setup
+    # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
 # ***********
 
 # CREATE
 # ***********
-    # implementacja subject_length -> lekcja ma się powtarzać tyle razy ile podane
+    # generacja na podstawie teachers
+        # dodać do tabeli teachers kolumny start lesson, end lesson, dni (w których dniach nauczyciel może mieć lekcje)
 # ***********
 
 # WEB
@@ -27,24 +30,6 @@ import tkinter_schedule_vis
     # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
     # pozwolenie na dany przedmiot
     # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
-# ***********
-
-# GUPOWANIE
-# ***********
-    # Zmiana w dodawaniu(append) lekcji w fukcji create:
-    # zamiast schedule.append(subject) dodawac liste schedule.append([subject])
-
-    # zmienic zmienna z teacher_id na teachers_id jako liste nauczycieli
-    # w trakcie sprawdzania nauczycieli sprawdzic wszystkich nauczycieli z listy
-
-    # Grupowanie lekcji:
-        # po initowaniu planu lekcji trzeba podzielić przedmiot(subject) na odpowiednią ilość grup
-        # żeby podzielić grupy trzeba wiedzieć ilu nauczycieli obsuługuje dany przedmiot
-        # jeśli liczba nauczycieli (ln) == ilość grup (ig) dublujemy lekcje w tym samym miejscu
-            # [subject_id1_gr1, subject_id1_gr2, ...]
-            # jeśli nauczyciel wywołuje konflikt wymieniamy lekcje danej grupy w tym miejscu na inną zgrupowaną lekcje odpowiednią dla tej grupy
-            # jeśli i to nie jest możliwe stawiamy przedmiot dla danej grupy w innym miejscu traktując go jako osobny niezgrupowany przedmiot
-        # jeśli ln == 1 przechodzimy odrazu do traktowania każdej lekcji jako osobny niezgrupowany obiekt pozostawiając tylko 1 grupe na orginalnej pozycji
 # ***********
 
 # ---------------------------------------------------------------------------------------------------------------------
