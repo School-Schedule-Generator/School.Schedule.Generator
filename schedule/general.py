@@ -136,9 +136,8 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
     return True
 
 
-def swap_subject_in_groups(self, class_id, group, subjects_list_x, subjects_list_y):
+def swap_subject_in_groups(self, group, subjects_list_x, subjects_list_y):
     group -= 1
-    # TODO: this can sometimes run to index error if there is not enougth lessons on one side (either group or just subject)
     (
         subjects_list_x[group].lesson_hours_id,
         subjects_list_y[group].lesson_hours_id
@@ -173,17 +172,21 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
     :return: was operation successful
     """
 
-    subject_to_position = None
+    subject_to_position = lesson_index = None
     if subject_new_position == 0:
         first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_to], log_file_name=log_file_name)
 
         if first_lesson_index is None:
             subject_to_position = -1
+            lesson_index = 0
         elif first_lesson_index != 0:
-            subject_to_position = first_lesson_index - 1
+            subject_to_position = lesson_index = first_lesson_index - 1
+        else:
+            return False
 
     elif subject_new_position == -1:
         subject_to_position = -1
+        lesson_index = len(self.school_schedule[class_id][day_to])
 
     elif subject_new_position < find_first_lesson_index(
             self.school_schedule[class_id][day_from],
@@ -192,13 +195,13 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
         debug_log(log_file_name, f"ERROR: can't move subject before first lesson\n")
         raise BaseException
 
+    debug_log(log_file_name, f'day_to {day_to}, lesson_index {lesson_index}')
+
     if not self.are_teachers_taken(
         teachers=teachers_id,
-        day=day_to,
-        lesson_index=subject_to_position,
+        day_to=day_to,
+        lesson_index=lesson_index,
         class_id=class_id,
-        log=True,
-        log_file_name=log_file_name
     ):
         if not self.move_subject_to_day(
                 class_id=class_id,
@@ -222,16 +225,18 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
     return False
 
 
-def get_same_time_teacher(self, day, lesson_index, class_id, check_groups=False, group=None, log=False, log_file_name='log'):
+def get_same_time_teacher(self, day_to, lesson_index, class_id, check_groups=False, group=None, log=False, log_file_name=''):
     same_time_teachers = []
     if check_groups and group is None:
-        debug_log(log_file_name, "ERROR: can't check groups without passing in group")
+        debug_log(log_file_name, f"ERROR: can't check groups without passing in group")
 
     for class_schedule_id in self.school_schedule:
         if class_id == class_schedule_id and not check_groups:
             continue
         try:
-            subjects_list = self.school_schedule[class_schedule_id][day][lesson_index]
+            subjects_list = self.school_schedule[class_schedule_id][day_to][lesson_index]
+            if log:
+                debug_log(log_file_name, class_id, day_to, lesson_index)
             for subject in subjects_list:
                 if check_groups and subject.group == group:
                     continue

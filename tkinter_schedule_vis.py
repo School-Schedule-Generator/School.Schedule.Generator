@@ -51,10 +51,12 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                     last_digit = 1
                     for subject in subjects:
                         if schedule_obj.are_teachers_taken(
-                                subject.teachers_id,
-                                day,
-                                subject.lesson_hours_id,
-                                class_schedule_id
+                            subject.teachers_id,
+                            day,
+                            subject.lesson_hours_id,
+                            class_schedule_id,
+                            check_groups=True,
+                            group=subject.group
                         ):
                             color = [255, 0, 0]
                             break
@@ -70,17 +72,22 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
 
                         color[0] *= last_digit + 1
                         color[0] = min(color[0], 0)
-                        color[0] = color[0] % 255
+
+                    teachers = ''
+                    teachers_list = []
+                    for subject in subjects:
+                        if subject.teachers_id[0] in teachers_list:
+                            color = [255, 0, 0]
+
+                        teachers_list.append(subject.teachers_id[0])
+                        teachers += str(subject.teachers_id[0]) + ' '
 
                     color = rgb(*color)
 
-                    teachers = ''
-                    for subject in subjects:
-                        teachers += str(subject.teachers_id[0]) + ' '
-
                     label = tk.Label(
                         root,
-                        text=f"teacher: {teachers}\n"
+                        text=f"num of lessons: {len(subjects)}\n"
+                        f"teacher: {teachers}\n"
                         f"lesson_hours_id: {subjects[0].lesson_hours_id}",
                         font=("Arial", 8),
                         bg=color

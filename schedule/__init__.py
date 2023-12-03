@@ -62,10 +62,10 @@ class Schedule:
                     next_lesson_index = len(new_class_schedule[day])
 
                     if self.are_teachers_taken(
-                        subject.teachers_id,
-                        day,
-                        next_lesson_index,
-                        class_id,
+                        teachers=subject.teachers_id,
+                        day_to=day,
+                        lesson_index=next_lesson_index,
+                        class_id=class_id,
                     ):
                         days_with_teacher_conflict.add(day)
                         continue
@@ -153,7 +153,7 @@ class Schedule:
 
                     base_teacher = subjects_list[0].teachers_id[0]
                     same_teacher = True
-                    for subject in subjects_list:
+                    for subject in subjects_list[1:]:
                         if not subject.teachers_id[0] == base_teacher:
                             same_teacher = False
                             break
@@ -167,17 +167,29 @@ class Schedule:
                                 continue
                             else:
                                 for another_day, another_index, another_subjects_list in possibilities:
-                                    if base_teacher not in self.get_same_time_teacher(
-                                        another_day,
-                                        another_index,
-                                        class_id,
-                                        check_groups=True,
-                                        group=subject.group,
-                                        log=True,
-                                        log_file_name=log_file_name
+                                    group_index = subject.group-1
+                                    if (
+                                            base_teacher not in self.get_same_time_teacher(
+                                                day_to=another_day,
+                                                lesson_index=another_index,
+                                                class_id=class_id,
+                                                check_groups=True,
+                                                group=subject.group,
+                                                log=True,
+                                                log_file_name=log_file_name
+                                            )
+                                            and
+                                            another_subjects_list[group_index].teachers_id not in self.get_same_time_teacher(
+                                                day_to=day,
+                                                lesson_index=subject.lesson_hours_id,
+                                                class_id=class_id,
+                                                check_groups=True,
+                                                group=subject.group,
+                                                log=True,
+                                                log_file_name=log_file_name
+                                            )
                                     ):
                                         self.swap_subject_in_groups(
-                                            class_id=class_id,
                                             group=subject.group,
                                             subjects_list_x=subjects_list,
                                             subjects_list_y=another_subjects_list

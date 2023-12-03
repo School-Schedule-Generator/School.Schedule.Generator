@@ -64,20 +64,13 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         class_id=class_schedule_id,
                         log_file_name=log_file_name
                 ):
-                    inp = [
-                        s.teachers_id
-                        for s in
-                        schedule.school_schedule[class_schedule_id][current_day][-1]
-                    ]
                     debug_log(log_file_name,
-                        f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                        f'1.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
                         f'{days[max_len_day_i]}\n'
                         f'{-1}'
-                        f'{max_day_schedule[-1][0].teachers_id}\n'
                         f'Day to\n'
                         f'{current_day}\n'
                         f'{-1}'
-                        f'{inp}'
                     )
                     tkinter_schedule_vis(
                         schedule,
@@ -94,23 +87,13 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         class_id=class_schedule_id,
                         log_file_name=log_file_name
                 ):
-                    inp = [
-                        s.teachers_id
-                        for s in
-                        schedule.school_schedule
-                            [class_schedule_id]
-                            [current_day]
-                            [schedule.find_first_lesson_index(schedule.school_schedule[class_schedule_id][current_day], log_file_name)]
-                    ]
                     debug_log(log_file_name,
-                        f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                        f'2.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
                         f'{days[max_len_day_i]}\n'
                         f'{-1}'
-                        f'{max_day_schedule[first_lesson_index][0].teachers_id}\n'
                         f'Day to\n'
                         f'{current_day}\n'
                         f'{-1}'
-                        f'{inp}'
                     )
                     tkinter_schedule_vis(
                         schedule,
@@ -144,20 +127,13 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 class_id=class_schedule_id,
                                 log_file_name=log_file_name
                         ):
-                            inp = [
-                                s.teachers_id
-                                for s in
-                                schedule.school_schedule[class_schedule_id][current_day][-1]
-                            ]
                             debug_log(log_file_name,
-                                f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                                f'{days[max_len_day_i]}\n'
+                                f'3.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                                f'{day}\n'
                                 f'{-1}'
-                                f'{day[first_lesson_index][0].teachers_id}\n'
                                 f'Day to\n'
                                 f'{current_day}\n'
                                 f'{-1}'
-                                f'{inp}'
                             )
                             tkinter_schedule_vis(
                                 schedule,
@@ -174,23 +150,13 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 class_id=class_schedule_id,
                                 log_file_name=log_file_name
                         ):
-                            inp = [
-                                s.teachers_id
-                                for s in
-                                schedule.school_schedule
-                                    [class_schedule_id]
-                                    [current_day]
-                                    [schedule.find_first_lesson_index(schedule.school_schedule[class_schedule_id][current_day], log_file_name)]
-                            ]
                             debug_log(log_file_name,
-                                f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
-                                f'{days[max_len_day_i]}\n'
+                                f'4.\n{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                                f'{day}\n'
                                 f'{-1}'
-                                f'{day[first_lesson_index][0].teachers_id}\n'
                                 f'Day to\n'
                                 f'{current_day}\n'
                                 f'{-1}'
-                                f'{inp}'
                             )
                             tkinter_schedule_vis(
                                 schedule,
