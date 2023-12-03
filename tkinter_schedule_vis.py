@@ -6,7 +6,7 @@ from settings import settings
 
 def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name='log_0', capture=True):
     if not settings.TKCAPTURE:
-        return
+        return False
 
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
@@ -103,3 +103,5 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
 
         root.after(0, lambda: root.destroy())
         root.mainloop()
+
+    return True

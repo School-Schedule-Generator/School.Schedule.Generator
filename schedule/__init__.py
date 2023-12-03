@@ -6,7 +6,7 @@ from tkinter_schedule_vis import tkinter_schedule_vis
 
 
 class Schedule:
-    from .general import (create_class_schedule, log_schedule, move_subject_to_day, swap_subject_in_groups, safe_move,
+    from .general import (create_class_schedule, move_subject_to_day, swap_subject_in_groups, safe_move,
                           get_same_time_teacher, find_first_lesson_index, get_num_of_lessons,
                           find_another_grouped_lessons)
     from .returncondition import are_teachers_taken

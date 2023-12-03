@@ -4,7 +4,7 @@ class Settings:
         self.DEBUG = True
 
         # Take screenshots (True) or log in text to file (False)
-        self.TKCAPTURE = True
+        self.TKCAPTURE = False
 
         # if debug create default names
         if self.DEBUG:

@@ -45,12 +45,10 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     in the same time
     """
 
-    # Creating directory and log files
+    # Creating directory for log files
     if not os.path.exists(f'logs/{log_file_name}'):
         os.makedirs(f'logs/{log_file_name}')
     with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
-        pass
-    with open(f'logs/{log_file_name}/{log_file_name}_schedule.txt', 'w') as f:
         pass
 
     # Creating global schedule conditions
@@ -90,14 +88,13 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     )
 
     # schedule visualisation using tkinter
-    tkinter_schedule_vis.tkinter_schedule_vis(
+    if not tkinter_schedule_vis.tkinter_schedule_vis(
         schedule_obj=new_school_schedule_object,
         days=days,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture'
-    )
-
-    # new_school_schedule_object.log_schedule(days, log_file_name+'_schedule')
+    ):
+        debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
     return new_school_schedule_object
 

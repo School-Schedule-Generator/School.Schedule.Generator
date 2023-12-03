@@ -14,41 +14,6 @@ def create_class_schedule(days):
     return new_class_schedule
 
 
-def log_schedule(self, days, log_file_name):
-    schedule_by_hour_id = {}
-    lesson_hours = set()
-    for class_id in self.school_schedule:
-        class_schedule = self.school_schedule[class_id]
-        for day in days:
-            class_schedule_at_day = class_schedule[day]
-            for subjects in class_schedule_at_day:
-                if subjects[0].lesson_hours_id not in schedule_by_hour_id:
-                    schedule_by_hour_id[subjects[0].lesson_hours_id] = []
-                for subject in subjects:
-                    schedule_by_hour_id[subjects[0].lesson_hours_id].append({
-                        'c': class_id,
-                        # 'g': subject.group,
-                        # 't': subject.teachers_id,
-                        'h': subject.lesson_hours_id,
-                        'day': day
-                    })
-                lesson_hours.add(subjects[0].lesson_hours_id)
-
-    for lesson_hour in sorted(list(lesson_hours)):
-        debug_log(log_file_name, '{0:>7}'.format(f'|{lesson_hour}. |'), end='')
-        for subject in schedule_by_hour_id[lesson_hour]:
-            debug_log(log_file_name, ':', end='')
-            msg = ''
-            for key, value in subject.items():
-                if value is None:
-                    value=0
-                msg += f'{key}: {value} '
-            debug_log(log_file_name, '{0: <20}'.format(f'{msg}, '))
-
-            debug_log(log_file_name, ':', end='')
-        debug_log(log_file_name, '|\n')
-
-
 def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
                         subject_to_position=-1, group=None, log_file_name=''):
     try:
