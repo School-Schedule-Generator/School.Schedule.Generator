@@ -34,7 +34,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                 tkinter_schedule_vis(
                     schedule,
                     days,
-                    capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_pre_change',
+                    capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_a_pre_change',
                     dir_name=log_file_name
                 )
 
@@ -59,24 +59,65 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                         teachers_id=max_day_schedule[-1][0].teachers_id,
                         day_from=days[max_len_day_i],
                         day_to=current_day,
+                        subject_position=-1,
                         subject_new_position=-1,
                         class_id=class_schedule_id,
-                        days=days,
-                        tk_capture_count=tk_capture_count,
                         log_file_name=log_file_name
                 ):
-                    pass
+                    inp = [
+                        s.teachers_id
+                        for s in
+                        schedule.school_schedule[class_schedule_id][current_day][-1]
+                    ]
+                    debug_log(log_file_name,
+                        f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                        f'{days[max_len_day_i]}\n'
+                        f'{-1}'
+                        f'{max_day_schedule[-1][0].teachers_id}\n'
+                        f'Day to\n'
+                        f'{current_day}\n'
+                        f'{-1}'
+                        f'{inp}'
+                    )
+                    tkinter_schedule_vis(
+                        schedule,
+                        days,
+                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_b_post_change',
+                        dir_name=log_file_name
+                    )
                 elif schedule.safe_move(
                         teachers_id=max_day_schedule[first_lesson_index][0].teachers_id,
                         day_from=days[max_len_day_i],
                         day_to=current_day,
+                        subject_position=first_lesson_index,
                         subject_new_position=0,
                         class_id=class_schedule_id,
-                        days=days,
-                        tk_capture_count=tk_capture_count,
                         log_file_name=log_file_name
                 ):
-                    pass
+                    inp = [
+                        s.teachers_id
+                        for s in
+                        schedule.school_schedule
+                            [class_schedule_id]
+                            [current_day]
+                            [schedule.find_first_lesson_index(schedule.school_schedule[class_schedule_id][current_day], log_file_name)]
+                    ]
+                    debug_log(log_file_name,
+                        f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                        f'{days[max_len_day_i]}\n'
+                        f'{-1}'
+                        f'{max_day_schedule[first_lesson_index][0].teachers_id}\n'
+                        f'Day to\n'
+                        f'{current_day}\n'
+                        f'{-1}'
+                        f'{inp}'
+                    )
+                    tkinter_schedule_vis(
+                        schedule,
+                        days,
+                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                        dir_name=log_file_name
+                    )
                 else:
                     days_with_conflict.add(days[max_len_day_i])
                     debug_log(log_file_name, 'while 2', days_with_conflict != set_days, days_with_conflict, set_days)
@@ -98,24 +139,65 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                                 teachers_id=schedule_at_other_day[-1][0].teachers_id,
                                 day_from=day,
                                 day_to=current_day,
+                                subject_position=-1,
                                 subject_new_position=-1,
                                 class_id=class_schedule_id,
-                                days=days,
-                                tk_capture_count=tk_capture_count,
                                 log_file_name=log_file_name
                         ):
-                            pass
+                            inp = [
+                                s.teachers_id
+                                for s in
+                                schedule.school_schedule[class_schedule_id][current_day][-1]
+                            ]
+                            debug_log(log_file_name,
+                                f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                                f'{days[max_len_day_i]}\n'
+                                f'{-1}'
+                                f'{day[first_lesson_index][0].teachers_id}\n'
+                                f'Day to\n'
+                                f'{current_day}\n'
+                                f'{-1}'
+                                f'{inp}'
+                            )
+                            tkinter_schedule_vis(
+                                schedule,
+                                days,
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                dir_name=log_file_name
+                            )
                         elif schedule.safe_move(
                                 teachers_id=schedule_at_other_day[first_lesson_index][0].teachers_id,
                                 day_from=day,
                                 day_to=current_day,
+                                subject_position=first_lesson_index,
                                 subject_new_position=0,
                                 class_id=class_schedule_id,
-                                days=days,
-                                tk_capture_count=tk_capture_count,
                                 log_file_name=log_file_name
                         ):
-                            pass
+                            inp = [
+                                s.teachers_id
+                                for s in
+                                schedule.school_schedule
+                                    [class_schedule_id]
+                                    [current_day]
+                                    [schedule.find_first_lesson_index(schedule.school_schedule[class_schedule_id][current_day], log_file_name)]
+                            ]
+                            debug_log(log_file_name,
+                                f'{class_schedule_id}_{tk_capture_count}\nDay from\n'
+                                f'{days[max_len_day_i]}\n'
+                                f'{-1}'
+                                f'{day[first_lesson_index][0].teachers_id}\n'
+                                f'Day to\n'
+                                f'{current_day}\n'
+                                f'{-1}'
+                                f'{inp}'
+                            )
+                            tkinter_schedule_vis(
+                                schedule,
+                                days,
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                dir_name=log_file_name
+                            )
                         else:
                             days_with_conflict.add(day)
                             continue

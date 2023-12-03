@@ -22,20 +22,29 @@ def log_schedule(self, days, log_file_name):
         for day in days:
             class_schedule_at_day = class_schedule[day]
             for subjects in class_schedule_at_day:
-                try:
-                    schedule_by_hour_id[subjects[0].lesson_hours_id].append(subjects)
-                except KeyError:
-                    schedule_by_hour_id[subjects[0].lesson_hours_id] = [subjects]
+                if subjects[0].lesson_hours_id not in schedule_by_hour_id:
+                    schedule_by_hour_id[subjects[0].lesson_hours_id] = []
+                for subject in subjects:
+                    schedule_by_hour_id[subjects[0].lesson_hours_id].append({
+                        'c': class_id,
+                        # 'g': subject.group,
+                        # 't': subject.teachers_id,
+                        'h': subject.lesson_hours_id,
+                        'day': day
+                    })
                 lesson_hours.add(subjects[0].lesson_hours_id)
 
     for lesson_hour in sorted(list(lesson_hours)):
         debug_log(log_file_name, '{0:>7}'.format(f'|{lesson_hour}. |'), end='')
-        for subjects in schedule_by_hour_id[lesson_hour]:
+        for subject in schedule_by_hour_id[lesson_hour]:
             debug_log(log_file_name, ':', end='')
-            for subject in subjects:
-                debug_log(log_file_name, '{0:>10}'.format(f'{subject.teachers_id}, '))
-            else:
-                debug_log(log_file_name, '{0:>10}'.format(''))
+            msg = ''
+            for key, value in subject.items():
+                if value is None:
+                    value=0
+                msg += f'{key}: {value} '
+            debug_log(log_file_name, '{0: <20}'.format(f'{msg}, '))
+
             debug_log(log_file_name, ':', end='')
         debug_log(log_file_name, '|\n')
 
@@ -45,7 +54,6 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
     try:
         old = self.school_schedule[class_id][day_from][subject_position]
     except IndexError:
-        # TODO: For some reason subject position is completly wrong - day is smaller than index we want to enter
         debug_log(log_file_name, f'subject pos: {subject_position}, '
                                  f'len of day: {len(self.school_schedule[class_id][day_from])}')
         raise BaseException
@@ -128,37 +136,36 @@ def move_subject_to_day(self, class_id, day_to, day_from, subject_position,
     return True
 
 
-def swap_subject_in_groups(self, class_id, day_x, subject_x_position, day_y, subject_y_position, group):
+def swap_subject_in_groups(self, class_id, group, subjects_list_x, subjects_list_y):
     group -= 1
-    print(group)
+    # TODO: this can sometimes run to index error if there is not enougth lessons on one side (either group or just subject)
     (
-        self.school_schedule[class_id][day_x][subject_x_position][group].lesson_hours_id,
-        self.school_schedule[class_id][day_y][subject_y_position][group].lesson_hours_id
+        subjects_list_x[group].lesson_hours_id,
+        subjects_list_y[group].lesson_hours_id
     ) = (
-        self.school_schedule[class_id][day_y][subject_y_position][group].lesson_hours_id,
-        self.school_schedule[class_id][day_x][subject_x_position][group].lesson_hours_id
+        subjects_list_y[group].lesson_hours_id,
+        subjects_list_x[group].lesson_hours_id
     )
 
     (
-        self.school_schedule[class_id][day_x][subject_x_position][group],
-        self.school_schedule[class_id][day_y][subject_y_position][group]
+        subjects_list_x[group],
+        subjects_list_y[group]
     ) = (
-        self.school_schedule[class_id][day_y][subject_y_position][group],
-        self.school_schedule[class_id][day_x][subject_x_position][group]
+        subjects_list_y[group],
+        subjects_list_x[group]
     )
 
 
-def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_id, days, tk_capture_count,
+def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new_position, class_id,
               group=None, log_file_name=''):
     """
     :param self: class schedule
     :param teachers_id: ids of teachers to check
     :param day_from: day which we take subject from
     :param day_to: day which we add subject to
+    :param subject_position: old position of subject
     :param subject_new_position: new position to add subject to
     :param class_id:
-    :param days: list of days with lessons in
-    :param tk_capture_count:
     :param group: class group to move
     :param log_file_name: file name for run information
     :description: before trying to move using move_subject_to_day(), function checks if action is possible
@@ -166,38 +173,38 @@ def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_i
     :return: was operation successful
     """
 
+    subject_to_position = None
     if subject_new_position == 0:
-        subject_new_position = find_first_lesson_index(
-            self.school_schedule[class_id][day_from],
-            log_file_name=log_file_name
-        )
+        first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_to], log_file_name=log_file_name)
+
+        if first_lesson_index is None:
+            subject_to_position = -1
+        elif first_lesson_index != 0:
+            subject_to_position = first_lesson_index - 1
+
+    elif subject_new_position == -1:
+        subject_to_position = -1
+
     elif subject_new_position < find_first_lesson_index(
             self.school_schedule[class_id][day_from],
             log_file_name=log_file_name
-    ) and subject_new_position != -1:
-        debug_log(log_file_name, "ERROR: can't move subject before first lesson")
+    ):
+        debug_log(log_file_name, f"ERROR: can't move subject before first lesson\n")
         raise BaseException
 
-    first_lesson_index = find_first_lesson_index(self.school_schedule[class_id][day_to], log_file_name=log_file_name)
-
-    subject_to_position = -1
-    lesson_index = len(self.school_schedule[class_id][day_to])
-    if first_lesson_index != 0:
-        first_empty_space = first_lesson_index - 1
-        lesson_index = first_empty_space
-        subject_to_position = first_empty_space
-
     if not self.are_teachers_taken(
-            teachers=teachers_id,
-            day=day_to,
-            lesson_index=lesson_index,
-            class_id=class_id
+        teachers=teachers_id,
+        day=day_to,
+        lesson_index=subject_to_position,
+        class_id=class_id,
+        log=True,
+        log_file_name=log_file_name
     ):
         if not self.move_subject_to_day(
                 class_id=class_id,
                 day_to=day_to,
                 day_from=day_from,
-                subject_position=subject_new_position,
+                subject_position=subject_position,
                 subject_to_position=subject_to_position,
                 group=group,
                 log_file_name=log_file_name
@@ -211,29 +218,29 @@ def safe_move(self, teachers_id, day_from, day_to, subject_new_position, class_i
                 f'{day_from}'
             )
             raise BaseException
-        tkinter_schedule_vis(
-            self,
-            days,
-            capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_post_change',
-            dir_name=log_file_name
-        )
         return True
     return False
 
 
-def get_same_time_teacher(self, day, lesson_index, class_id):
+def get_same_time_teacher(self, day, lesson_index, class_id, check_groups=False, group=None, log=False, log_file_name='log'):
     same_time_teachers = []
+    if check_groups and group is None:
+        debug_log(log_file_name, "ERROR: can't check groups without passing in group")
+
     for class_schedule_id in self.school_schedule:
-        if class_id == class_schedule_id:
+        if class_id == class_schedule_id and not check_groups:
             continue
-        class_schedule_day = self.school_schedule[class_schedule_id][day]
         try:
-            class_subjects = class_schedule_day[lesson_index]
-            for class_subject in class_subjects:
-                for teacher_id in class_subject.teachers_id:
+            subjects_list = self.school_schedule[class_schedule_id][day][lesson_index]
+            for subject in subjects_list:
+                if check_groups and subject.group == group:
+                    continue
+                for teacher_id in subject.teachers_id:
                     same_time_teachers.append(teacher_id)
         except IndexError:
             pass
+    if log:
+        debug_log(log_file_name, same_time_teachers)
     return same_time_teachers
 
 

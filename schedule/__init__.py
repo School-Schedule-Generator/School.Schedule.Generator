@@ -61,7 +61,12 @@ class Schedule:
                     day = random.choice(days)
                     next_lesson_index = len(new_class_schedule[day])
 
-                    if self.are_teachers_taken(subject.teachers_id, day, next_lesson_index, class_id):
+                    if self.are_teachers_taken(
+                        subject.teachers_id,
+                        day,
+                        next_lesson_index,
+                        class_id,
+                    ):
                         days_with_teacher_conflict.add(day)
                         continue
 
@@ -76,7 +81,7 @@ class Schedule:
                             tkinter_schedule_vis(
                                 self,
                                 days,
-                                capture_name=f'LastInitCapture',
+                                capture_name=f'CreateFinalCapture',
                                 dir_name=log_file_name,
                             )
                         break
@@ -127,8 +132,13 @@ class Schedule:
                         subject.teachers_id = [subject.teachers_id[0]]
                         subject.group = 1
 
-                        for i, s in enumerate(subjects_list):
-                            print(i, s.teachers_id)
+                        # tkinter_schedule_vis(
+                        #     self,
+                        #     days,
+                        #     capture_name=f'splitting_{tk_capture_count}',
+                        #     dir_name=log_file_name,
+                        # )
+                        tk_capture_count += 1
 
         tk_capture_count = 0
         for class_id in self.school_schedule:
@@ -148,39 +158,35 @@ class Schedule:
                             same_teacher = False
                             break
 
-                    # based on subject position we can in some cases simplify for natural look of schedule
-                    #   and avoiding logical issues as for e.g. one group having empty hour in between lessons
-                    first_lesson_index = self.find_first_lesson_index(class_schedule_at_day, log_file_name)
                     if same_teacher:
                         for subject in subjects_list[1:]:
-                            possibilities = self.find_another_grouped_lessons(
-                                class_id,
-                                day,
-                                subject.lesson_hours_id,
-                                subject.number_of_groups,
-                                days
-                            )
+                            possibilities = self.find_another_grouped_lessons(class_id, day, subject.lesson_hours_id, subject.number_of_groups, days)
 
                             if len(possibilities) == 0:
                                 # TODO: nieparzysta liczba grup
                                 continue
                             else:
                                 for another_day, another_index, another_subjects_list in possibilities:
-                                    if (base_teacher
-                                            not in self.get_same_time_teacher(another_day, another_index, class_id)):
+                                    if base_teacher not in self.get_same_time_teacher(
+                                        another_day,
+                                        another_index,
+                                        class_id,
+                                        check_groups=True,
+                                        group=subject.group,
+                                        log=True,
+                                        log_file_name=log_file_name
+                                    ):
                                         self.swap_subject_in_groups(
-                                            class_id,
-                                            day,
-                                            subject.lesson_hours_id,
-                                            another_day,
-                                            another_index,
-                                            subject.group
+                                            class_id=class_id,
+                                            group=subject.group,
+                                            subjects_list_x=subjects_list,
+                                            subjects_list_y=another_subjects_list
                                         )
-
-                            tkinter_schedule_vis(
-                                self,
-                                days,
-                                capture_name=f'grouping_{tk_capture_count}',
-                                dir_name=log_file_name,
-                            )
-                            tk_capture_count += 1
+                                        tkinter_schedule_vis(
+                                            self,
+                                            days,
+                                            capture_name=f'grouping_{tk_capture_count}',
+                                            dir_name=log_file_name,
+                                        )
+                                        tk_capture_count += 1
+                                        break
