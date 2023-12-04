@@ -71,6 +71,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     classes_id = SchoolClass.get_classes_id(classes_df)
     school_classes = SchoolClass.get_school_classes(classes_df, classes_id)
     subject_per_class = split_subject_per_class(subjects_df, school_classes)
+    teachers = create_teachers(teachers_df)
 
     new_school_schedule_object = Schedule().create(
         classes_id=classes_id,

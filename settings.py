@@ -19,7 +19,7 @@ class Settings:
                 'SSG_SUBJECTS': ['subject_ID', 'subject_name_ID', 'class_ID', 'subject_count_in_week',
                                  'number_of_groups', 'subject_length', 'lesson_hours_ID', 'teachers_ID',
                                  'classroom_ID'],
-                'SSG_TEACHERS': ['teacher_ID', 'name', 'surname', 'possible subjects'],
+                'SSG_TEACHERS': ['teacher_ID', 'name', 'surname', 'possible_subjects', 'start_hour_index', 'end_hour_index', 'days'],
                 'SSG_CLASSES': ['Class_ID', 'grade', 'class_sygnature', 'class_sygnature_number',
                                 'supervising_teacher'],
                 'SSG_CLASSROOMS': ['classroom_ID', 'classroom_name', 'possible_lessons']

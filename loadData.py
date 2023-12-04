@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import sqlite3
 from subject import *
+from teacher import  *
 import ast
 
 
@@ -82,3 +83,19 @@ def split_subject_per_class(subjects_df, school_classes):
                     )
                 )
     return subject_per_class
+
+
+#nazwa do zmiany
+def create_teachers(teachers_df):
+    teachers = {}
+    for _, row in teachers_df.iterrows():
+        teachers[row['teacher_ID']] = Teacher(
+            name=row['name'],
+            surname=row['surname'],
+            possible_subjects=row['possible_subjects'],
+            start_hour_index=row['start_hour_index'],
+            end_hour_index=row['end_hour_index'],
+            days=row['days']
+        )
+
+    return teachers

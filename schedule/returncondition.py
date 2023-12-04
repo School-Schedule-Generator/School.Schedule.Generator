@@ -11,3 +11,6 @@ def are_teachers_taken(self, teachers, day_to, lesson_index):
             if same_time_teacher == teacher:
                 return True
     return False
+
+def check_teacher_conditions(self, teacher_id, day, lesson_index):
+    pass
