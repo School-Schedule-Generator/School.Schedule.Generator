@@ -35,7 +35,12 @@ def load_data(
                 con = sqlite3.connect(settings.DATABASE_PATH)
                 sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
                 dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
+
         dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
+
+        dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
+        dataframes['SSG_TEACHERS']['end_hour_index'] = dataframes['SSG_TEACHERS']['end_hour_index'].apply(ast.literal_eval)
+        dataframes['SSG_TEACHERS']['days'] = dataframes['SSG_TEACHERS']['days'].apply(ast.literal_eval)
     else:
         for file in tables:
             if file_type == 'xlsx':

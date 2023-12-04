@@ -17,6 +17,11 @@ import tkinter_schedule_vis
     # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
 # ***********
 
+# GROUPING:
+# ***********
+    # make grouping suitable for teachers conditions (check for day that the teacher can have lessons in)
+# ***********
+
 # CREATE
 # ***********
     # generacja na podstawie teachers
@@ -30,6 +35,8 @@ import tkinter_schedule_vis
     # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
     # pozwolenie na dany przedmiot
     # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
+
+    # sprawdzanie czy user wpisał poprawne dane (np w ograniczaniu dni nauczycieli)
 # ***********
 
 # ---------------------------------------------------------------------------------------------------------------------
