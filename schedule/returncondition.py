@@ -12,5 +12,13 @@ def are_teachers_taken(self, teachers, day_to, lesson_index):
                 return True
     return False
 
-def check_teacher_conditions(self, teacher_id, day, lesson_index):
-    pass
+def check_teacher_conditions(teacher_id, day, days, lesson_index, teachers):
+    day_index = days.index(day)
+    teacher = teachers[teacher_id]
+    start_index = teacher.start_hour_index[day_index]
+    end_index = teacher.end_hour_index[day_index]
+
+    if end_index == -1:
+        end_index = lesson_index
+
+    return (start_index <= lesson_index <= end_index) and teachers[teacher_id].days[day_index]

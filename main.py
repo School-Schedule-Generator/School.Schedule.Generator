@@ -69,31 +69,34 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
 
     # gathering basic information from dataframes
     classes_id = SchoolClass.get_classes_id(classes_df)
-    school_classes = SchoolClass.get_school_classes(classes_df, classes_id)
-    subject_per_class = split_subject_per_class(subjects_df, school_classes)
+
     teachers = create_teachers(teachers_df)
+    subjects = split_subjects(subjects_df, teachers, classes_id)
+
+    print(len(teachers))
 
     new_school_schedule_object = Schedule().create(
         classes_id=classes_id,
         conditions=conditions,
         days=days,
-        subject_per_class=subject_per_class,
+        subjects=subjects,
+        teachers=teachers,
         log_file_name=log_file_name
     )
 
-    new_school_schedule_object.split_to_groups(
-        days,
-        conditions,
-        log_file_name
-    )
-
-    # applay complex conditions to schedule
-    new_school_schedule_object.format_schedule(
-        conditions,
-        schedule=new_school_schedule_object,
-        days=days,
-        log_file_name=log_file_name
-    )
+    # new_school_schedule_object.split_to_groups(
+    #     days,
+    #     conditions,
+    #     log_file_name
+    # )
+    #
+    # # applay complex conditions to schedule
+    # new_school_schedule_object.format_schedule(
+    #     conditions,
+    #     schedule=new_school_schedule_object,
+    #     days=days,
+    #     log_file_name=log_file_name
+    # )
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(

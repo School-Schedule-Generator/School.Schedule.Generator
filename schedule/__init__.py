@@ -1,6 +1,6 @@
 import copy
 import random
-
+import pandas as pd
 from debug_log import debug_log
 from tkinter_schedule_vis import tkinter_schedule_vis
 
@@ -9,13 +9,14 @@ class Schedule:
     from .general import (create_class_schedule, move_subject_to_day, swap_subject_in_groups, safe_move,
                           get_same_time_teacher, find_first_lesson_index, get_num_of_lessons,
                           find_another_grouped_lessons)
-    from .returncondition import are_teachers_taken
+    from .returncondition import are_teachers_taken, check_teacher_conditions
     from .formatschedule import format_schedule
 
     create_class_schedule = staticmethod(create_class_schedule)
     format_schedule = staticmethod(format_schedule)
     find_first_lesson_index = staticmethod(find_first_lesson_index)
     get_num_of_lessons = staticmethod(get_num_of_lessons)
+    check_teacher_conditions = staticmethod(check_teacher_conditions)
 
     def __init__(self):
         self.school_schedule = {}
@@ -27,63 +28,62 @@ class Schedule:
         """
         self.school_schedule[class_id] = class_schedule
 
-    def create(self, classes_id, conditions, days, subject_per_class, log_file_name):
+    def create(self, classes_id, conditions, days, subjects, teachers, log_file_name):
         """
         :param classes_id: list of ids
         :param conditions: global conditions of schedule
         :param days: list of days with lessons in
-        :param subject_per_class: split into classes lists of subjects
+        :param subjects: splited per teacher splited per class subjects
+        :param teachers: list of teachers (obj)
         :param log_file_name: file name for run information
         :return: structured and logical schedule
         """
+        tkcapture_count = 0
 
-        # loop through all the classes to create separated schedules for them
-        for class_id_index, class_id in enumerate(classes_id):
-            # create empty class schedule to fill in
-            new_class_schedule = self.create_class_schedule(days)
-            self.push_class_schedule(class_id, new_class_schedule)
+        def map_teachers():
+            data = {'id': list(teachers.keys()), 'value': list(teachers.values())}
+            df = pd.DataFrame(data)
+            mapped = {}
+            for i, day in enumerate(days):
 
-            # loop through all the subjects of class to add to schedule
-            for subject_num, subject in enumerate(subject_per_class[class_id]):
+                teachers_at_day = df[df['value'].apply(lambda x: x.days[i] == 1)]['id'].tolist()
 
-                # set of days to remember for avoiding infinite loops in case of impossible situation
-                days_with_teacher_conflict = set()
+                teachers_at_day_subject_count = {}
+                for teacher_id in teachers_at_day:
+                    teachers_at_day_subject_count[teacher_id] = 0
+                    for class_id in classes_id:
+                        teachers_at_day_subject_count[teacher_id] += len(subjects[teacher_id][class_id])
 
-                # looping until subject is possible to add with met conditions:
-                # - none of the teachers have two lessons at once (are_teachers_taken)
-                # - checking if adding subject conflicts max possible length of day
-                # - (return with error) if there is no available position to add new subject to
+                mapped[day] = teachers_at_day_subject_count
 
-                while True:
-                    if days_with_teacher_conflict == set(days):
-                        return self.create(classes_id, conditions, days, subject_per_class, log_file_name)
 
-                    day = random.choice(days)
-                    next_lesson_index = len(new_class_schedule[day])
+            return mapped
 
-                    if self.are_teachers_taken(
-                        teachers=subject.teachers_id,
-                        day_to=day,
-                        lesson_index=next_lesson_index,
-                    ):
-                        days_with_teacher_conflict.add(day)
-                        continue
+        mapped_teachers = map_teachers()
 
-                    if len(new_class_schedule[day]) >= conditions.general['max_lessons_per_day']:
-                        days_with_teacher_conflict.add(day)
-                    else:
-                        subject.lesson_hours_id = next_lesson_index
-                        new_class_schedule[day].append([subject])
+        for class_id in classes_id:
+            self.school_schedule[class_id] = {}
+            for day in days:
+                self.school_schedule[class_id][day] = []
 
-                        if subject_num == len(subject_per_class[class_id]) - 1 and \
-                                class_id_index == len(classes_id) - 1:
-                            tkinter_schedule_vis(
-                                self,
-                                days,
-                                capture_name=f'CreateFinalCapture',
-                                dir_name=log_file_name,
-                            )
-                        break
+        random.shuffle(days)
+        for day in days:
+            teachers_at_day_sorted = dict(sorted(mapped_teachers[day].items(), key=lambda item: item[1]))
+            for teacher_id in teachers_at_day_sorted:
+                if self.check_teacher_conditions(
+                    teacher_id=teacher_id,
+                    day=day,
+                    days=days,
+                    lesson_index=len(self.school_schedule[class_id][day]),
+                    teachers=teachers
+                ):
+                    for class_id in classes_id:
+                        for subject in subjects[teacher_id][class_id]:
+                            # TODO: shuffle teachers a little and days and remove teachers where they ar not needed in day
+                            subject.lesson_hours_id = len(self.school_schedule[class_id][day])
+                            self.school_schedule[class_id][day].append([subject])
+                            subjects[teacher_id][class_id].remove(subject)
+
         return self
 
     def split_to_groups(self, days, conditions, log_file_name):
