@@ -62,10 +62,7 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         pass
 
     # Creating global schedule conditions
-    conditions = ScheduleConditions(file_path=conditions_file_path, log_file_name=log_file_name)
-    if not conditions.valid:
-        debug_log(log_file_name, 'Error: Passed in conditions had syntax error')
-        return -1
+    conditions = ScheduleConditions()
 
     teachers_orders = [0, 1]
     if settings.RANDOM:
