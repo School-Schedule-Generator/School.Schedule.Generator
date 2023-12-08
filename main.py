@@ -19,6 +19,9 @@ import tkinter_schedule_vis
         # (esspecialy in update_min_day_len where there is infinite loop if there is no possible place to take subject from)
     # try to create new schedule when there is no possible one with current setup
     # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
+
+    # add class start hour lesson index column !important
+    # add subject max stack column !important
 # ***********
 
 # WEB
@@ -45,11 +48,10 @@ def permutations(iterable, r=None):
             yield tuple(pool[i] for i in indices)
 
 
-def generate_schedule(data, days, conditions_file_path, log_file_name):
+def generate_schedule(data, days, log_file_name):
     """
     :param data: list of data in strict order of: [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df]
     :param days: list of days that the lessons can occur
-    :param conditions_file_path: path to file with list of conditions to satisfy with the schedule
     :param log_file_name: current time for logging
     :return: generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
     in the same time
@@ -131,6 +133,5 @@ time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
 ss = generate_schedule(
     data=load_data(),
     days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-    conditions_file_path='./conditions.txt',
     log_file_name=time_str
 )

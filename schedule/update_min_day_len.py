@@ -1,5 +1,3 @@
-import copy
-
 from debug_log import *
 from tkinter_schedule_vis import tkinter_schedule_vis
 
@@ -30,7 +28,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
             # - none of the teachers have two lessons at once
             # (return with ERROR) if there is no available position to add new subject to
             while self.get_num_of_lessons(schedule_at_day, log_file_name) < \
-                    conditions.general['min_lessons_per_day']:
+                    conditions.data['min_lessons_per_day']:
                 class_schedule_list = list(class_schedule.values())
                 max_len_day_i = class_schedule_list.index(max(class_schedule.values(), key=len))
 
@@ -113,7 +111,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                             continue
 
                         if self.get_num_of_lessons(schedule_at_other_day, log_file_name) <= \
-                                conditions.general['min_lessons_per_day']:
+                                conditions.data['min_lessons_per_day']:
                             continue
 
                         if self.safe_move(
@@ -158,7 +156,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
 
                     break
 
-            if self.get_num_of_lessons(schedule_at_day, log_file_name) < conditions.general['min_lessons_per_day']:
+            if self.get_num_of_lessons(schedule_at_day, log_file_name) < conditions.data['min_lessons_per_day']:
                 self.valid = False
                 return self
 
