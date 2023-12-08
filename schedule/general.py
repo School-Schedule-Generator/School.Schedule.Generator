@@ -1,3 +1,5 @@
+import copy
+
 from subject import Subject
 from debug_log import *
 from tkinter_schedule_vis import tkinter_schedule_vis
@@ -121,7 +123,7 @@ def swap_subject_in_groups(self, group, subjects_list_x, subjects_list_y):
 
 
 def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new_position, class_id,
-              group=None, log_file_name=''):
+              days, teachers, group=None, log_file_name=''):
     """
     :param self: class schedule
     :param teachers_id: ids of teachers to check
@@ -129,7 +131,9 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
     :param day_to: day which we add subject to
     :param subject_position: old position of subject
     :param subject_new_position: new position to add subject to
-    :param class_id:
+    :param class_id: class of subject moved
+    :param days: list of days
+    :param teachers: list of all teachers
     :param group: class group to move
     :param log_file_name: file name for run information
     :description: before trying to move using move_subject_to_day(), function checks if action is possible
@@ -160,10 +164,18 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
         debug_log(log_file_name, f"ERROR: can't move subject before first lesson\n")
         raise BaseException
 
+    old_schedule = copy.deepcopy(self.school_schedule)
+
     if not self.are_teachers_taken(
-        teachers=teachers_id,
+        teachers_id=teachers_id,
         day_to=day_to,
         lesson_index=lesson_index,
+    ) and self.check_teacher_conditions(
+        teachers_id=teachers_id,
+        day=day_to,
+        days=days,
+        lesson_index=lesson_index,
+        teachers=teachers
     ):
         if not self.move_subject_to_day(
                 class_id=class_id,
@@ -176,13 +188,17 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
         ):
             debug_log(
                 log_file_name,
-                f'While 1: class_schedule_id: '
+                f'ERROR: '
                 f'{class_id} '
-                f'lesson_index={-1} '
+                f'lesson_index={lesson_index} '
                 f'day_to: {day_to} day_from: '
                 f'{day_from}'
             )
             raise BaseException
+
+        if old_schedule == self.school_schedule:
+            debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+            return False
         return True
     return False
 

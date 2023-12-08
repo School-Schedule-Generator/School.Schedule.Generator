@@ -1,12 +1,15 @@
+import copy
+
 from debug_log import *
 from tkinter_schedule_vis import tkinter_schedule_vis
 
 
-def update_min_day_len(conditions, schedule, days, log_file_name):
+def update_min_day_len(conditions, schedule, days, teachers, log_file_name):
     """
         :param conditions: global conditions of schedule
         :param schedule: the schedule to operate on
         :param days: list of days with lessons in
+        :param teachers: list of all teachers
         :param log_file_name: file name for run information
         :return: schedule with min 5 lessons at day
     """
@@ -22,7 +25,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
 
             # looping until num of lessons is lower than minimum and subject is possible to add with met conditions:
             # - none of the teachers have two lessons at once
-            # (return with error) if there is no available position to add new subject to
+            # (return with ERROR) if there is no available position to add new subject to
             while schedule.get_num_of_lessons(schedule_at_day, log_file_name) < \
                     conditions.general['min_lessons_per_day']:
                 class_schedule_list = list(class_schedule.values())
@@ -30,6 +33,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
 
                 schedule_at_day = class_schedule[current_day]
 
+                schedule_pre_change = copy.deepcopy(schedule.school_schedule)
                 tk_capture_count += 1
                 tkinter_schedule_vis(
                     schedule,
@@ -39,7 +43,7 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                 )
 
                 if days_with_conflict == set_days:
-                    debug_log(log_file_name, 'Error: days_with_conflict == set_days')
+                    debug_log(log_file_name, 'ERROR: days_with_conflict == set_days')
                     return
 
                 first_lesson_index = schedule.find_first_lesson_index(schedule_at_day, log_file_name)
@@ -54,37 +58,52 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                 # first (if and elif) check ideal case where program subract from the longest day
                 #   to balance length of days
                 # if not possible program loops trough every other day to find any spot to place the subject
-                #   (if not possible return with error)
+                #   (if not possible return with ERROR)
+                try:
+                    max_day_schedule[-1][0]
+                except IndexError:
+                    print(max_day_schedule[-1])
+
                 if schedule.safe_move(
-                        teachers_id=max_day_schedule[-1][0].teachers_id,
-                        day_from=days[max_len_day_i],
-                        day_to=current_day,
-                        subject_position=-1,
-                        subject_new_position=-1,
-                        class_id=class_schedule_id,
-                        log_file_name=log_file_name
+                    teachers_id=max_day_schedule[-1][0].teachers_id,
+                    day_from=days[max_len_day_i],
+                    day_to=current_day,
+                    subject_position=-1,
+                    subject_new_position=-1,
+                    class_id=class_schedule_id,
+                    days=days,
+                    teachers=teachers,
+                    log_file_name=log_file_name
                 ):
                     tkinter_schedule_vis(
                         schedule,
                         days,
-                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_b_post_change',
+                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_{-1}_{-1}_b_post_change',
                         dir_name=log_file_name
                     )
+                    if schedule.school_schedule == schedule_pre_change:
+                        debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+                        return False
                 elif schedule.safe_move(
-                        teachers_id=max_day_schedule[first_lesson_index][0].teachers_id,
-                        day_from=days[max_len_day_i],
-                        day_to=current_day,
-                        subject_position=first_lesson_index,
-                        subject_new_position=0,
-                        class_id=class_schedule_id,
-                        log_file_name=log_file_name
+                    teachers_id=max_day_schedule[first_lesson_index][0].teachers_id,
+                    day_from=days[max_len_day_i],
+                    day_to=current_day,
+                    subject_position=first_lesson_index,
+                    subject_new_position=0,
+                    class_id=class_schedule_id,
+                    days=days,
+                    teachers=teachers,
+                    log_file_name=log_file_name
                 ):
                     tkinter_schedule_vis(
                         schedule,
                         days,
-                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                        capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_{first_lesson_index}_{0}_b_post_change',
                         dir_name=log_file_name
                     )
+                    if schedule.school_schedule == schedule_pre_change:
+                        debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+                        return False
                 else:
                     days_with_conflict.add(days[max_len_day_i])
 
@@ -102,38 +121,53 @@ def update_min_day_len(conditions, schedule, days, log_file_name):
                             continue
 
                         if schedule.safe_move(
-                                teachers_id=schedule_at_other_day[-1][0].teachers_id,
-                                day_from=day,
-                                day_to=current_day,
-                                subject_position=-1,
-                                subject_new_position=-1,
-                                class_id=class_schedule_id,
-                                log_file_name=log_file_name
+                            teachers_id=schedule_at_other_day[-1][0].teachers_id,
+                            day_from=day,
+                            day_to=current_day,
+                            subject_position=-1,
+                            subject_new_position=-1,
+                            class_id=class_schedule_id,
+                            days=days,
+                            teachers=teachers,
+                            log_file_name=log_file_name
                         ):
                             tkinter_schedule_vis(
                                 schedule,
                                 days,
-                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_inElse_{-1}_{-1}_b_post_change',
                                 dir_name=log_file_name
                             )
+                            if schedule.school_schedule == schedule_pre_change:
+                                debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+                                return False
                         elif schedule.safe_move(
-                                teachers_id=schedule_at_other_day[first_lesson_index][0].teachers_id,
-                                day_from=day,
-                                day_to=current_day,
-                                subject_position=first_lesson_index,
-                                subject_new_position=0,
-                                class_id=class_schedule_id,
-                                log_file_name=log_file_name
+                            teachers_id=schedule_at_other_day[first_lesson_index][0].teachers_id,
+                            day_from=day,
+                            day_to=current_day,
+                            subject_position=first_lesson_index,
+                            subject_new_position=0,
+                            class_id=class_schedule_id,
+                            days=days,
+                            teachers=teachers,
+                            log_file_name=log_file_name
                         ):
                             tkinter_schedule_vis(
                                 schedule,
                                 days,
-                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_post_change',
+                                capture_name=f'update_min_day_len_{class_schedule_id}_{tk_capture_count}_{first_lesson_index}_{0}_b_post_change',
                                 dir_name=log_file_name
                             )
+                            if schedule.school_schedule == schedule_pre_change:
+                                debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+                                return False
                         else:
                             days_with_conflict.add(day)
                             continue
 
                         tk_capture_count += 1
+
+                    if schedule.school_schedule == schedule_pre_change:
+                        debug_log(log_file_name, "ERROR: no possible outcome from this schedule")
+                        return False
+
                     break

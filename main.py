@@ -12,20 +12,10 @@ import tkinter_schedule_vis
 
 # GENERAL:
 # ***********
-    # fix schedule text logging
+    # create handling for no possible outcomes of current schedule
+        # (esspecialy in update_min_day_len where there is infinite loop if there is no possible place to take subject from)
     # try to create new schedule when there is no possible one with current setup
     # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
-# ***********
-
-# GROUPING:
-# ***********
-    # make grouping suitable for teachers conditions (check for day that the teacher can have lessons in)
-# ***********
-
-# CREATE
-# ***********
-    # generacja na podstawie teachers
-        # dodać do tabeli teachers kolumny start lesson, end lesson, dni (w których dniach nauczyciel może mieć lekcje)
 # ***********
 
 # WEB
@@ -37,6 +27,8 @@ import tkinter_schedule_vis
     # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
 
     # sprawdzanie czy user wpisał poprawne dane (np w ograniczaniu dni nauczycieli)
+
+    # zmienianie dni w których mogą być lekcje
 # ***********
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -73,8 +65,6 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
     teachers = create_teachers(teachers_df)
     subjects = split_subjects(subjects_df, teachers, classes_id)
 
-    print(len(teachers))
-
     new_school_schedule_object = Schedule().create(
         classes_id=classes_id,
         conditions=conditions,
@@ -84,19 +74,20 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         log_file_name=log_file_name
     )
 
-    # new_school_schedule_object.split_to_groups(
-    #     days,
-    #     conditions,
-    #     log_file_name
-    # )
-    #
-    # # applay complex conditions to schedule
-    # new_school_schedule_object.format_schedule(
-    #     conditions,
-    #     schedule=new_school_schedule_object,
-    #     days=days,
-    #     log_file_name=log_file_name
-    # )
+    new_school_schedule_object.split_to_groups(
+        days,
+        conditions,
+        log_file_name
+    )
+
+    # applay complex conditions to schedule
+    new_school_schedule_object.format_schedule(
+        conditions,
+        schedule=new_school_schedule_object,
+        days=days,
+        teachers=teachers,
+        log_file_name=log_file_name
+    )
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(

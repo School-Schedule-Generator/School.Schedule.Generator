@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from debug_log import debug_log
 from tkinter_schedule_vis import tkinter_schedule_vis
+from math import ceil
 
 
 class Schedule:
@@ -38,8 +39,26 @@ class Schedule:
         :param log_file_name: file name for run information
         :return: structured and logical schedule
         """
-        tkcapture_count = 0
+        def avg_subjects_per_day(num_of_days) -> dict:
+            avg_subjects = {}
+            for day in days:
+                avg_subjects[day] = {}
+                for class_id in classes_id:
+                    avg_subjects[day][class_id] = 0
 
+            for day_i, day in enumerate(days):
+                for teacher_id, subjects_list in subjects.items():
+                    for class_id, values in subjects_list.items():
+                        if teachers[teacher_id].days[day_i]:
+                            avg_subjects[day][class_id] += len(values)
+
+            for day in days:
+                for class_id in classes_id:
+                    avg_subjects[day][class_id] /= num_of_days
+
+            return avg_subjects
+
+        tkcapture_count = 0
         def map_teachers():
             data = {'id': list(teachers.keys()), 'value': list(teachers.values())}
             df = pd.DataFrame(data)
@@ -67,11 +86,13 @@ class Schedule:
                 self.school_schedule[class_id][day] = []
 
         random.shuffle(days)
-        for day in days:
+        for day_i, day in enumerate(days):
+            avg_day_len = avg_subjects_per_day(len(days)-day_i)[day]
+            print(avg_day_len)
             teachers_at_day_sorted = dict(sorted(mapped_teachers[day].items(), key=lambda item: item[1]))
             for teacher_id in teachers_at_day_sorted:
                 if self.check_teacher_conditions(
-                    teacher_id=teacher_id,
+                    teachers_id=teacher_id,
                     day=day,
                     days=days,
                     lesson_index=len(self.school_schedule[class_id][day]),
@@ -79,10 +100,26 @@ class Schedule:
                 ):
                     for class_id in classes_id:
                         for subject in subjects[teacher_id][class_id]:
-                            # TODO: shuffle teachers a little and days and remove teachers where they ar not needed in day
-                            subject.lesson_hours_id = len(self.school_schedule[class_id][day])
-                            self.school_schedule[class_id][day].append([subject])
-                            subjects[teacher_id][class_id].remove(subject)
+                            lesson_index = len(self.school_schedule[class_id][day])
+                            if (
+                                    len(self.school_schedule[class_id][day]) < ceil(avg_day_len[class_id])
+                                    and not self.are_teachers_taken(
+                                        teachers_id=subject.teachers_id,
+                                        day_to=day,
+                                        lesson_index=lesson_index
+                                    )
+                            ):
+                                subject.lesson_hours_id = lesson_index
+                                self.school_schedule[class_id][day].append([subject])
+                                subjects[teacher_id][class_id].remove(subject)
+                            else:
+                                continue
+            tkinter_schedule_vis(
+                self,
+                days,
+                capture_name=f'create_{day_i}_{day}',
+                dir_name=log_file_name,
+            )
 
         return self
 
