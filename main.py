@@ -1,4 +1,7 @@
+import copy
 from datetime import datetime
+from itertools import product
+from settings import settings
 from loadData import *
 from scheduleConditions import *
 from schoolClass import *
@@ -33,6 +36,14 @@ import tkinter_schedule_vis
 
 # ---------------------------------------------------------------------------------------------------------------------
 
+def permutations(iterable, r=None):
+    pool = tuple(iterable)
+    n = len(pool)
+    r = n if r is None else r
+    for indices in product(range(n), repeat=r):
+        if len(set(indices)) == r:
+            yield tuple(pool[i] for i in indices)
+
 
 def generate_schedule(data, days, conditions_file_path, log_file_name):
     """
@@ -56,49 +67,66 @@ def generate_schedule(data, days, conditions_file_path, log_file_name):
         debug_log(log_file_name, 'Error: Passed in conditions had syntax error')
         return -1
 
-    # splitting data to separate dataframes
-    [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df] = data
+    teachers_orders = [0, 1]
+    if settings.RANDOM:
+        teachers_orders.append(-1)
 
-    # gathering basic information from dataframes
-    classes_id = SchoolClass.get_classes_id(classes_df)
+    schedule = False
+    for i, days_order in enumerate(permutations(days, len(days))):
+        for j, teachers_order in enumerate(teachers_orders):
+            version = i*10+j
 
-    teachers = create_teachers(teachers_df)
-    subjects = split_subjects(subjects_df, teachers, classes_id)
+            # splitting data to separate dataframes
+            [
+                lesson_hours_df,
+                subject_names_df,
+                subjects_df,
+                teachers_df,
+                classes_df,
+                classrooms_df
+            ] = copy.deepcopy(data)
 
-    new_school_schedule_object = Schedule().create(
-        classes_id=classes_id,
-        conditions=conditions,
-        days=days,
-        subjects=subjects,
-        teachers=teachers,
-        log_file_name=log_file_name
-    )
+            # gathering basic information from dataframes
+            classes_id = SchoolClass.get_classes_id(classes_df)
+            teachers = create_teachers(teachers_df)
+            subjects = split_subjects(subjects_df, teachers, classes_id)
 
-    new_school_schedule_object.split_to_groups(
-        days,
-        conditions,
-        log_file_name
-    )
+            schedule = Schedule(version=version).create(
+                classes_id=classes_id,
+                conditions=conditions,
+                days=days,
+                days_ordered=days_order,
+                subjects=subjects,
+                teachers=teachers,
+                teachers_order=teachers_order,
+                log_file_name=log_file_name
+            ).split_to_groups(
+                days,
+                conditions,
+                log_file_name
+            ).format_schedule(
+                conditions,
+                days=days,
+                teachers=teachers,
+                log_file_name=log_file_name
+            )
+            debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}")
+            if schedule.valid:
+                break
 
-    # applay complex conditions to schedule
-    new_school_schedule_object.format_schedule(
-        conditions,
-        schedule=new_school_schedule_object,
-        days=days,
-        teachers=teachers,
-        log_file_name=log_file_name
-    )
+        if schedule.valid:
+            break
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(
-        schedule_obj=new_school_schedule_object,
+        schedule=schedule,
         days=days,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture'
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
-    return new_school_schedule_object
+    return schedule.data
 
 
 now = datetime.now()

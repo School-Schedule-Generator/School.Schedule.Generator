@@ -1,5 +1,4 @@
 from distutils.util import strtobool
-from specificConditions import *
 from debug_log import *
 
 

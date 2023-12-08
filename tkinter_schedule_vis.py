@@ -4,7 +4,7 @@ import os
 from settings import settings
 
 
-def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name='log_0', capture=True):
+def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
     if not settings.TKCAPTURE:
         return False
 
@@ -15,22 +15,22 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
         return [int(d) for d in str(number)]
 
     root = tk.Tk()
-    schedule = schedule_obj.school_schedule
+    data = schedule.data
 
     for i, day in enumerate(days):  # i -> day id
         week_day = tk.Label(root, text=day, font=("Arial", 14))
-        week_day.grid(row=0, column=i * len(schedule), columnspan=len(schedule))
+        week_day.grid(row=0, column=i * len(data), columnspan=len(data))
 
         # loop through classes and subjects
-        for j, class_schedule_id in enumerate(schedule):  # j -> class id
-            class_schedule = schedule[class_schedule_id]
+        for j, class_schedule_id in enumerate(data):  # j -> class id
+            class_schedule = data[class_schedule_id]
             for k in range(len(class_schedule[day])):  # k -> subject id
                 subjects = class_schedule[day][k]
 
                 # check if there is teacher conflict (one teacher has some lessons in the same time)
                 same_time_subjects = []
-                for x, other_class_schedule_id in enumerate(schedule):
-                    other_class_schedule = schedule[other_class_schedule_id]
+                for x, other_class_schedule_id in enumerate(data):
+                    other_class_schedule = data[other_class_schedule_id]
                     if other_class_schedule != class_schedule:
                         try:
                             same_time_subjects.append(other_class_schedule[day][k])
@@ -49,7 +49,7 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                     color = [27, 58, 19]
                     last_digit = 1
                     for subject in subjects:
-                        if subject.teachers_id in schedule_obj.get_same_time_teacher(
+                        if subject.teachers_id in schedule.get_same_time_teacher(
                             day_to=day,
                             lesson_index=subject.lesson_hours_id,
                         ):
@@ -89,7 +89,7 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
                         bg=color
                     )
 
-                label.grid(row=k + 1, column=i * len(schedule) + j)
+                label.grid(row=k + 1, column=i * len(data) + j)
 
     if not os.path.exists('logs'):
         os.mkdir('logs')
@@ -97,9 +97,12 @@ def tkinter_schedule_vis(schedule_obj, days, capture_name='tkCapture', dir_name=
     if not os.path.exists(f'logs/{dir_name}'):
         os.mkdir(f'logs/{dir_name}')
 
+    if not os.path.exists(f'logs/{dir_name}/{schedule.version}'):
+        os.mkdir(f'logs/{dir_name}/{schedule.version}')
+
     if capture:
         cap = tkcap.CAP(root)
-        cap.capture(f'logs/{dir_name}/{capture_name}.jpg')
+        cap.capture(f'logs/{dir_name}/{schedule.version}/{capture_name}.jpg')
 
         root.after(0, lambda: root.destroy())
         root.mainloop()

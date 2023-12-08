@@ -1,5 +1,7 @@
-from specificConditions import *
+from schedule.update_min_day_len import *
 
 
-def format_schedule(conditions, schedule, days, teachers, log_file_name):
-    update_min_day_len(conditions, schedule, days, teachers, log_file_name)
+def format_schedule(self, conditions, days, teachers, log_file_name):
+    if self.valid is False:
+        return self
+    return update_min_day_len(self, conditions, days, teachers, log_file_name)

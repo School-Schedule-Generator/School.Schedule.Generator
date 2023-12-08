@@ -6,6 +6,9 @@ class Settings:
         # Take screenshots (True) or log in text to file (False)
         self.TKCAPTURE = True
 
+        # Allow random shuffle
+        self.RANDOM = False
+
         # if debug create default names
         if self.DEBUG:
             self.TEST_DATA_PATH = './data/testData'
