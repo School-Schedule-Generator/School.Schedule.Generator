@@ -149,7 +149,10 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
             subject_to_position = -1
             lesson_index = 0
         elif first_lesson_index != 0:
-            subject_to_position = lesson_index = first_lesson_index - 1
+            if self.data[class_id][day_to][first_lesson_index - 1].movable:
+                subject_to_position = lesson_index = first_lesson_index - 1
+            else:
+                return False
         else:
             return False
 
@@ -236,9 +239,7 @@ def find_another_grouped_lessons(self, class_id, lesson_day, lesson_index, numbe
 def find_first_lesson_index(schedule_at_day, log_file_name):
     for i, subjects in enumerate(schedule_at_day):
         for subject in subjects:
-            if subject.is_empty:
-                debug_log(log_file_name, 'DEBUG: empty cell')
-            else:
+            if not subject.is_empty:
                 return i
     return None
 

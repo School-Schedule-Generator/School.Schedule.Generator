@@ -59,10 +59,6 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                 #   to balance length of days
                 # if not possible program loops trough every other day to find any spot to place the subject
                 #   (if not possible return with ERROR)
-                try:
-                    max_day_schedule[-1][0]
-                except IndexError:
-                    print(max_day_schedule)
 
                 if self.safe_move(
                     teachers_id=max_day_schedule[-1][0].teachers_id,

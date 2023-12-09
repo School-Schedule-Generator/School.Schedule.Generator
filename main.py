@@ -19,9 +19,6 @@ import tkinter_schedule_vis
         # (esspecialy in update_min_day_len where there is infinite loop if there is no possible place to take subject from)
     # try to create new schedule when there is no possible one with current setup
     # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
-
-    # add class start hour lesson index column !important
-    # add subject max stack column !important
 # ***********
 
 # WEB
@@ -48,11 +45,13 @@ def permutations(iterable, r=None):
             yield tuple(pool[i] for i in indices)
 
 
-def generate_schedule(data, days, log_file_name):
+def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_file_name):
     """
     :param data: list of data in strict order of: [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df]
     :param days: list of days that the lessons can occur
     :param log_file_name: current time for logging
+    :param min_lessons_per_day: minimum number of lessons per day
+    :param max_lessons_per_day: maximum number of lessons per day
     :return: generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
     in the same time
     """
@@ -64,57 +63,53 @@ def generate_schedule(data, days, log_file_name):
         pass
 
     # Creating global schedule conditions
-    conditions = ScheduleConditions()
+    conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
 
-    teachers_orders = [0, 1]
-    if settings.RANDOM:
-        teachers_orders.append(-1)
 
     schedule = False
     for i, days_order in enumerate(permutations(days, len(days))):
-        for j, teachers_order in enumerate(teachers_orders):
-            version = i*10+j
+        version = i
 
-            # splitting data to separate dataframes
-            [
-                lesson_hours_df,
-                subject_names_df,
-                subjects_df,
-                teachers_df,
-                classes_df,
-                classrooms_df
-            ] = copy.deepcopy(data)
+        # splitting data to separate dataframes
+        [
+            lesson_hours_df,
+            subject_names_df,
+            subjects_df,
+            teachers_df,
+            classes_df,
+            classrooms_df
+        ] = copy.deepcopy(data)
 
-            # gathering basic information from dataframes
-            classes_id = SchoolClass.get_classes_id(classes_df)
-            teachers = create_teachers(teachers_df)
-            subjects = split_subjects(subjects_df, teachers, classes_id)
+        # gathering basic information from dataframes
+        classes_id, classes_starint_hour_index = SchoolClass.get_classes_data(classes_df)
+        teachers = create_teachers(teachers_df)
+        subjects = split_subjects(subjects_df, teachers, classes_id)
 
-            schedule = Schedule(version=version).create(
-                classes_id=classes_id,
-                conditions=conditions,
-                days=days,
-                days_ordered=days_order,
-                subjects=subjects,
-                teachers=teachers,
-                teachers_order=teachers_order,
-                log_file_name=log_file_name
-            ).split_to_groups(
-                days,
-                conditions,
-                log_file_name
-            ).format_schedule(
-                conditions,
-                days=days,
-                teachers=teachers,
-                log_file_name=log_file_name
-            )
-            debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}")
-            if schedule.valid:
-                break
+        schedule = Schedule(version=version).create(
+            classes_id=classes_id,
+            classes_starint_hour_index=classes_starint_hour_index,
+            conditions=conditions,
+            days=days,
+            days_ordered=days_order,
+            subjects=subjects,
+            teachers=teachers,
+            log_file_name=log_file_name
+        ).split_to_groups(
+            days,
+            conditions,
+            log_file_name
+        ).format_schedule(
+            conditions,
+            days=days,
+            teachers=teachers,
+            log_file_name=log_file_name
+        )
+        debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}, Day order: {days_order}")
 
         if schedule.valid:
             break
+
+    settings.TKCAPTURE = True
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(
@@ -133,5 +128,7 @@ time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
 ss = generate_schedule(
     data=load_data(),
     days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    min_lessons_per_day=7,
+    max_lessons_per_day=10,
     log_file_name=time_str
 )

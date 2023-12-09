@@ -80,9 +80,11 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
 
                     color = rgb(*color)
 
+                    subjects_ids = [x.subject_id for x in subjects]
+
                     label = tk.Label(
                         root,
-                        text=f"num of lessons: {len(subjects)}\n"
+                        text=f"subjects id {subjects_ids}\n"
                         f"teacher: {teachers}\n"
                         f"lesson_hours_id: {subjects[0].lesson_hours_id}",
                         font=("Arial", 8),

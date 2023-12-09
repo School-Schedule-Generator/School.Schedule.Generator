@@ -9,12 +9,16 @@ class SchoolClass:
         self.supervising_teacher = supervising_teacher
 
     @staticmethod
-    def get_classes_id(df):
+    def get_classes_data(df):
         """
         :param df: dataframe of classes
-        :return: list of classes ids
+        :return: list of classes ids and dict of hours when class starts
         """
-        return df['Class_ID'].to_numpy()
+        classes_starint_hour_index = {}
+        for i, class_id in enumerate(df['Class_ID'].to_numpy()):
+            classes_starint_hour_index[class_id] = df['starting_lesson_hour_id'].to_numpy()[i]
+
+        return df['Class_ID'].to_numpy(), classes_starint_hour_index
 
     @staticmethod
     def get_school_classes(class_df, classes_id):

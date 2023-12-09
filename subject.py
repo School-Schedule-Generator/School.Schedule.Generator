@@ -6,8 +6,9 @@ class Subject:
     subject from subjects dataframe turned into an object
     """
     def __init__(self, subject_id=0, subject_name_id=0, class_id=0, number_of_groups=0, subject_length=0,
-                 lesson_hours_id=0, teachers_id=None, classroom_id=0, is_empty=False, group=None, log_file_name='',
-                 max_stack=0):
+                 lesson_hours_id=0, teachers_id=None, classroom_id=0, is_empty=False,
+                 movable=True, group=None, max_stack=0,
+                 log_file_name=''):
 
         if teachers_id is None:
             teachers_id = [-1]
@@ -21,6 +22,5 @@ class Subject:
         self.classroom_id = classroom_id
         self.is_empty = is_empty
         self.max_stack = max_stack
-        if is_empty:
-            debug_log(log_file_name, 'DEBUG: empty space created')
+        self.movable = movable
         self.group = group

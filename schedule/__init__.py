@@ -31,15 +31,15 @@ class Schedule:
         """
         self.data[class_id] = class_schedule
 
-    def create(self, classes_id, conditions, days, days_ordered, subjects, teachers, teachers_order, log_file_name):
+    def create(self, classes_id, classes_starint_hour_index, conditions, days, days_ordered, subjects, teachers, log_file_name):
         """
         :param classes_id: list of ids
+        :param classes_starint_hour_index: dict of hours when class starts
         :param conditions: global conditions of schedule
         :param days: list of days with lessons in
         :param days_ordered: list of days but with order wich in the teachers are added in
         :param subjects: splited per teacher splited per class subjects
         :param teachers: list of teachers (obj)
-        :param teachers_order: order in wich teachers are added (set to: -1 - random; 0 - ascending; 1 - descending)
         :param log_file_name: file name for run information
         :return: structured and logical schedule
         """
@@ -108,19 +108,18 @@ class Schedule:
                         for sub in subjects[teacher_id][class_id]:
                             s.append((teacher_id, sub.subject_id))
                         empty = False
-            print(f'count {count_of_subjects}, subjects: {s}')
+            debug_log(log_file_name, f'count {count_of_subjects}, subjects: {s}')
             return empty, count_of_subjects, s
 
-        for class_id in classes_id:
-            self.data[class_id] = {}
-            for day in days:
-                self.data[class_id][day] = []
-
-        def add_subjects(iteration):
-            by_avg = not iteration
+        def add_subjects(iteration, stack_handle):
+            first_iter = not iteration
 
             for day_i, day in enumerate(days_ordered):
+
                 avg_day_len = avg_subjects_per_day(len(days) - day_i)[day]
+
+                last_class_id = None
+                last_subject_id = None
 
                 for teacher_id in map_teachers()[day]:
                     for class_id in classes_id:
@@ -131,9 +130,44 @@ class Schedule:
                                 lesson_index=len(self.data[class_id][day]),
                                 teachers=teachers
                         ):
+                            subject_stack = 0
                             for subject in subjects[teacher_id][class_id]:
-                                first_lesson_index = self.find_first_lesson_index(self.data[class_id][day], log_file_name)
+                                if not subject.subject_id in stack_handle[day].keys():
+                                    stack_handle[day][subject.subject_id] = False
 
+                                if first_iter:
+                                    if last_subject_id is None:
+                                        last_subject_id = subject.subject_id
+
+                                    if last_class_id is None:
+                                        last_class_id = subject.class_id
+
+                                    if subject.subject_id != last_subject_id:
+                                        stack_handle[day][last_subject_id] = 'EXISTS_IN_DAY'
+
+                                    if stack_handle[day][subject.subject_id] == 'EXISTS_IN_DAY':
+                                        last_class_id = subject.class_id
+                                        last_subject_id = subject.subject_id
+                                        continue
+
+                                if subject.class_id == last_class_id and subject.subject_id == last_subject_id:
+                                    subject_stack += 1
+
+                                if stack_handle[day][subject.subject_id] == 'MAX_STACK_REACHED':
+                                    last_class_id = subject.class_id
+                                    last_subject_id = subject.subject_id
+                                    continue
+
+                                if subject_stack > subject.max_stack:
+                                    stack_handle[day][subject.subject_id] = 'MAX_STACK_REACHED'
+                                    last_class_id = subject.class_id
+                                    last_subject_id = subject.subject_id
+                                    continue
+
+                                last_class_id = subject.class_id
+                                last_subject_id = subject.subject_id
+
+                                first_lesson_index = self.find_first_lesson_index(self.data[class_id][day], log_file_name)
                                 lesson_index = len(self.data[class_id][day])
 
                                 if (first_lesson_index is None or first_lesson_index == 0) and not self.data[class_id][day]:
@@ -142,14 +176,15 @@ class Schedule:
                                         lesson_index = len(self.data[class_id][day])
 
                                 if (
-                                    first_lesson_index is not None and first_lesson_index > 0
-                                    and (not by_avg or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
-                                    and len(self.data[class_id][day]) < conditions.data['max_lessons_per_day']
-                                    and not self.are_teachers_taken(
-                                        teachers_id=subject.teachers_id,
-                                        day_to=day,
-                                        lesson_index=first_lesson_index - 1
-                                    )
+                                        first_lesson_index is not None and first_lesson_index > 0
+                                        and self.data[class_id][day][first_lesson_index-1][0].movable
+                                        and (not first_iter or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
+                                        and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
+                                        and not self.are_teachers_taken(
+                                    teachers_id=subject.teachers_id,
+                                    day_to=day,
+                                    lesson_index=first_lesson_index - 1
+                                )
                                 ):
                                     subject.lesson_hours_id = first_lesson_index - 1
                                     self.data[class_id][day][first_lesson_index-1] = [subject]
@@ -159,13 +194,13 @@ class Schedule:
                                         except ValueError:
                                             pass
                                 elif (
-                                    (not by_avg or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
-                                    and len(self.data[class_id][day]) < conditions.data['max_lessons_per_day']
-                                    and not self.are_teachers_taken(
-                                        teachers_id=subject.teachers_id,
-                                        day_to=day,
-                                        lesson_index=lesson_index
-                                    )
+                                        (not first_iter or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
+                                        and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
+                                        and not self.are_teachers_taken(
+                                    teachers_id=subject.teachers_id,
+                                    day_to=day,
+                                    lesson_index=lesson_index
+                                )
                                 ):
                                     subject.lesson_hours_id = lesson_index
                                     self.data[class_id][day].append([subject])
@@ -183,20 +218,31 @@ class Schedule:
                     dir_name=log_file_name,
                 )
 
+        for class_id in classes_id:
+            self.data[class_id] = {}
+            for day in days:
+                self.data[class_id][day] = [[Subject(is_empty=True, movable=False)] for _ in range(classes_starint_hour_index[class_id])]
+
         i = 0
         empty, count, _  = is_subjects_empty()
         old_count = count + 1
+
+        stack_handle = {}
+        for day in days:
+            stack_handle[day] = {}
+
         while count < old_count:
-            add_subjects(i)
+            if empty:
+                return self
+            add_subjects(i, stack_handle)
             old_count = count
             empty, count, _ = is_subjects_empty()
             i += 1
 
-        if not empty:
-            self.valid = False
-            return self
-
+        self.valid = False
         return self
+
+
 
     def split_to_groups(self, days, conditions, log_file_name):
         """
