@@ -13,23 +13,15 @@ import tkinter_schedule_vis
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
 
-# GENERAL:
-# ***********
-    # create handling for no possible outcomes of current schedule
-        # (esspecialy in update_min_day_len where there is infinite loop if there is no possible place to take subject from)
-    # try to create new schedule when there is no possible one with current setup
-    # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
-# ***********
-
 # WEB
 # ***********
+    # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
+
     # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
 
     # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
     # pozwolenie na dany przedmiot
     # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
-
-    # sprawdzanie czy user wpisał poprawne dane (np w ograniczaniu dni nauczycieli)
 
     # zmienianie dni w których mogą być lekcje
 # ***********
