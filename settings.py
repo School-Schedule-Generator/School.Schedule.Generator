@@ -1,10 +1,10 @@
 class Settings:
     def __init__(self):
         # Describe mode to run the program on
-        self.DEBUG = True
+        self.DEBUG = False
 
         # Take screenshots (True) or log in text to file (False)
-        self.TKCAPTURE = True
+        self.TKCAPTURE = False
 
         # if debug create default names
         if self.DEBUG:

@@ -25,37 +25,25 @@ def load_data(
     :return: list of pandas dataframes
     """
     dataframes = {}
-    if settings.DEBUG:
-        for file in tables:
-            if file_type == 'xlsx':
-                try:
-                    dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
-                except FileNotFoundError:
-                    dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + 'ods'), engine="odf")
-            if file_type == 'csv':
-                dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
-            elif file_type == 'mdf':
-                table_name = file
-                con = sqlite3.connect(settings.DATABASE_PATH)
-                sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
-                dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
+    for file in tables:
+        if file_type == 'xlsx':
+            try:
+                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+            except FileNotFoundError:
+                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + 'ods'), engine="odf")
+        if file_type == 'csv':
+            dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+        elif file_type == 'mdf':
+            table_name = file
+            con = sqlite3.connect(settings.DATABASE_PATH)
+            sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
+            dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
 
-        dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
+    dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
 
-        dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
-        dataframes['SSG_TEACHERS']['end_hour_index'] = dataframes['SSG_TEACHERS']['end_hour_index'].apply(ast.literal_eval)
-        dataframes['SSG_TEACHERS']['days'] = dataframes['SSG_TEACHERS']['days'].apply(ast.literal_eval)
-    else:
-        for file in tables:
-            if file_type == 'xlsx':
-                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + file_type))
-            if file_type == 'csv':
-                dataframes[file] = pd.read_csv(os.path.join(path, file + '.' + file_type))
-            elif file_type == 'mdf':
-                table_name = file
-                con = sqlite3.connect(path)
-                sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
-                dataframes[file] = pd.DataFrame(sql_query, columns=sql_tables[table_name])
+    dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
+    dataframes['SSG_TEACHERS']['end_hour_index'] = dataframes['SSG_TEACHERS']['end_hour_index'].apply(ast.literal_eval)
+    dataframes['SSG_TEACHERS']['days'] = dataframes['SSG_TEACHERS']['days'].apply(ast.literal_eval)
 
     return list(dataframes.values())
 

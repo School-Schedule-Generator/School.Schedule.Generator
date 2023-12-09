@@ -1,7 +1,5 @@
-import copy
 from datetime import datetime
 from itertools import product
-from settings import settings
 from loadData import *
 from scheduleConditions import *
 from schoolClass import *
@@ -27,6 +25,7 @@ import tkinter_schedule_vis
 # ***********
 
 # ---------------------------------------------------------------------------------------------------------------------
+
 
 def permutations(iterable, r=None):
     pool = tuple(iterable)
@@ -57,7 +56,6 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
     # Creating global schedule conditions
     conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
 
-
     schedule = False
     for i, days_order in enumerate(permutations(days, len(days))):
         version = i
@@ -73,13 +71,13 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
         ] = copy.deepcopy(data)
 
         # gathering basic information from dataframes
-        classes_id, classes_starint_hour_index = SchoolClass.get_classes_data(classes_df)
+        classes_id, classes_start_hour_index = SchoolClass.get_classes_data(classes_df)
         teachers = create_teachers(teachers_df)
         subjects = split_subjects(subjects_df, teachers, classes_id)
 
         schedule = Schedule(version=version).create(
             classes_id=classes_id,
-            classes_starint_hour_index=classes_starint_hour_index,
+            classes_starint_hour_index=classes_start_hour_index,
             conditions=conditions,
             days=days,
             days_ordered=days_order,
@@ -100,8 +98,6 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
         if schedule.valid:
             break
-
-    settings.TKCAPTURE = True
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(
