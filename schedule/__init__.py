@@ -1,9 +1,10 @@
 import copy
-import random
+import numpy as np
 import pandas as pd
 from debug_log import debug_log
 from tkinter_schedule_vis import tkinter_schedule_vis
 from math import ceil
+from subject import Subject
 
 
 class Schedule:
@@ -66,73 +67,134 @@ class Schedule:
             return avg_subjects
 
         def map_teachers():
-            data = {'id': list(teachers.keys()), 'value': list(teachers.values())}
-            df = pd.DataFrame(data)
+            teachers_data = {'id': list(teachers.keys()), 'value': list(teachers.values())}
+            teachers_df = pd.DataFrame(teachers_data)
             mapped = {}
-            for i, day in enumerate(days):
+            for day_i, day in enumerate(days):
 
-                teachers_at_day = df[df['value'].apply(lambda x: x.days[i] == 1)]['id'].tolist()
+                teachers_at_day = teachers_df[teachers_df['value'].apply(lambda x: x.days[day_i] == 1)].copy()
 
-                teachers_at_day_subject_count = {}
-                for teacher_id in teachers_at_day:
-                    teachers_at_day_subject_count[teacher_id] = 0
-                    for class_id in classes_id:
-                        teachers_at_day_subject_count[teacher_id] += len(subjects[teacher_id][class_id])
+                teachers_at_day['start_hour_index'] = teachers_at_day['value'].apply(lambda x: x.start_hour_index[day_i])
+                teachers_at_day['end_hour_index'] = teachers_at_day['value'].apply(lambda x: x.end_hour_index[day_i])
 
-                mapped[day] = teachers_at_day_subject_count
+                teachers_at_day['score'] = np.nan
+
+                for i, row in teachers_at_day.iterrows():
+                    score = None
+                    if row['start_hour_index'] == 0 and row['end_hour_index'] == -1:
+                        score = -1
+                    elif row['start_hour_index'] != 0 and row['end_hour_index'] != -1:
+                        score = row['end_hour_index'] - row['start_hour_index'] - 1
+                    elif row['end_hour_index'] != -1:
+                        score = 10 - row['end_hour_index']
+                    elif row['start_hour_index'] != 0:
+                        score = 5 + row['start_hour_index']
+
+                    teachers_at_day.at[i,'score'] = score
+
+                teachers_at_day.sort_values(by='score', inplace=True, ascending=False)
+
+                mapped[day] = teachers_at_day['id']
             return mapped
 
-        tkcapture_count = 0
-        mapped_teachers = map_teachers()
+        def is_subjects_empty():
+            empty = True
+            count_of_subjects = 0
+            s = []
+            for teacher_id in teachers.keys():
+                for class_id in classes_id:
+                    if len(subjects[teacher_id][class_id]) != 0:
+                        count_of_subjects += len(subjects[teacher_id][class_id])
+                        for sub in subjects[teacher_id][class_id]:
+                            s.append((teacher_id, sub.subject_id))
+                        empty = False
+            print(f'count {count_of_subjects}, subjects: {s}')
+            return empty, count_of_subjects, s
 
         for class_id in classes_id:
             self.data[class_id] = {}
             for day in days:
                 self.data[class_id][day] = []
 
-        for day_i, day in enumerate(days_ordered):
-            avg_day_len = avg_subjects_per_day(len(days) - day_i)[day]
+        def add_subjects(iteration):
+            by_avg = not iteration
 
-            if teachers_order == 0:
-                teachers_at_order = dict(sorted(mapped_teachers[day].items(), key=lambda item: item[1]))
-            elif teachers_order == 1:
-                teachers_at_order = dict(sorted(mapped_teachers[day].items(), key=lambda item: item[1], reverse=True))
-            elif teachers_order == -1:
-                teachers_at_order = mapped_teachers[day]
-            else:
-                self.valid = False
-                return self
+            for day_i, day in enumerate(days_ordered):
+                avg_day_len = avg_subjects_per_day(len(days) - day_i)[day]
 
-            for teacher_id in teachers_at_order:
-                if self.check_teacher_conditions(
-                        teachers_id=teacher_id,
-                        day=day,
-                        days=days,
-                        lesson_index=len(self.data[class_id][day]),
-                        teachers=teachers
-                ):
+                for teacher_id in map_teachers()[day]:
                     for class_id in classes_id:
-                        for subject in subjects[teacher_id][class_id]:
-                            lesson_index = len(self.data[class_id][day])
-                            if (
-                                len(self.data[class_id][day]) < ceil(avg_day_len[class_id])
-                                and not self.are_teachers_taken(
-                                    teachers_id=subject.teachers_id,
-                                    day_to=day,
-                                    lesson_index=lesson_index
-                                )
-                            ):
-                                subject.lesson_hours_id = lesson_index
-                                self.data[class_id][day].append([subject])
-                                subjects[teacher_id][class_id].remove(subject)
-                            else:
-                                continue
-            tkinter_schedule_vis(
-                self,
-                days,
-                capture_name=f'create_{day_i}_{day}',
-                dir_name=log_file_name,
-            )
+                        if self.check_teacher_conditions(
+                                teachers_id=teacher_id,
+                                day=day,
+                                days=days,
+                                lesson_index=len(self.data[class_id][day]),
+                                teachers=teachers
+                        ):
+                            for subject in subjects[teacher_id][class_id]:
+                                first_lesson_index = self.find_first_lesson_index(self.data[class_id][day], log_file_name)
+
+                                lesson_index = len(self.data[class_id][day])
+
+                                if (first_lesson_index is None or first_lesson_index == 0) and not self.data[class_id][day]:
+                                    while lesson_index < teachers[teacher_id].start_hour_index[day_i]:
+                                        self.data[class_id][day].append([Subject(is_empty=True)])
+                                        lesson_index = len(self.data[class_id][day])
+
+                                if (
+                                    first_lesson_index is not None and first_lesson_index > 0
+                                    and (not by_avg or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
+                                    and len(self.data[class_id][day]) < conditions.data['max_lessons_per_day']
+                                    and not self.are_teachers_taken(
+                                        teachers_id=subject.teachers_id,
+                                        day_to=day,
+                                        lesson_index=first_lesson_index - 1
+                                    )
+                                ):
+                                    subject.lesson_hours_id = first_lesson_index - 1
+                                    self.data[class_id][day][first_lesson_index-1] = [subject]
+                                    for teacher_to_remove_id in subject.teachers_id:
+                                        try:
+                                            subjects[teacher_to_remove_id][subject.class_id].remove(subject)
+                                        except ValueError:
+                                            pass
+                                elif (
+                                    (not by_avg or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
+                                    and len(self.data[class_id][day]) < conditions.data['max_lessons_per_day']
+                                    and not self.are_teachers_taken(
+                                        teachers_id=subject.teachers_id,
+                                        day_to=day,
+                                        lesson_index=lesson_index
+                                    )
+                                ):
+                                    subject.lesson_hours_id = lesson_index
+                                    self.data[class_id][day].append([subject])
+                                    for teacher_to_remove_id in subject.teachers_id:
+                                        try:
+                                            subjects[teacher_to_remove_id][subject.class_id].remove(subject)
+                                        except ValueError:
+                                            pass
+                                else:
+                                    continue
+                tkinter_schedule_vis(
+                    self,
+                    days,
+                    capture_name=f'create_{iteration}_{day_i}_{day}',
+                    dir_name=log_file_name,
+                )
+
+        i = 0
+        empty, count, _  = is_subjects_empty()
+        old_count = count + 1
+        while count < old_count:
+            add_subjects(i)
+            old_count = count
+            empty, count, _ = is_subjects_empty()
+            i += 1
+
+        if not empty:
+            self.valid = False
+            return self
 
         return self
 

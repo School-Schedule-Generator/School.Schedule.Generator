@@ -28,7 +28,10 @@ def load_data(
     if settings.DEBUG:
         for file in tables:
             if file_type == 'xlsx':
-                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+                try:
+                    dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+                except FileNotFoundError:
+                    dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + 'ods'), engine="odf")
             if file_type == 'csv':
                 dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
             elif file_type == 'mdf':
@@ -87,7 +90,8 @@ def split_subjects(subjects_df, teachers, classes_id):
                             teachers_id=[x for x in row['teachers_ID']],
                             classroom_id=row['classroom_ID'],
                             subject_length=row['subject_length'],
-                            lesson_hours_id=row['lesson_hours_ID']
+                            lesson_hours_id=row['lesson_hours_ID'],
+                            max_stack=row['max_stack']
                         )
                     )
 
