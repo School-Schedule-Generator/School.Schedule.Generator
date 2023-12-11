@@ -34,7 +34,11 @@ class Subject(models.Model):
 
 
 class Users:
-    pass
+    username = models.CharField(max_length=40, unique=True) # unikalna nazwa dla usera
+    password = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.username
 
 
 class ScheduleList(models.Model):
@@ -44,4 +48,4 @@ class ScheduleList(models.Model):
     context = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.user_id, self.name
