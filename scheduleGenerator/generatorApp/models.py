@@ -33,7 +33,12 @@ class Subject(models.Model):
         return
 
 
+class Users:
+    pass
+
+
 class ScheduleList(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     created_date = models.DateTimeField(default=timezone.now())
     context = models.TextField()
