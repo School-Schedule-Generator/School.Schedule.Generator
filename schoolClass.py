@@ -14,11 +14,11 @@ class SchoolClass:
         :param df: dataframe of classes
         :return: list of classes ids and dict of hours when class starts
         """
-        classes_starint_hour_index = {}
+        classes_start_hour_index = {}
         for i, class_id in enumerate(df['Class_ID'].to_numpy()):
-            classes_starint_hour_index[class_id] = df['starting_lesson_hour_id'].to_numpy()[i]
+            classes_start_hour_index[class_id] = df['starting_lesson_hour_id'].to_numpy()[i]
 
-        return df['Class_ID'].to_numpy(), classes_starint_hour_index
+        return df['Class_ID'].to_numpy(), classes_start_hour_index
 
     @staticmethod
     def get_school_classes(class_df, classes_id):
@@ -30,7 +30,7 @@ class SchoolClass:
         school_classes = [SchoolClass(
                 class_id=class_df.loc[i, 'Class_ID'],
                 grade=class_df.loc[i, 'grade'],
-                class_signature=class_df.loc[i, 'class_sygnature'],
+                class_signature=class_df.loc[i, 'class_signature'],
                 supervising_teacher=class_df.loc[i, 'supervising_teacher']
             )
             for i, class_id in enumerate(classes_id)

@@ -19,10 +19,10 @@ class Schedule:
     get_num_of_lessons = staticmethod(get_num_of_lessons)
     check_teacher_conditions = staticmethod(check_teacher_conditions)
 
-    def __init__(self, version):
+    def __init__(self, version=-1, valid=True):
         self.version = version
         self.data = {}
-        self.valid = True
+        self.valid = valid
 
     def push_class_schedule(self, class_id, class_schedule):
         """

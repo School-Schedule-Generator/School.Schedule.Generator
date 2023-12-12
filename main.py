@@ -8,6 +8,7 @@ from tkinter_schedule_vis import *
 
 import tkinter_schedule_vis
 
+
 # TODO-LIST:
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -27,15 +28,6 @@ import tkinter_schedule_vis
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-def permutations(iterable, r=None):
-    pool = tuple(iterable)
-    n = len(pool)
-    r = n if r is None else r
-    for indices in product(range(n), repeat=r):
-        if len(set(indices)) == r:
-            yield tuple(pool[i] for i in indices)
-
-
 def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_file_name):
     """
     :param data: list of data in strict order of: [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df]
@@ -47,6 +39,14 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
     in the same time
     """
 
+    def permutations(iterable, r=None):
+        pool = tuple(iterable)
+        n = len(pool)
+        r = n if r is None else r
+        for indices in product(range(n), repeat=r):
+            if len(set(indices)) == r:
+                yield tuple(pool[i] for i in indices)
+
     # Creating directory for log files
     if not os.path.exists(f'logs/{log_file_name}'):
         os.makedirs(f'logs/{log_file_name}')
@@ -56,7 +56,7 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
     # Creating global schedule conditions
     conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
 
-    schedule = False
+    schedule = Schedule(valid=False)
     for i, days_order in enumerate(permutations(days, len(days))):
         version = i
 
@@ -85,15 +85,19 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
             teachers=teachers,
             log_file_name=log_file_name
         ).split_to_groups(
-            days,
-            conditions,
-            log_file_name
+            days=days,
+            conditions=conditions,
+            log_file_name=log_file_name
         ).format_schedule(
-            conditions,
+            conditions=conditions,
             days=days,
             teachers=teachers,
+            classes_id=classes_id,
+            classes_start_hour_index=classes_start_hour_index,
+            days_ordered=days_order,
             log_file_name=log_file_name
         )
+
         debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}, Day order: {days_order}")
 
         if schedule.valid:
@@ -101,18 +105,22 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(
-        schedule=schedule,
-        days=days,
-        dir_name=f'{log_file_name}',
-        capture_name='FinalCapture'
+            schedule=schedule,
+            days=days,
+            dir_name=f'{log_file_name}',
+            capture_name='FinalCapture'
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
+
+    if not schedule.valid:
+        return schedule.valid
 
     return schedule.data
 
 
 now = datetime.now()
 time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
+
 ss = generate_schedule(
     data=load_data(),
     days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],

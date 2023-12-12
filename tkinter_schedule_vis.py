@@ -5,7 +5,7 @@ from settings import settings
 
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
-    if not settings.TKCAPTURE:
+    if not settings.TKCAPTURE and not capture:
         return False
 
     def rgb(red, green, blue):
@@ -102,11 +102,10 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
     if not os.path.exists(f'logs/{dir_name}/{schedule.version}'):
         os.mkdir(f'logs/{dir_name}/{schedule.version}')
 
-    if capture:
-        cap = tkcap.CAP(root)
-        cap.capture(f'logs/{dir_name}/{schedule.version}/{capture_name}.jpg')
+    cap = tkcap.CAP(root)
+    cap.capture(f'logs/{dir_name}/{schedule.version}/{capture_name}.jpg')
 
-        root.after(0, lambda: root.destroy())
-        root.mainloop()
+    root.after(0, lambda: root.destroy())
+    root.mainloop()
 
     return True

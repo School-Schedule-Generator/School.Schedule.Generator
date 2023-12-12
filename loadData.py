@@ -34,8 +34,9 @@ def load_data(
         if file_type == 'csv':
             dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
         elif file_type == 'mdf':
+            # TODO: change to proper conection to sql
             table_name = file
-            con = sqlite3.connect(settings.DATABASE_PATH)
+            con = sqlite3.connect(settings.BASE_DATA_PATH)
             sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
             dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
 
@@ -53,7 +54,7 @@ def split_subjects(subjects_df, teachers, classes_id):
     :param subjects_df: dataframe of all subjects
     :param teachers: list of school_classes
     :param classes_id: list of ids of classes
-    :return: returns splitet per teacher lists of subjects
+    :return: returns split per teacher lists of subjects
     """
 
     subject_per_teacher_per_class = {}
