@@ -4,7 +4,7 @@ import os
 from settings import settings
 
 
-def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
+def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=settings.TKCAPTURE):
     if not settings.TKCAPTURE and not capture:
         return False
 
@@ -84,9 +84,10 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
 
                     label = tk.Label(
                         root,
-                        text=f"subjects id {subjects_ids}\n"
-                        f"teacher: {teachers}\n"
-                        f"lesson_hours_id: {subjects[0].lesson_hours_id}",
+                        text=f"class id {class_schedule_id}\n"
+                             f"subjects id {subjects_ids}\n"
+                             f"teacher {teachers}\n"
+                             f"lesson hours id {subjects[0].lesson_hours_id}",
                         font=("Arial", 8),
                         bg=color
                     )

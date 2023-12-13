@@ -105,10 +105,11 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
     # schedule visualisation using tkinter
     if not tkinter_schedule_vis.tkinter_schedule_vis(
-            schedule=schedule,
-            days=days,
-            dir_name=f'{log_file_name}',
-            capture_name='FinalCapture'
+        schedule=schedule,
+        days=days,
+        dir_name=f'{log_file_name}',
+        capture_name='FinalCapture',
+        capture=True # Capture even if settings.TKCAPTURE == False
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
