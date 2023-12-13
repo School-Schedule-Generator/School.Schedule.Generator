@@ -88,7 +88,7 @@ generate_schedule splits into 3 parts:
 * loging
 ---
 ***Preparing***  
-
+  
 This part of code takes care of preparing, splitting and formatting data.
 Now we will break down all the lines that are categorized in that group  
 ```
