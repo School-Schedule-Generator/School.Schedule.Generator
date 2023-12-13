@@ -4,8 +4,8 @@ import os
 from settings import settings
 
 
-def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=settings.TKCAPTURE):
-    if not settings.TKCAPTURE and not capture:
+def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
+    if not settings.TKCAPTURE:
         return False
 
     def rgb(red, green, blue):
@@ -70,6 +70,7 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         color[0] = min(color[0], 200)
 
                     teachers = ''
+                    classrooms = ''
                     teachers_list = []
                     for subject in subjects:
                         if subject.teachers_id[0] in teachers_list:
@@ -77,6 +78,7 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
 
                         teachers_list.append(subject.teachers_id[0])
                         teachers += str(subject.teachers_id[0]) + ' '
+                        classrooms += str(subject.classroom_id)
 
                     color = rgb(*color)
 
@@ -84,10 +86,10 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
 
                     label = tk.Label(
                         root,
-                        text=f"class id {class_schedule_id}\n"
-                             f"subjects id {subjects_ids}\n"
-                             f"teacher {teachers}\n"
-                             f"lesson hours id {subjects[0].lesson_hours_id}",
+                        text=f"subjects id {subjects_ids}\n"
+                        f"teacher: {teachers}\n"
+                        f"lesson_hours_id: {subjects[0].lesson_hours_id}\n"
+                        f"classrooms_id: {classrooms}",
                         font=("Arial", 8),
                         bg=color
                     )
@@ -103,10 +105,12 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
     if not os.path.exists(f'logs/{dir_name}/{schedule.version}'):
         os.mkdir(f'logs/{dir_name}/{schedule.version}')
 
-    cap = tkcap.CAP(root)
-    cap.capture(f'logs/{dir_name}/{schedule.version}/{capture_name}.jpg')
+    if capture:
+        cap = tkcap.CAP(root)
+        cap.capture(f'logs/{dir_name}/{schedule.version}/{capture_name}.jpg')
 
-    root.after(0, lambda: root.destroy())
-    root.mainloop()
+        root.after(0, lambda: root.destroy())
+        root.mainloop()
 
     return True
+

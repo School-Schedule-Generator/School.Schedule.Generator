@@ -2,8 +2,6 @@ from settings import *
 import pandas as pd
 import os
 import sqlite3
-from subject import *
-from teacher import  *
 import ast
 
 
@@ -34,13 +32,13 @@ def load_data(
         if file_type == 'csv':
             dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
         elif file_type == 'mdf':
-            # TODO: change to proper conection to sql
             table_name = file
-            con = sqlite3.connect(settings.BASE_DATA_PATH)
+            con = sqlite3.connect(settings.DATABASE_PATH)
             sql_query = pd.read_sql(f'SELECT * FROM {table_name}', con)
             dataframes[file] = pd.DataFrame(sql_query, columns=settings.COLLUMN_NAMES[table_name])
 
     dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
+    dataframes['SSG_SUBJECTS']['classroom_types'] = dataframes['SSG_SUBJECTS']['classroom_types'].apply(ast.literal_eval)
 
     dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
     dataframes['SSG_TEACHERS']['end_hour_index'] = dataframes['SSG_TEACHERS']['end_hour_index'].apply(ast.literal_eval)

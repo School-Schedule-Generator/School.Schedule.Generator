@@ -7,7 +7,7 @@ class Subject:
     """
     def __init__(self, subject_id=0, subject_name_id=0, class_id=0, number_of_groups=0, subject_length=0,
                  lesson_hours_id=0, teachers_id=None, classroom_id=0, is_empty=False,
-                 movable=True, group=None, max_stack=0,
+                 movable=True, group=None, max_stack=0, classroom_types=[],
                  log_file_name=''):
 
         if teachers_id is None:
@@ -24,6 +24,7 @@ class Subject:
         self.max_stack = max_stack
         self.movable = movable
         self.group = group
+        self.classroom_types = classroom_types
 
 
 def split_subjects(subjects_df, teachers, classes_id):
@@ -57,7 +58,8 @@ def split_subjects(subjects_df, teachers, classes_id):
                             classroom_id=row['classroom_ID'],
                             subject_length=row['subject_length'],
                             lesson_hours_id=row['lesson_hours_ID'],
-                            max_stack=row['max_stack']
+                            max_stack=row['max_stack'],
+                            classroom_types=row['classroom_types']
                         )
                     )
 

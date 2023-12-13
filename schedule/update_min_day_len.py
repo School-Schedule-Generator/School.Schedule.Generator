@@ -4,6 +4,7 @@ from tkinter_schedule_vis import tkinter_schedule_vis
 
 def update_min_day_len(self, conditions, days, teachers, log_file_name):
     """
+        :param self:
         :param conditions: global conditions of schedule
         :param days: list of days with lessons in
         :param teachers: list of all teachers

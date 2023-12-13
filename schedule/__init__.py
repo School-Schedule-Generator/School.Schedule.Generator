@@ -31,14 +31,14 @@ class Schedule:
         """
         self.data[class_id] = class_schedule
 
-    def create(self, classes_id, classes_starint_hour_index, conditions, days, days_ordered, subjects, teachers, log_file_name):
+    def create(self, classes_id, classes_start_hour_index, conditions, days, days_ordered, subjects, teachers, log_file_name):
         """
         :param classes_id: list of ids
-        :param classes_starint_hour_index: dict of hours when class starts
+        :param classes_start_hour_index: dict of hours when class starts
         :param conditions: global conditions of schedule
         :param days: list of days with lessons in
         :param days_ordered: list of days but with order wich in the teachers are added in
-        :param subjects: splited per teacher splited per class subjects
+        :param subjects: split per teacher split per class subjects
         :param teachers: list of teachers (obj)
         :param log_file_name: file name for run information
         :return: structured and logical schedule
@@ -181,10 +181,10 @@ class Schedule:
                                         and (not first_iter or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
-                                    teachers_id=subject.teachers_id,
-                                    day_to=day,
-                                    lesson_index=first_lesson_index - 1
-                                )
+                                            teachers_id=subject.teachers_id,
+                                            day_to=day,
+                                            lesson_index=first_lesson_index - 1
+                                        )
                                 ):
                                     subject.lesson_hours_id = first_lesson_index - 1
                                     self.data[class_id][day][first_lesson_index-1] = [subject]
@@ -197,10 +197,10 @@ class Schedule:
                                         (not first_iter or len(self.data[class_id][day]) < ceil(avg_day_len[class_id]))
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
-                                    teachers_id=subject.teachers_id,
-                                    day_to=day,
-                                    lesson_index=lesson_index
-                                )
+                                            teachers_id=subject.teachers_id,
+                                            day_to=day,
+                                            lesson_index=lesson_index
+                                        )
                                 ):
                                     subject.lesson_hours_id = lesson_index
                                     self.data[class_id][day].append([subject])
@@ -221,7 +221,7 @@ class Schedule:
         for class_id in classes_id:
             self.data[class_id] = {}
             for day in days:
-                self.data[class_id][day] = [[Subject(is_empty=True, movable=False)] for _ in range(classes_starint_hour_index[class_id])]
+                self.data[class_id][day] = [[Subject(is_empty=True, movable=False)] for _ in range(classes_start_hour_index[class_id])]
 
         i = 0
         empty, count, _  = is_subjects_empty()
@@ -241,8 +241,6 @@ class Schedule:
 
         self.valid = False
         return self
-
-
 
     def split_to_groups(self, days, conditions, log_file_name):
         """
@@ -331,15 +329,15 @@ class Schedule:
                                     group_index = subject.group - 1
                                     if (
                                             base_teacher not in self.get_same_time_teacher(
-                                        day_to=another_day,
-                                        lesson_index=another_index,
-                                    )
+                                                day_to=another_day,
+                                                lesson_index=another_index,
+                                            )
                                             and
                                             another_subjects_list[
                                                 group_index].teachers_id not in self.get_same_time_teacher(
-                                        day_to=day,
-                                        lesson_index=subject.lesson_hours_id,
-                                    )
+                                                    day_to=day,
+                                                    lesson_index=subject.lesson_hours_id,
+                                                )
                                     ):
                                         self.swap_subject_in_groups(
                                             group=subject.group,
