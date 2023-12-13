@@ -9,8 +9,7 @@ who look to expand range of programs possibilities.
 ## Intro
 
 First download repository through GitHub or clone using command:  
-(zmienić na branch bez django)  
-```gh repo clone OFALOFAL/School.Schedule.Generator```
+```git clone -b generator git@github.com:OFALOFAL/School.Schedule.Generator.git```
 
 You'll need knowledge of python and sql or excel.
 
