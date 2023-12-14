@@ -10,9 +10,11 @@ from subject import Subject
 class Schedule:
     from .general import (create_class_schedule, move_subject_to_day, swap_subject_in_groups, safe_move,
                           get_same_time_teacher, find_first_lesson_index, get_num_of_lessons,
-                          find_another_grouped_lessons)
+                          find_another_grouped_lessons, get_same_time_classrooms, get_stacked_lessons)
     from .returncondition import are_teachers_taken, check_teacher_conditions
     from .formatschedule import format_schedule
+    from .add_classrooms import add_classrooms
+    from .update_min_day_len import update_min_day_len
 
     create_class_schedule = staticmethod(create_class_schedule)
     find_first_lesson_index = staticmethod(find_first_lesson_index)
@@ -157,7 +159,8 @@ class Schedule:
                                     last_class_id = subject.class_id
                                     last_subject_id = subject.subject_id
                                     continue
-
+                                if subject.max_stack is None:
+                                    pass
                                 if subject_stack > subject.max_stack:
                                     stack_handle[day][subject.subject_id] = 'MAX_STACK_REACHED'
                                     last_class_id = subject.class_id

@@ -98,6 +98,9 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
             days=days,
             teachers=teachers,
             classrooms=classrooms,
+            classes_id=classes_id,
+            classes_start_hour_index=classes_start_hour_index,
+            days_ordered=days_order,
             log_file_name=log_file_name
         )
         debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}, Day order: {days_order}")
@@ -110,7 +113,8 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
         schedule=schedule,
         days=days,
         dir_name=f'{log_file_name}',
-        capture_name='FinalCapture'
+        capture_name='FinalCapture',
+        capture=True
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 

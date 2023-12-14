@@ -5,7 +5,7 @@ from settings import settings
 
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
-    if not settings.TKCAPTURE:
+    if not settings.TKCAPTURE and not capture:
         return False
 
     def rgb(red, green, blue):
@@ -72,13 +72,17 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                     teachers = ''
                     classrooms = ''
                     teachers_list = []
+                    classrooms_list = []
                     for subject in subjects:
                         if subject.teachers_id[0] in teachers_list:
                             color = [255, 0, 0]
 
+                        # TODO wyswetlac na czerwono jesli jest konflikt klas
+                        if subject.classroom_id is not None:
+                            classrooms += str(subject.classroom_id) + ' '
+
                         teachers_list.append(subject.teachers_id[0])
                         teachers += str(subject.teachers_id[0]) + ' '
-                        classrooms += str(subject.classroom_id)
 
                     color = rgb(*color)
 

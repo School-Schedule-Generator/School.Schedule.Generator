@@ -9,18 +9,31 @@ def add_classrooms(self, classrooms, days, log_file_name):
             class_schedule_at_day = class_schedule[day]
 
             for subjects_list in class_schedule_at_day:
-                first_lesson_index = self.find_first_lesson_index(class_schedule_at_day, log_file_name)
+                for subject in subjects_list:
 
-                # na poczatku sprawdzac czy lekcja ma juz przypisana klase (czy jest rowna 0)
-                # moze byc lepiej napisac funkcje ktora zwraca ilosc zestakowanych lekcji dla podanego subjecta w danym dniu
-                # i wtedy dla wszystkich pokolei ustawiac ta sama klase a jesli w ktoryms miejscu nie bedzie pasowac to
-                # wylosowac kolejna
+                    if subject.classroom_id is not None or subject.is_empty:
+                        continue
 
+                    stacked_subjects, _ = self.get_stacked_lessons(
+                        class_id=class_id,
+                        day=day,
+                        group=subject.group,
+                        lesson_index=subject.lesson_hours_id
+                    )
+                    for classroom in classrooms:
+                        print(classroom)
+                        valid = True
+                        for stacked_subject in stacked_subjects:
+                            if not (classrooms[classroom].type_id in stacked_subject.classroom_types
+                               and classrooms[classroom].type_id) not in self.get_same_time_classrooms(
+                                day,
+                                stacked_subject.lesson_hours_id
+                            ):
+                                valid = False
+                                break
 
-                    # for subject in subjects_list:
-                    #     for classroom in classrooms:
-                    #         # TODO trzeba dodac spawdzanie czy dana klasa nie jest juz zajeta
-                    #         if classrooms[classroom].type_id in subject.classroom_types:
-                    #             subject.classroom_id = classroom
-                    #             break
-
+                        if valid:
+                            for stacked_subject in stacked_subjects:
+                                stacked_subject.classroom_id = classroom
+                            break
+    return self
