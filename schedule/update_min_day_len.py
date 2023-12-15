@@ -15,8 +15,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
         return self
 
     # loop through all classes
-    for class_id in self.data:
-        class_schedule = self.data[class_id]
+    for class_schedule, class_id in self.data.items():
         tk_capture_count = 0
         for current_day in days:
             schedule_at_day = class_schedule[current_day]
@@ -60,6 +59,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                 # if not possible program loops trough every other day to find any spot to place the subject
                 #   (if not possible return with ERROR)
 
+                ## TODO: add mixed cases subject_position=-1/0, subject_new_position=-1/0
                 if self.safe_move(
                     teachers_id=max_day_schedule[-1][0].teachers_id,
                     day_from=days[max_len_day_i],
