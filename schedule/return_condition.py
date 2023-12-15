@@ -12,6 +12,7 @@ def are_teachers_taken(self, teachers_id, day_to, lesson_index):
                 return True
     return False
 
+
 def check_teacher_conditions(teachers_id, day, days, lesson_index, teachers):
     if type(teachers_id) is not list:
         teachers_id = [teachers_id]

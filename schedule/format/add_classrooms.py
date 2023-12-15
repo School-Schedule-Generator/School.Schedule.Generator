@@ -21,11 +21,10 @@ def add_classrooms(self, classrooms, days, log_file_name):
                         lesson_index=subject.lesson_hours_id
                     )
                     for classroom in classrooms:
-                        print(classroom)
                         valid = True
                         for stacked_subject in stacked_subjects:
-                            if not (classrooms[classroom].type_id in stacked_subject.classroom_types
-                               and classrooms[classroom].type_id) not in self.get_same_time_classrooms(
+                            if classrooms[classroom].type_id not in stacked_subject.classroom_types \
+                               or classroom in self.get_same_time_classrooms(
                                 day,
                                 stacked_subject.lesson_hours_id
                             ):

@@ -221,7 +221,8 @@ def get_same_time_classrooms(self, day_to, lesson_index):
         try:
             subjects_list = self.data[class_schedule_id][day_to][lesson_index]
             for subject in subjects_list:
-                same_time_classrooms.append(subject.classroom_id)
+                if subject.classroom_id is not None:
+                    same_time_classrooms.append(subject.classroom_id)
         except IndexError:
             pass
     return same_time_classrooms
@@ -230,18 +231,18 @@ def get_same_time_classrooms(self, day_to, lesson_index):
 def get_stacked_lessons(self, class_id, day, group, lesson_index=0, log_file_name=''):
     class_schedule = self.data[class_id][day]
 
-    if lesson_index == 0:
-        lesson_index = self.find_first_lesson_index(class_schedule, log_file_name)
+    # if lesson_index == 0:
+    #     lesson_index = self.find_first_lesson_index(class_schedule, log_file_name)
 
     subject = class_schedule[lesson_index][group-1]
     stacked_subjects = [subject]
 
-    if subject.lesson_hours_id == class_schedule[-1][0].lesson_hours_id:
+    if lesson_index == class_schedule[-1][0].lesson_hours_id:
         return stacked_subjects, stacked_subjects[-1].lesson_hours_id
 
-    for subject_list in class_schedule[subject.lesson_hours_id+1:]:
+    for subject_list in class_schedule[lesson_index+1:]:
         for current_subject in subject_list:
-            if not current_subject.group == group or not current_subject.subject_id == subject.subject_id:
+            if current_subject.group != group or current_subject.subject_id != subject.subject_id:
                 return stacked_subjects, stacked_subjects[-1].lesson_hours_id
 
             stacked_subjects.append(current_subject)
