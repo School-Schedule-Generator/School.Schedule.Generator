@@ -11,7 +11,7 @@ who look to expand range of programs possibilities.
 First download repository through GitHub or clone using command:  
 ```git clone -b generator git@github.com:OFALOFAL/School.Schedule.Generator.git```
 
-You'll need knowledge of python and sql or excel.
+You'll need knowledge of python and excel.
 
 To understand flow of program first go to [intro]() section.  
 
@@ -308,3 +308,95 @@ Dictionary:
 * start_hour_index and end_hour_index - time frames of teacher duty for each day
   (in list)
 * days - list of days that teacher learns in 
+
+---
+
+## Adding data via excel
+
+To add or delete data you'll just need to add or delete row of data.  
+It's important to leave column names the same, if not the file won't be read 
+properly! 
+  
+### Columns and their values
+
+> Note:  
+> 
+> You'll still need to write all the default values!
+  
+SSG_CLASSES:
+* Class_ID - no default, can't repeat values
+* grade - can be any (this column isn't important)
+* class_sygnature - can be any (this column isn't important)
+* class_sygnature_number - can be any (this column isn't important)
+* supervising_teacher - can be any (this column isn't important)
+* starting_lesson_hour_id - default 0 - decides when class starts it's lessons
+  
+SSG_CLASSROOMS:
+* classroom_ID - no default, can't repeat values
+* classroom_name - no default, can't repeat values
+* type - no default - decides subjects that can take place in this classroom
+  
+SSG_LESSON_HOURS:
+* lesson_ID - no default, can't repeat values
+* start_hour - time when lesson starts
+* duration - duration of lesson
+  
+SSG_SUBJECT_NAMES:
+* subject_name_ID - no default, can't repeat values
+* name - no default - only for visuals
+  
+SSG_TEACHERS:
+* teacher_ID - no default, can't repeat values 
+* name - no default - only for visuals
+* surname - no default - only for visuals
+* possible_subjects - no defaults - only for visuals - list of possible subjects
+* start_hour_index - list of minimum len of number of active days 
+(so for 3 days [a, b, c]) - default for each day is 0
+* end_hour_index - similar to start_hour_index - default is -1
+* days - similar list to 2 above - 1 if teacher has lessons in that day, else 0
+  
+SSG_SUBJECTS:
+* subject_ID - no default, can't repeat values 
+* subject_name_ID - no default - has to exist in SSG_SUBJECT_NAMES
+* class_ID - no default - has to exist in SSG_CLASSES
+* subject_count_in_week - default 1 - number of times you want to repeat this subject
+* number_of_groups - default 1 - number of groups the subject splits class to
+* subject_length - no use in code - column has no use
+* lesson_hours_ID - this has to always be NULL
+* teachers_ID - list of teachers that can take this subject (written like so: [a, b])
+* classroom_ID - this has to always be NULL
+* max_stack - default 3 - defines how many subject of the same type can be in a row
+* classroom_types - list of classroom_types that this subject is in (written like so: [a, b])
+
+---
+
+# Writing new functions
+
+Now, that you know how to move around in project, it's time to write your new function.  
+To start, first crate new file in `./schedule/formatFunctions` 
+and add function of the same name in it  
+then you can import that function in `./schedule/formatschedule.py` like so:  
+(dodaj import)  
+`  `  
+and add it in format_schedule function:  
+(dodaj formatowanie)  
+`  `  
+and import all data that you need and is aviable in format_schedule to your function:
+(dodaj dodawanie danych)
+`  `  
+and change it in functions definition:
+`  `  
+in start of your function you'll need to write those three lines:
+```
+if not self.valid:
+  return self
+  
+  //Your code here
+  
+return self
+```
+> Note:
+> 
+> You can write your formatting in between if-statement and 2nd return
+
+(DO KONTYNUACJ, wyjaśnić jak pisać funkcje, jak loopować itd)
