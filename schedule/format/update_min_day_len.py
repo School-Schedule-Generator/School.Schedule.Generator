@@ -61,7 +61,48 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                 # if not possible program loops trough every other day to find any spot to place the subject
                 #   (if not possible return with ERROR)
 
+                # Positions we check
+                # subject current position | subject new position
+                #           -1             |            0
+                #            0             |            0
+                #           -1             |           -1
+                #            0             |           -1
+
                 if self.safe_move(
+                    teachers_id=max_day_schedule[-1][0].teachers_id,
+                    day_from=days[max_len_day_i],
+                    day_to=current_day,
+                    subject_position=-1,
+                    subject_new_position=0,
+                    class_id=class_id,
+                    days=days,
+                    teachers=teachers,
+                    log_file_name=log_file_name
+                ):
+                    tkinter_schedule_vis(
+                        self,
+                        days,
+                        capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{-1}_{0}_b_post_change',
+                        dir_name=log_file_name
+                    )
+                elif self.safe_move(
+                    teachers_id=max_day_schedule[first_lesson_index][0].teachers_id,
+                    day_from=days[max_len_day_i],
+                    day_to=current_day,
+                    subject_position=first_lesson_index,
+                    subject_new_position=0,
+                    class_id=class_id,
+                    days=days,
+                    teachers=teachers,
+                    log_file_name=log_file_name
+                ):
+                    tkinter_schedule_vis(
+                        self,
+                        days,
+                        capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{first_lesson_index}_{0}_b_post_change',
+                        dir_name=log_file_name
+                    )
+                elif self.safe_move(
                     teachers_id=max_day_schedule[-1][0].teachers_id,
                     day_from=days[max_len_day_i],
                     day_to=current_day,
@@ -83,7 +124,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                     day_from=days[max_len_day_i],
                     day_to=current_day,
                     subject_position=first_lesson_index,
-                    subject_new_position=0,
+                    subject_new_position=-1,
                     class_id=class_id,
                     days=days,
                     teachers=teachers,
@@ -92,7 +133,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                     tkinter_schedule_vis(
                         self,
                         days,
-                        capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{first_lesson_index}_{0}_b_post_change',
+                        capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{first_lesson_index}_{-1}_b_post_change',
                         dir_name=log_file_name
                     )
                 else:
@@ -116,6 +157,40 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                             day_from=day,
                             day_to=current_day,
                             subject_position=-1,
+                            subject_new_position=0,
+                            class_id=class_id,
+                            days=days,
+                            teachers=teachers,
+                            log_file_name=log_file_name
+                        ):
+                            tkinter_schedule_vis(
+                                self,
+                                days,
+                                capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_inElse_{-1}_{0}_b_post_change',
+                                dir_name=log_file_name
+                            )
+                        elif self.safe_move(
+                            teachers_id=schedule_at_other_day[first_lesson_index][0].teachers_id,
+                            day_from=day,
+                            day_to=current_day,
+                            subject_position=first_lesson_index,
+                            subject_new_position=0,
+                            class_id=class_id,
+                            days=days,
+                            teachers=teachers,
+                            log_file_name=log_file_name
+                        ):
+                            tkinter_schedule_vis(
+                                self,
+                                days,
+                                capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_inElse_{first_lesson_index}_{0}_b_post_change',
+                                dir_name=log_file_name
+                            )
+                        elif self.safe_move(
+                            teachers_id=schedule_at_other_day[-1][0].teachers_id,
+                            day_from=day,
+                            day_to=current_day,
+                            subject_position=-1,
                             subject_new_position=-1,
                             class_id=class_id,
                             days=days,
@@ -133,7 +208,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                             day_from=day,
                             day_to=current_day,
                             subject_position=first_lesson_index,
-                            subject_new_position=0,
+                            subject_new_position=-1,
                             class_id=class_id,
                             days=days,
                             teachers=teachers,
@@ -142,7 +217,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                             tkinter_schedule_vis(
                                 self,
                                 days,
-                                capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{first_lesson_index}_{0}_b_post_change',
+                                capture_name=f'update_min_day_len_{class_id}_{tk_capture_count}_{first_lesson_index}_{-1}_b_post_change',
                                 dir_name=log_file_name
                             )
                         else:
