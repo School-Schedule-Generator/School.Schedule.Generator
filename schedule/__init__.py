@@ -189,7 +189,7 @@ class Schedule:
                                             lesson_index=first_lesson_index - 1
                                         )
                                 ):
-                                    subject.lesson_hours_id = first_lesson_index - 1
+                                    subject.lesson_hour_id = first_lesson_index - 1
                                     self.data[class_id][day][first_lesson_index-1] = [subject]
                                     for teacher_to_remove_id in subject.teachers_id:
                                         try:
@@ -205,7 +205,7 @@ class Schedule:
                                             lesson_index=lesson_index
                                         )
                                 ):
-                                    subject.lesson_hours_id = lesson_index
+                                    subject.lesson_hour_id = lesson_index
                                     self.data[class_id][day].append([subject])
                                     for teacher_to_remove_id in subject.teachers_id:
                                         try:
@@ -321,7 +321,7 @@ class Schedule:
 
                     if same_teacher:
                         for subject in subjects_list[1:]:
-                            possibilities = self.find_another_grouped_lessons(class_id, day, subject.lesson_hours_id,
+                            possibilities = self.find_another_grouped_lessons(class_id, day, subject.lesson_hour_id,
                                                                               subject.number_of_groups, days)
 
                             if len(possibilities) == 0:
@@ -337,9 +337,9 @@ class Schedule:
                                             )
                                             and
                                             another_subjects_list[
-                                                group_index].teachers_id not in self.get_same_time_teacher(
+                                                group_index].teachers_id[0] not in self.get_same_time_teacher(
                                                     day_to=day,
-                                                    lesson_index=subject.lesson_hours_id,
+                                                    lesson_index=subject.lesson_hour_id,
                                                 )
                                     ):
                                         self.swap_subject_in_groups(

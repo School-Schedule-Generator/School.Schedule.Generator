@@ -18,7 +18,7 @@ def add_classrooms(self, classrooms, days, log_file_name):
                         class_id=class_id,
                         day=day,
                         group=subject.group,
-                        lesson_index=subject.lesson_hours_id
+                        lesson_index=subject.lesson_hour_id
                     )
                     for classroom in classrooms:
                         valid = True
@@ -26,7 +26,7 @@ def add_classrooms(self, classrooms, days, log_file_name):
                             if classrooms[classroom].type_id not in stacked_subject.classroom_types \
                                or classroom in self.get_same_time_classrooms(
                                 day,
-                                stacked_subject.lesson_hours_id
+                                stacked_subject.lesson_hour_id
                             ):
                                 valid = False
                                 break

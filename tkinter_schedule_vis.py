@@ -5,8 +5,33 @@ from settings import settings
 
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
-    if not settings.TKCAPTURE and not capture:
+
+    if (not settings.TKCAPTURE and not capture) and not settings.DEBUG:
         return False
+
+    def get_invalid_data(day_to, lesson_index, class_id, group):
+        same_time_teachers = []
+        same_time_classrooms = []
+        for class_schedule_id in schedule.data:
+            try:
+                subjects_list = schedule.data[class_schedule_id][day_to][lesson_index]
+                for subject in subjects_list:
+                    if subject.group is None and class_schedule_id == class_id:
+                        continue
+                    if subject.group is not None and class_schedule_id == class_id and subject.group == group:
+                        continue
+
+                    # print(len(subjects_list))
+                    # print(subject)
+                    # print(subject.teachers_id)
+                    # for teacher_id in subject.teachers_id:
+                    same_time_teachers.append(subject.teachers_id[0])
+
+                    if subject.classroom_id is not None:
+                        same_time_classrooms.append(subject.classroom_id)
+            except IndexError:
+                pass
+        return same_time_teachers, same_time_classrooms
 
     def rgb(red, green, blue):
         return f'#{red:02x}{green:02x}{blue:02x}'
@@ -25,20 +50,9 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
         for j, class_schedule_id in enumerate(data):  # j -> class id
             class_schedule = data[class_schedule_id]
             for k in range(len(class_schedule[day])):  # k -> subject id
-                subjects = class_schedule[day][k]
+                subjects_list = class_schedule[day][k]
 
-                # check if there is teacher conflict (one teacher has some lessons in the same time)
-                same_time_subjects = []
-                for x, other_class_schedule_id in enumerate(data):
-                    other_class_schedule = data[other_class_schedule_id]
-                    if other_class_schedule != class_schedule:
-                        try:
-                            same_time_subjects.append(other_class_schedule[day][k])
-                        except IndexError:
-                            pass
-
-                # create labels and set colors on red if there is a conflict
-                if subjects[0].is_empty:
+                if subjects_list[0].is_empty:
                     label = tk.Label(
                         root,
                         text="empty",
@@ -48,13 +62,14 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                 else:
                     color = [27, 58, 19]
                     last_digit = 1
-                    for subject in subjects:
-                        if subject.teachers_id in schedule.get_same_time_teacher(
-                            day_to=day,
-                            lesson_index=subject.lesson_hours_id,
-                        ):
+
+                    for subject in subjects_list:
+                        taken_teachers, taken_classrooms = get_invalid_data(day, subject.lesson_hour_id,
+                                                                            class_schedule_id, subject.group)
+                        if subject.teachers_id[0] in taken_teachers or subject.classroom_id in taken_classrooms:
                             color = [255, 0, 0]
                             break
+
                         for teacher_id in subject.teachers_id:
                             for digit in get_digits(teacher_id):
                                 color[1] *= digit + 1
@@ -69,30 +84,24 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         color[0] = color[0] % 255
                         color[0] = min(color[0], 200)
 
-                    teachers = ''
-                    classrooms = ''
-                    teachers_list = []
-                    classrooms_list = []
-                    for subject in subjects:
-                        if subject.teachers_id[0] in teachers_list:
-                            color = [255, 0, 0]
+                    teachers = []
+                    classrooms = []
 
-                        # TODO wyswetlac na czerwono jesli jest konflikt klas
+                    for subject in subjects_list:
                         if subject.classroom_id is not None:
-                            classrooms += str(subject.classroom_id) + ' '
+                            classrooms.append(subject.classroom_id)
 
-                        teachers_list.append(subject.teachers_id[0])
-                        teachers += str(subject.teachers_id[0]) + ' '
+                        teachers.append(subject.teachers_id[0])
 
                     color = rgb(*color)
 
-                    subjects_ids = [x.subject_id for x in subjects]
+                    subjects_ids = [x.subject_id for x in subjects_list]
 
                     label = tk.Label(
                         root,
                         text=f"subjects id {subjects_ids}\n"
                         f"teacher: {teachers}\n"
-                        f"lesson_hours_id: {subjects[0].lesson_hours_id}\n"
+                        f"lesson_hours_id: {subjects_list[0].lesson_hour_id}\n"
                         f"classrooms_id: {classrooms}",
                         font=("Arial", 8),
                         bg=color
@@ -117,4 +126,3 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
         root.mainloop()
 
     return True
-
