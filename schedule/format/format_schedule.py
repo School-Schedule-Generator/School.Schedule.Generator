@@ -10,6 +10,7 @@ def format_schedule(self, conditions, days, teachers, classrooms, classes_id,
         log_file_name
     ).add_classrooms(
         classrooms,
+        teachers,
         days,
         log_file_name
     )
