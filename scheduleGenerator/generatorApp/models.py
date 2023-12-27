@@ -2,8 +2,28 @@ from django.db import models
 from django.utils import timezone
 
 
-# po zrobieniu modeli zrobic migracje i stworzy super usera
+class Users(models.Model):
+    username = models.CharField(max_length=40, unique=True)
+    password = models.CharField(max_length=100)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.username
+
+
+class ScheduleList(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    created_date = models.DateTimeField(default=timezone.now())
+    content = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
 class ClassroomTypes(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     description = models.CharField(max_length=150)
 
     def __str__(self):
@@ -65,21 +85,3 @@ class Subject(models.Model):
     number_of_groups = models.IntegerField()
     max_stack = models.IntegerField()
     classroom_types = models.CharField(max_length=30)
-
-
-class Users(models.Model):
-    username = models.CharField(max_length=40, unique=True)
-    password = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.username
-
-
-class ScheduleList(models.Model):
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    created_date = models.DateTimeField(default=timezone.now())
-    content = models.TextField()
-
-    def __str__(self):
-        return self.name

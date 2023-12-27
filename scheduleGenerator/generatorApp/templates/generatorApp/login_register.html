@@ -1,0 +1,31 @@
+{% extends 'generatorApp/index.html' %}
+
+{% block content %}
+<!--login-->
+<form method="POST" action="{% url 'generatorApp:login' %}">
+    {% csrf_token %}
+    <input name="username" type="text">
+    <input name="password" type="password">
+
+    <input type="submit" value="login">
+</form>
+
+<!--register-->
+<form method="POST" action="{% url 'generatorApp:register' %}">
+    {% csrf_token %}
+    <input name="username" type="text">
+    <input name="password" type="password">
+    <input name="repeat-password" type="password">
+
+    <input type="submit" value="register">
+</form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}
