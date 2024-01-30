@@ -1,0 +1,19 @@
+<!--jesli ta linijka bedzie powodowala blad przeniesz ja pod doctype, nie wiem czemu w pycharm podokresla-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'nazwapliku.css' %}">
+<!--    blok aby umozliwic dodawanie stlyi, tytulu itp na dziedziczonych stronach-->
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+<!--miejsce na navbar (tylko navbar)-->
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

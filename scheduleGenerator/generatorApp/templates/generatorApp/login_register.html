@@ -1,4 +1,9 @@
 {% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'nazwapliku.css' %}">
+{% endblock %}
 
 {% block content %}
 <!--login-->
