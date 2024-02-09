@@ -1,19 +1,10 @@
 from django.db import models
 from django.utils import timezone
-
-
-class Users(models.Model):
-    username = models.CharField(max_length=40, unique=True)
-    password = models.CharField(max_length=100)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return self.username
+from django.contrib.auth.models import User
 
 
 class ScheduleList(models.Model):
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     created_date = models.DateTimeField(default=timezone.now())
     content = models.TextField()
@@ -31,6 +22,7 @@ class ClassroomTypes(models.Model):
 
 
 class Classrooms(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     type_id = models.ForeignKey(ClassroomTypes, default=0, on_delete=models.SET_DEFAULT)
     name = models.CharField(max_length=30)
 
@@ -39,6 +31,7 @@ class Classrooms(models.Model):
 
 
 class Teachers(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     main_classroom_id = models.ForeignKey(Classrooms, default='Null', on_delete=models.SET_DEFAULT)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
@@ -52,6 +45,7 @@ class Teachers(models.Model):
 
 
 class LessonHours(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     start_hour = models.CharField(max_length=30)
     duration = models.IntegerField()
 
@@ -60,6 +54,7 @@ class LessonHours(models.Model):
 
 
 class Classes(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     supervising_teacher_id = models.ForeignKey(Teachers, default='Null', on_delete=models.SET_DEFAULT)
     starting_lesson_hour_id = models.ForeignKey(LessonHours, default=0, on_delete=models.SET_DEFAULT)
     grade = models.IntegerField()
@@ -70,6 +65,7 @@ class Classes(models.Model):
 
 
 class SubjectNames(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -77,6 +73,7 @@ class SubjectNames(models.Model):
 
 
 class Subject(models.Model):
+    schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
     subject_name_id = models.ForeignKey(SubjectNames, on_delete=models.CASCADE)
     teacher_id = models.ForeignKey(Teachers, on_delete=models.CASCADE)
     lesson_hour_id = models.ForeignKey(LessonHours, default='Null', on_delete=models.SET_DEFAULT)

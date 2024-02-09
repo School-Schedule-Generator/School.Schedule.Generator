@@ -114,7 +114,6 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
         days=days,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture',
-        capture=True
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
@@ -130,3 +129,5 @@ ss = generate_schedule(
     max_lessons_per_day=10,
     log_file_name=time_str
 )
+
+schedule_to_json(ss, time_str)

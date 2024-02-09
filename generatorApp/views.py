@@ -41,7 +41,7 @@ def register_page(request):
         password = request.POST.get('password')
         repeat_password = request.POST.get('repeat-password')
 
-        if Users.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             messages.error(request, 'This username is taken. Please choice different one.')
             return HttpResponseRedirect(reverse('generatorApp:login_register'))
 
@@ -49,7 +49,7 @@ def register_page(request):
             messages.error(request, 'Passwords must be identical!')
             return HttpResponseRedirect(reverse('generatorApp:login_register'))
 
-        user = Users(
+        user = User(
             username=username,
             password=password
         )
