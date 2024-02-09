@@ -6,7 +6,7 @@ from settings import settings
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
 
-    if (not settings.TKCAPTURE and not capture) and not settings.DEBUG:
+    if not (settings.TKCAPTURE and capture and settings.DEBUG):
         return False
 
     def get_invalid_data(day_to, lesson_index, class_id, group):

@@ -1,7 +1,8 @@
+import numpy
+
 from settings import *
 import pandas as pd
 import os
-import sqlite3
 import ast
 import json
 
@@ -43,23 +44,44 @@ def load_data(
     return list(dataframes.values())
 
 
-def class_to_json(obj, file_path):
-    def convert_to_dict(_obj):
-        if isinstance(_obj, (int, float, str, bool)):
-            return _obj
-        elif isinstance(_obj, dict):
-            return {k: convert_to_dict(v) for k, v in _obj.items()}
-        elif isinstance(_obj, (list, tuple)):
-            return [convert_to_dict(item) for item in _obj]
-        elif hasattr(_obj, '__dict__'):
-            return {k: convert_to_dict(v) for k, v in _obj.__dict__.items() if not k.startswith('__')}
-        else:
-            return str(_obj)
+def class_to_json(obj):
+    def todict(_obj):
+        if isinstance(_obj, list):
+            _list = []
+            for _value in _obj:
+                _list.append(todict(_value))
 
-    with open(file_path, 'w') as file:
-        json.dump(convert_to_dict(obj), file, indent=4)
+            return _list
+        elif (
+            isinstance(_obj, (int, bool, float, str)) or
+            _obj is None
+        ):
+            return _obj
+        elif isinstance(_obj, numpy.int64):
+            return int(_obj)
+        else:
+            _dict = {}
+
+            iter_dict = _obj.items() if isinstance(_obj, dict) else _obj.__dict__.items()
+
+            for key, value in iter_dict:
+                if isinstance(key, numpy.int64):
+                    key = int(key)
+
+                if isinstance(value, list):
+                    for _value in value:
+                        _dict[key] = [todict(_value)]
+                elif "class" in str(type(value)):
+                    _dict[key] = todict(value)
+                else:
+                    _dict[key] = str(value)
+
+            return _dict
+
+    return todict(obj)
 
 
 def schedule_to_json(schedule, time):
-    with open(f'./data/json_schedule_{time}.json', 'w', encoding='utf-8') as file:
-        class_to_json(schedule, file)
+    with open(f'../data/json_schedule_{time}.json', 'a') as file:
+        file.write('')
+        json.dump(class_to_json(schedule), file)
