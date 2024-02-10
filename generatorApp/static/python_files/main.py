@@ -122,12 +122,16 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
 now = datetime.now()
 time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
+data = load_data()
+
 ss = generate_schedule(
-    data=load_data(),
+    data=data,
     days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
     min_lessons_per_day=7,
     max_lessons_per_day=10,
     log_file_name=time_str
 )
 
-schedule_to_json(ss, time_str)
+file_path = f'../data/schedule_{time_str}'
+info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path}
+schedule_to_excel(schedule_to_json(ss, file_path), data, info, file_path)

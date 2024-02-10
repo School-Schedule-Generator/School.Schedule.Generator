@@ -1,5 +1,7 @@
+import copy
 import numpy
-
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font
 from settings import *
 import pandas as pd
 import os
@@ -8,31 +10,30 @@ import json
 
 
 def load_data(
-        path='.',
+        path=settings.TEST_DATA_PATH,
         tables=settings.DF_NAMES,
         file_type='xlsx',
-        sql_tables={}
 ):
     """
     :param path: path to either SQL database or folder with tables of type CSV or Excel
     :param tables: list of files/tables
     :param file_type: type of file to read, can be xlsx (Excel file), CSV (comma-separated values), defaults to xlsx
-    :param sql_tables: list of table names and their columns formatted like:
-        {
-            'table_1': ['column_1', 'column_2'],
-            'table_2': ['column_1', 'column_2']
-        }
     :return: list of pandas dataframes
     """
+
+    if not settings.DEBUG and path==settings.TEST_DATA_PATH:
+        raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, \n"
+                                f"please specify a path when using this function in release mode")
+
     dataframes = {}
     for file in tables:
         if file_type == 'xlsx':
             try:
-                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + file_type))
             except FileNotFoundError:
-                dataframes[file] = pd.read_excel(os.path.join(settings.TEST_DATA_PATH, file + '.' + 'ods'), engine="odf")
+                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + 'ods'), engine="odf")
         if file_type == 'csv':
-            dataframes[file] = pd.read_csv(os.path.join(settings.TEST_DATA_PATH, file + '.' + file_type))
+            dataframes[file] = pd.read_csv(os.path.join(path, file + '.' + file_type))
 
     dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
     dataframes['SSG_SUBJECTS']['classroom_types'] = dataframes['SSG_SUBJECTS']['classroom_types'].apply(ast.literal_eval)
@@ -69,8 +70,9 @@ def class_to_json(obj):
                     key = int(key)
 
                 if isinstance(value, list):
+                    _dict[key] = []
                     for _value in value:
-                        _dict[key] = [todict(_value)]
+                        _dict[key].append(todict(_value))
                 elif "class" in str(type(value)):
                     _dict[key] = todict(value)
                 else:
@@ -81,7 +83,85 @@ def class_to_json(obj):
     return todict(obj)
 
 
-def schedule_to_json(schedule, time):
-    with open(f'../data/json_schedule_{time}.json', 'a') as file:
+def schedule_to_json(schedule, file_path):
+    schedule_dict = class_to_json(schedule)
+    with open(f'{file_path}.json', 'a') as file:
         file.write('')
-        json.dump(class_to_json(schedule), file)
+        json.dump(schedule_dict, file)
+
+    return schedule_dict
+
+
+def schedule_to_excel(schedule_dict, data, info, file_path):
+    [
+        lesson_hours_df,
+        subject_names_df,
+        subjects_df,
+        teachers_df,
+        classes_df,
+        classrooms_df,
+        classroom_types_df
+    ] = copy.deepcopy(data)
+
+    columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+    try:
+        wb = load_workbook(f'{file_path}.xlsx')
+    except FileNotFoundError:
+        wb = Workbook()
+
+    if 'Sheet' in wb.sheetnames:
+        ws = wb['Sheet']
+        ws.title = info['Title']
+
+        ws.merge_cells('A1:E1')  # Merge cells for the title
+        title_cell = ws['A1']
+        title_cell.value = info['Title']
+        title_cell.font = Font(size=20, bold=True)
+
+        for i, key in enumerate(info):
+            if key == 'Title':
+                pass
+            ws[f'A{i + 2}'] = key
+            ws.merge_cells(f'B{i + 2}:E{i + 2}')
+            value_cell = ws[f'B{i + 2}']
+            value_cell.value = info[key]
+
+    for class_name in schedule_dict.keys():
+        ws = wb.create_sheet(title=f'Class_{class_name}')
+
+        ws['A1'] = 'day/lesson'
+
+        for lesson in range(len(lesson_hours_df)):
+            ws[f'A{lesson + 2}'] = f"{lesson+1}."
+
+        for i, day in enumerate(schedule_dict[class_name].keys()):
+            ws[f'{columns[i + 1]}{1}'] = day
+
+            for j, hour in enumerate(schedule_dict[class_name][day]):
+                message = ''
+                for subject in schedule_dict[class_name][day][j]:
+                    try:
+                        subject_name = subject_names_df.loc[
+                            subject_names_df['subject_name_ID'] == subject['subject_id'], 'name'
+                        ].values[0]
+                    except IndexError:
+                        subject_name = '---'
+
+                    try:
+                        teacher_name = " ".join(
+                            teachers_df.loc[
+                                teachers_df['teacher_ID'] == subject['teachers_id'][0], ['name', 'surname']
+                            ].values[0]
+                        )
+                    except IndexError:
+                        teacher_name = '---'
+
+                    if subject['number_of_groups'] > 1:
+                        message += f"gr.{subject['group']} : {subject_name} : {teacher_name}\n"
+                    else:
+                        message += f"{subject_name} : {teacher_name}"
+
+                ws[f'{columns[i + 1]}{j + 2}'] = message
+
+    wb.save(f'{file_path}.xlsx')
