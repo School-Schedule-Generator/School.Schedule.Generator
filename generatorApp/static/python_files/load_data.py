@@ -22,8 +22,7 @@ def load_data(
     """
 
     if not settings.DEBUG and path==settings.TEST_DATA_PATH:
-        raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, \n"
-                                f"please specify a path when using this function in release mode")
+        raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, please specify a different path when using this function in release mode.")
 
     dataframes = {}
     for file in tables:

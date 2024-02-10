@@ -8,7 +8,7 @@ def debug_log(file_name, *args, **kwargs):
     :param kwargs: kwargs for print
     :description: functions is extension to print as it does the same but writes all of it in a file
     """
-    if not settings.DEBUG:
+    if not settings.DEBUG or not settings.SAVELOG:
         return
     print(*args, **kwargs)
     dir_name = f'logs/{file_name}'

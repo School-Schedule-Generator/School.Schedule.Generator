@@ -3,8 +3,9 @@ class Settings:
         # Describe mode to run the program on
         self.DEBUG = True
 
-        # Take screenshots (True) or log in text to file (False)
+        # Take screenshots - True
         self.TKCAPTURE = False
+        self.SAVELOG = False
 
         # if debug create default names
         self.TEST_DATA_PATH = '../../../testdata'
