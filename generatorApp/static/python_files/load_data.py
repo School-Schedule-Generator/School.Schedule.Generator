@@ -95,11 +95,11 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
     [
         lesson_hours_df,
         subject_names_df,
-        subjects_df,
+        _,
         teachers_df,
         classes_df,
         classrooms_df,
-        classroom_types_df
+        _
     ] = copy.deepcopy(data)
 
     columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -134,6 +134,14 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
         for lesson in range(len(lesson_hours_df)):
             ws[f'A{lesson + 2}'] = f"{lesson+1}."
 
+        class_info = classes_df.loc[classes_df['Class_ID'] == class_name]
+        ws[f'A{len(lesson_hours_df) + 3}'] = f"Class:"
+        ws[f'B{len(lesson_hours_df) + 3}'] =  f"{class_info['grade'].values[0]}{class_info['class_signature'].values[0]}"
+
+        supervising_teacher = teachers_df.loc[teachers_df['teacher_ID'] == class_info['supervising_teacher'].values[0], ['name', 'surname']].values[0]
+        ws[f'D{len(lesson_hours_df) + 3}'] = f"Supervising teacher:"
+        ws[f'E{len(lesson_hours_df) + 3}'] = f"{supervising_teacher[0]} {supervising_teacher[1]}"
+
         for i, day in enumerate(schedule_dict[class_name].keys()):
             ws[f'{columns[i + 1]}{1}'] = day
 
@@ -156,10 +164,17 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
                     except IndexError:
                         teacher_name = '---'
 
+                    try:
+                        classroom_name = classrooms_df.loc[
+                            classrooms_df['classroom_ID'] == subject['classroom_id'], 'classroom_name'
+                        ].values[0]
+                    except IndexError:
+                        teacher_name = '---'
+
                     if subject['number_of_groups'] > 1:
-                        message += f"gr.{subject['group']} : {subject_name} : {teacher_name}\n"
+                        message += f"gr.{subject['group']} | {subject_name} | {teacher_name} | class: {classroom_name}\n"
                     else:
-                        message += f"{subject_name} : {teacher_name}"
+                        message += f"{subject_name} | {teacher_name} | class: {classroom_name}"
 
                 ws[f'{columns[i + 1]}{j + 2}'] = message
 

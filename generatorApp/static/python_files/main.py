@@ -51,10 +51,11 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
     """
 
     # Creating directory for log files
-    if not os.path.exists(f'logs/{log_file_name}'):
-        os.makedirs(f'logs/{log_file_name}')
-    with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
-        pass
+    if settings.SAVELOG:
+        if not os.path.exists(f'logs/{log_file_name}'):
+            os.makedirs(f'logs/{log_file_name}')
+        with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
+            pass
 
     # Creating global schedule conditions
     conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
@@ -65,13 +66,13 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
         # splitting data to separate dataframes
         [
-            lesson_hours_df,
-            subject_names_df,
+            _,
+            _,
             subjects_df,
             teachers_df,
             classes_df,
             classrooms_df,
-            classroom_types_df
+            _
         ] = copy.deepcopy(data)
 
         # gathering basic information from dataframes
