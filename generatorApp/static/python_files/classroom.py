@@ -7,7 +7,7 @@ class Classroom:
 def create_classrooms(classrooms_df):
     classrooms = {}
     for _, row in classrooms_df.iterrows():
-        classrooms[row['classroom_ID']] = Classroom(
+        classrooms[row['classroom_id']] = Classroom(
             classroom_name=row['classroom_name'],
             type_id=row['type_id']
         )

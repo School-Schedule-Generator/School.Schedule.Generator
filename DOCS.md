@@ -325,7 +325,7 @@ properly!
 > You'll still need to write all the default values!
   
 SSG_CLASSES:
-* Class_ID - no default, can't repeat values
+* Class_id - no default, can't repeat values
 * grade - can be any (this column isn't important)
 * class_sygnature - can be any (this column isn't important)
 * class_sygnature_number - can be any (this column isn't important)
@@ -333,25 +333,25 @@ SSG_CLASSES:
 * starting_lesson_hour_id - default 0 - decides when class starts it's lessons
   
 SSG_CLASSROOMS:
-* classroom_ID - no default, can't repeat values
+* classroom_id - no default, can't repeat values
 * classroom_name - no default, can't repeat values
 * type - no default - decides subjects that can take place in this classroom
   
 SSG_CLASSROOMS_TYPES:
-* type_ID - no default, can't repeat values
+* type_id - no default, can't repeat values
 * description - no default - only for visuals
   
 SSG_LESSON_HOURS:
-* lesson_ID - no default, can't repeat values
+* lesson_id - no default, can't repeat values
 * start_hour - time when lesson starts
 * duration - duration of lesson
   
 SSG_SUBJECT_NAMES:
-* subject_name_ID - no default, can't repeat values
+* subject_name_id - no default, can't repeat values
 * name - no default - only for visuals
   
 SSG_TEACHERS:
-* teacher_ID - no default, can't repeat values 
+* teacher_id - no default, can't repeat values 
 * name - no default - only for visuals
 * surname - no default - only for visuals
 * possible_subjects - no defaults - only for visuals - list of possible subjects
@@ -361,15 +361,15 @@ SSG_TEACHERS:
 * days - similar list to 2 above - 1 if teacher has lessons in that day, else 0
   
 SSG_SUBJECTS:
-* subject_ID - no default, can't repeat values 
-* subject_name_ID - no default - has to exist in SSG_SUBJECT_NAMES
-* class_ID - no default - has to exist in SSG_CLASSES
+* subject_id - no default, can't repeat values 
+* subject_name_id - no default - has to exist in SSG_SUBJECT_NAMES
+* class_id - no default - has to exist in SSG_CLASSES
 * subject_count_in_week - default 1 - number of times you want to repeat this subject
 * number_of_groups - default 1 - number of groups the subject splits class to
 * subject_length - no use in code - column has no use
-* lesson_hours_ID - this has to always be NULL
-* teachers_ID - list of teachers that can take this subject (written like so: [a, b])
-* classroom_ID - this has to always be NULL
+* lesson_hours_id - this has to always be NULL
+* teachers_id - list of teachers that can take this subject (written like so: [a, b])
+* classroom_id - this has to always be NULL
 * max_stack - default 3 - defines how many subject of the same type can be in a row
 * classroom_types - list of classroom_types that this subject is in (written like so: [a, b])
 

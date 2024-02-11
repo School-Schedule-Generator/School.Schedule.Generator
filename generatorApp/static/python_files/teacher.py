@@ -13,7 +13,7 @@ def create_teachers(teachers_df):
     teachers_df['main_classroom'] = teachers_df['main_classroom'].replace('Null', None)
     teachers = {}
     for _, row in teachers_df.iterrows():
-        teachers[row['teacher_ID']] = Teacher(
+        teachers[row['teacher_id']] = Teacher(
             name=row['name'],
             surname=row['surname'],
             possible_subjects=row['possible_subjects'],

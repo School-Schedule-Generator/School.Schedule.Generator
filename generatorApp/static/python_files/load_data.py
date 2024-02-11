@@ -1,4 +1,6 @@
 import copy
+import sys
+
 import numpy
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
@@ -17,24 +19,66 @@ def load_data(
     """
     :param path: path to either SQL database or folder with tables of type CSV or Excel
     :param tables: list of files/tables
-    :param file_type: type of file to read, can be xlsx (Excel file), CSV (comma-separated values), defaults to xlsx
-    :return: list of pandas dataframes
+    :param file_type: type of file to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values), defaults to xlsx
+    :return: list of pandas dataframes or False if files don't match schedule data
     """
 
     if not settings.DEBUG and path==settings.TEST_DATA_PATH:
         raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, please specify a different path when using this function in release mode.")
 
-    dataframes = {}
-    for file in tables:
-        if file_type == 'xlsx':
-            try:
-                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + file_type))
-            except FileNotFoundError:
-                dataframes[file] = pd.read_excel(os.path.join(path, file + '.' + 'ods'), engine="odf")
-        if file_type == 'csv':
-            dataframes[file] = pd.read_csv(os.path.join(path, file + '.' + file_type))
+    files_in_directory = os.listdir(path)
 
-    dataframes['SSG_SUBJECTS']['teachers_ID'] = dataframes['SSG_SUBJECTS']['teachers_ID'].apply(ast.literal_eval)
+    dataframes = {}
+    for table in tables:
+        file_exists = False
+        for file in files_in_directory:
+            if file.startswith(table):
+                file_exists = True
+
+                if file_type == 'xlsx':
+                    try:
+                        dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + file_type))
+                    except FileNotFoundError:
+                        print(f'There is one or more files missing, please pass in: {file}.xlsx file or change directory of your data.', file=sys.stderr)
+                        return False
+                elif file_type == 'ods':
+                    try:
+                        dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + 'ods'), engine="odf")
+                    except FileNotFoundError:
+                        print(f'There is one or more files missing, please pass in: {file}.ods file or change directory of your data.', file=sys.stderr)
+                        return False
+                elif file_type == 'csv':
+                    try:
+                        dataframes[table] = pd.read_csv(os.path.join(path, table + '.' + file_type))
+                    except FileNotFoundError:
+                        print(f'There is one or more files missing, please pass in: {file}.csv file or change directory of your data.', file=sys.stderr)
+                        return False
+                else:
+                    print(f'File type: {file_type} is not suported, please pass in files in .xlsx, .ods or .csv', file=sys.stderr)
+                    return False
+
+                if len(set(settings.COLUMN_NAMES[table])) < len(set(dataframes[table].columns.values)):
+                    print(
+                        f"There is too many columns in {table}\n"
+                        f"Unwanted columns: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}",
+                        file=sys.stderr
+                    )
+                    return False
+
+                elif set(settings.COLUMN_NAMES[table]) != set(dataframes[table].columns.values):
+                    print(
+                        f"Column names in passed in data file: \"{table}\" don't mach default schedule column names:\n"
+                        f"Passed in: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}\n"
+                        f"Needed: {set(settings.COLUMN_NAMES[table]) - set(dataframes[table].columns.values)}",
+                        file=sys.stderr
+                    )
+                    return False
+
+        if not file_exists:
+            print(f'There is one or more files missing, please pass in: {file} file or change directory of your data.', file=sys.stderr)
+            return False
+
+    dataframes['SSG_SUBJECTS']['teachers_id'] = dataframes['SSG_SUBJECTS']['teachers_id'].apply(ast.literal_eval)
     dataframes['SSG_SUBJECTS']['classroom_types'] = dataframes['SSG_SUBJECTS']['classroom_types'].apply(ast.literal_eval)
 
     dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
@@ -115,7 +159,10 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
 
         ws.merge_cells('A1:E1')  # Merge cells for the title
         title_cell = ws['A1']
-        title_cell.value = info['Title']
+        try:
+            title_cell.value = info['Title']
+        except KeyError:
+            title_cell.value = "School Schedule"
         title_cell.font = Font(size=20, bold=True)
 
         for i, key in enumerate(info):
@@ -134,13 +181,20 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
         for lesson in range(len(lesson_hours_df)):
             ws[f'A{lesson + 2}'] = f"{lesson+1}."
 
-        class_info = classes_df.loc[classes_df['Class_ID'] == class_name]
+        class_info = classes_df.loc[classes_df['Class_id'] == class_name]
         ws[f'A{len(lesson_hours_df) + 3}'] = f"Class:"
-        ws[f'B{len(lesson_hours_df) + 3}'] =  f"{class_info['grade'].values[0]}{class_info['class_signature'].values[0]}"
+        try:
+            ws[f'B{len(lesson_hours_df) + 3}'] =  f"{class_info['grade'].values[0]}{class_info['class_signature'].values[0]}"
+        except IndexError:
+            ws[f'B{len(lesson_hours_df) + 3}'] = "---"
 
-        supervising_teacher = teachers_df.loc[teachers_df['teacher_ID'] == class_info['supervising_teacher'].values[0], ['name', 'surname']].values[0]
+        supervising_teacher = teachers_df.loc[teachers_df['teacher_id'] == class_info['supervising_teacher'].values[0], ['name', 'surname']].values[0]
         ws[f'D{len(lesson_hours_df) + 3}'] = f"Supervising teacher:"
-        ws[f'E{len(lesson_hours_df) + 3}'] = f"{supervising_teacher[0]} {supervising_teacher[1]}"
+        try:
+            ws[f'E{len(lesson_hours_df) + 3}'] = f"{supervising_teacher[0]} {supervising_teacher[1]}"
+        except IndexError:
+            ws[f'E{len(lesson_hours_df) + 3}'] = "---"
+
 
         for i, day in enumerate(schedule_dict[class_name].keys()):
             ws[f'{columns[i + 1]}{1}'] = day
@@ -150,7 +204,7 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
                 for subject in schedule_dict[class_name][day][j]:
                     try:
                         subject_name = subject_names_df.loc[
-                            subject_names_df['subject_name_ID'] == subject['subject_id'], 'name'
+                            subject_names_df['subject_name_id'] == subject['subject_id'], 'name'
                         ].values[0]
                     except IndexError:
                         subject_name = '---'
@@ -158,7 +212,7 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
                     try:
                         teacher_name = " ".join(
                             teachers_df.loc[
-                                teachers_df['teacher_ID'] == subject['teachers_id'][0], ['name', 'surname']
+                                teachers_df['teacher_id'] == subject['teachers_id'][0], ['name', 'surname']
                             ].values[0]
                         )
                     except IndexError:
@@ -166,7 +220,7 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
 
                     try:
                         classroom_name = classrooms_df.loc[
-                            classrooms_df['classroom_ID'] == subject['classroom_id'], 'classroom_name'
+                            classrooms_df['classroom_id'] == subject['classroom_id'], 'classroom_name'
                         ].values[0]
                     except IndexError:
                         teacher_name = '---'
