@@ -8,8 +8,8 @@ class Settings:
         self.SAVELOG = False
 
         # if debug create default names
-        self.TEST_DATA_PATH = '../../../testdata'
-        self.DATABASE_PATH = './data'
+        self.TEST_DATA_PATH = '../../testdata'
+        self.BASE_DATA_PATH = '../static/data'
         self.DF_NAMES = ['SSG_LESSON_HOURS', 'SSG_SUBJECT_NAMES', 'SSG_SUBJECTS', 'SSG_TEACHERS', 'SSG_CLASSES',
                          'SSG_CLASSROOMS', 'SSG_CLASSROOM_TYPES']
 

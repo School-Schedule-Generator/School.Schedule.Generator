@@ -1,3 +1,4 @@
+import os.path
 from datetime import datetime
 from itertools import product
 from load_data import *
@@ -134,6 +135,6 @@ if data:
         log_file_name=time_str
     )
 
-    file_path = f'../data/schedule_{time_str}'
+    file_path = os.path.join(settings.BASE_DATA_PATH, f'schedule_{time_str}')
     info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path}
     schedule_to_excel(schedule_to_json(ss, file_path), data, info, file_path)

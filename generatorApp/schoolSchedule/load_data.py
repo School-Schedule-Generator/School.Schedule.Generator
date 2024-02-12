@@ -1,14 +1,14 @@
 import copy
 import sys
-
 import numpy
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font
-from settings import *
 import pandas as pd
 import os
 import ast
 import json
+
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font
+from settings import *
 
 
 def load_data(
@@ -23,8 +23,11 @@ def load_data(
     :return: list of pandas dataframes or False if files don't match schedule data
     """
 
+    if settings.DEBUG
+
     if not settings.DEBUG and path==settings.TEST_DATA_PATH:
-        raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, please specify a different path when using this function in release mode.")
+        raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, please specify \
+        a different path when using this function in release mode.")
 
     files_in_directory = os.listdir(path)
 
@@ -39,22 +42,26 @@ def load_data(
                     try:
                         dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + file_type))
                     except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.xlsx file or change directory of your data.', file=sys.stderr)
+                        print(f'There is one or more files missing, please pass in: {file}.xlsx file or change directory of your\
+                         data.', file=sys.stderr)
                         return False
                 elif file_type == 'ods':
                     try:
                         dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + 'ods'), engine="odf")
                     except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.ods file or change directory of your data.', file=sys.stderr)
+                        print(f'There is one or more files missing, please pass in: {file}.ods file or change directory\
+                         of your data.', file=sys.stderr)
                         return False
                 elif file_type == 'csv':
                     try:
                         dataframes[table] = pd.read_csv(os.path.join(path, table + '.' + file_type))
                     except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.csv file or change directory of your data.', file=sys.stderr)
+                        print(f'There is one or more files missing, please pass in: {file}.csv file or change directory\
+                         of your data.', file=sys.stderr)
                         return False
                 else:
-                    print(f'File type: {file_type} is not suported, please pass in files in .xlsx, .ods or .csv', file=sys.stderr)
+                    print(f'File type: {file_type} is not suported, please pass in files in .xlsx, .ods or .csv',
+                          file=sys.stderr)
                     return False
 
                 if len(set(settings.COLUMN_NAMES[table])) < len(set(dataframes[table].columns.values)):
