@@ -70,13 +70,11 @@ def home(request):
     return render(request, 'generatorApp/home.html')
 
 
-def test(request):
+def upload(request):
     if request.method == 'POST' and request.FILES['file']:
         file = request.FILES['file']
         fs = FileSystemStorage()
-        filename = fs.save('test', file)
-        # uploaded_file_url = fs.url(filename)
-        context = {}
-        return render(request, 'generatorApp/test.html', context)
+        fs.save(file.name, file)
+        return render(request, 'generatorApp/test.html', context={})
 
     return render(request, 'generatorApp/test.html')
