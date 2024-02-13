@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import ast
 import json
-
+import sqlite3
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
 from settings import *
@@ -15,11 +15,13 @@ def load_data(
         path=None,
         tables=settings.DF_NAMES,
         file_type='xlsx',
+        schedule_id=None
 ):
     """
     :param path: path to either SQL database or folder with tables of type CSV or Excel
     :param tables: list of files/tables
-    :param file_type: type of file to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values), defaults to xlsx
+    :param file_type: type of file to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values) or sql, defaults to xlsx
+    :param schedule_id: id of the schedule to pull from sql database
     :return: list of pandas dataframes or False if files don't match schedule data
     """
 
@@ -33,6 +35,13 @@ def load_data(
 
     files_in_directory = os.listdir(path)
 
+    if file_type == 'sql':
+        try:
+            conn = sqlite3.connect(settings.DATABASE_NAME)
+        except sqlite3.Error:
+            print(f'Failed to connect to database...', file=sys.stderr)
+            return False
+
     dataframes = {}
     for table in tables:
         file_exists = False
@@ -40,7 +49,13 @@ def load_data(
             if file.startswith(table):
                 file_exists = True
 
-                if file_type == 'xlsx':
+                if file_type == 'sql':
+                    columns = settings.settings.SQLTABLES_NAMES[table]['Columns']
+                    table_name = settings.SQLTABLES_NAMES[table]['Name']
+                    sql_query = pd.read_sql_query(f'SELECT {", ".join(columns)} FROM {table_name} WHERE schedule_id={schedule_id}', conn)
+
+                    dataframes[table] = pd.DataFrame(sql_query, columns=columns)
+                elif file_type == 'xlsx':
                     try:
                         dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + file_type))
                     except FileNotFoundError:
