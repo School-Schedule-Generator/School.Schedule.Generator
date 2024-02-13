@@ -3,6 +3,9 @@ from .models import *
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
+
+# from schoolSchedule.main import generate_schedule
 
 
 def login_register(request):
@@ -65,3 +68,15 @@ def register_page(request):
 
 def home(request):
     return render(request, 'generatorApp/home.html')
+
+
+def test(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        fs = FileSystemStorage()
+        filename = fs.save('test', file)
+        # uploaded_file_url = fs.url(filename)
+        context = {}
+        return render(request, 'generatorApp/test.html', context)
+
+    return render(request, 'generatorApp/test.html')

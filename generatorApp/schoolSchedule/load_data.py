@@ -12,7 +12,7 @@ from settings import *
 
 
 def load_data(
-        path=settings.TEST_DATA_PATH,
+        path=None,
         tables=settings.DF_NAMES,
         file_type='xlsx',
 ):
@@ -23,11 +23,13 @@ def load_data(
     :return: list of pandas dataframes or False if files don't match schedule data
     """
 
-    if settings.DEBUG
-
-    if not settings.DEBUG and path==settings.TEST_DATA_PATH:
+    if settings.DEBUG:
+        path = settings.TEST_DATA_PATH
+    elif not settings.DEBUG and path == settings.TEST_DATA_PATH:
         raise FileNotFoundError(f"Path {settings.TEST_DATA_PATH} is reserved for debugging purposes, please specify \
         a different path when using this function in release mode.")
+    elif not settings.DEBUG and path is None:
+        path = settings.BASE_DATA_PATH
 
     files_in_directory = os.listdir(path)
 
