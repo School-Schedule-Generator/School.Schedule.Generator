@@ -22,7 +22,7 @@ class Settings:
                              'classroom_id', 'max_stack', 'classroom_types'],
             'SSG_TEACHERS': ['teacher_id', 'name', 'surname', 'possible_subjects', 'start_hour_index',
                              'end_hour_index', 'days', 'main_classroom'],
-            'SSG_CLASSES': ['Class_id', 'grade', 'class_signature', 'class_signature_number',
+            'SSG_CLASSES': ['Class_id', 'grade', 'class_signature',
                             'supervising_teacher', 'starting_lesson_hour_id'],
             'SSG_CLASSROOMS': ['classroom_id', 'classroom_name', 'type_id'],
             'SSG_CLASSROOM_TYPES': ['type_id', 'description']

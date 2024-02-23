@@ -67,7 +67,6 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                 #            0             |            0
                 #           -1             |           -1
                 #            0             |           -1
-
                 if self.safe_move(
                     teachers_id=max_day_schedule[-1][0].teachers_id,
                     day_from=days[max_len_day_i],

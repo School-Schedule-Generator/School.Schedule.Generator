@@ -150,6 +150,8 @@ def class_to_json(obj):
     return todict(obj)
 
 
+#TODO:
+#naprawic bledy z json oraz inne z generowaniem planu lekcji jak sa np. z ładowaniem danych itp
 def schedule_to_json(schedule, file_path):
     schedule_dict = class_to_json(schedule)
     with open(f'{file_path}.json', 'a') as file:
