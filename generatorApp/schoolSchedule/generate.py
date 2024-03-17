@@ -9,26 +9,7 @@ from classroom import *
 from subject import *
 from teacher import *
 from tkinter_schedule_vis import *
-
 import tkinter_schedule_vis
-
-# TODO-LIST:
-# ---------------------------------------------------------------------------------------------------------------------
-
-# WEB
-# ***********
-    # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
-
-    # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
-
-    # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
-    # pozwolenie na dany przedmiot
-    # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
-
-    # zmienianie dni w których mogą być lekcje
-# ***********
-
-# ---------------------------------------------------------------------------------------------------------------------
 
 
 def permutations(iterable, r=None):
@@ -40,19 +21,20 @@ def permutations(iterable, r=None):
             yield tuple(pool[i] for i in indices)
 
 
-def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_file_name):
+def generate_schedule(data, schedule_settings, log_file_name):
     """
     :param data: list of data in strict order of: [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df]
-    :param days: list of days that the lessons can occur
     :param log_file_name: current time for logging
-    :param min_lessons_per_day: minimum number of lessons per day
-    :param max_lessons_per_day: maximum number of lessons per day
+    :param schedule_settings: dictionary of settings for schedule
     :return: generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
     in the same time
     """
 
+    min_lessons_per_day, max_lessons_per_day = schedule_settings["min_lessons_per_day"], schedule_settings["max_lessons_per_day"]
+    days = schedule_settings["days"]
+
     # Creating directory for log files
-    if settings.SAVELOG:
+    if schedule_settings.SAVELOG:
         if not os.path.exists(f'logs/{log_file_name}'):
             os.makedirs(f'logs/{log_file_name}')
         with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
@@ -126,12 +108,16 @@ now = datetime.now()
 time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
 data = load_data()
 
+schedule_settings = {
+    "days": ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    "min_lessons_per_day": 7,
+    "max_lessons_per_day": 10,
+}
+
 if data:
     ss = generate_schedule(
         data=data,
-        days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-        min_lessons_per_day=7,
-        max_lessons_per_day=10,
+        schedule_settings=schedule_settings,
         log_file_name=time_str
     )
 
