@@ -24,7 +24,6 @@ class ClassroomTypes(models.Model):
     class Meta:
         unique_together = ('schedule_id', '_id')
 
-
     def __str__(self):
         return self.description
 
@@ -98,6 +97,7 @@ class SubjectNames(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class ScheduleSettings(models.Model):
     schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)
