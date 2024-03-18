@@ -1,14 +1,13 @@
-from debug_log import *
-from tkinter_schedule_vis import tkinter_schedule_vis
+from ...debug_log import *
+from ...tkinter_schedule_vis import tkinter_schedule_vis
 
 
-def add_classrooms(self, classrooms, teachers, days, log_file_name):
+def add_classrooms(self, classrooms, teachers, days):
     """
     :param self:
     :param classrooms: list of classrooms
     :param teachers: list of all teachers in schedule
     :param days: list of days
-    :log_file_name: pass
     :description: adding classrooms to subjects
     """
     for class_id in self.data:

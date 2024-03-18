@@ -1,15 +1,13 @@
 import os.path
-from datetime import datetime
 from itertools import product
-from load_data import *
-from schedule_conditions import *
-from school_class import *
-from schedule import *
-from classroom import *
-from subject import *
-from teacher import *
-from tkinter_schedule_vis import *
-import tkinter_schedule_vis
+from .schedule_conditions import *
+from .school_class import *
+from .schedule import *
+from .classroom import *
+from .subject import *
+from .teacher import *
+from .tkinter_schedule_vis import *
+from .settings import *
 
 
 def permutations(iterable, r=None):
@@ -34,11 +32,10 @@ def generate_schedule(data, schedule_settings, log_file_name):
     days = schedule_settings["days"]
 
     # Creating directory for log files
-    if schedule_settings.SAVELOG:
-        if not os.path.exists(f'logs/{log_file_name}'):
-            os.makedirs(f'logs/{log_file_name}')
-        with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
-            pass
+    if not os.path.exists(f'logs/{log_file_name}'):
+        os.makedirs(f'logs/{log_file_name}')
+    with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
+        pass
 
     # Creating global schedule conditions
     conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
@@ -49,13 +46,13 @@ def generate_schedule(data, schedule_settings, log_file_name):
 
         # splitting data to separate dataframes
         [
-            _,
-            _,
+            lesson_hours_df,
+            subject_names_df,
             subjects_df,
             teachers_df,
             classes_df,
             classrooms_df,
-            _
+            classroom_types_df
         ] = copy.deepcopy(data)
 
         # gathering basic information from dataframes
@@ -64,6 +61,7 @@ def generate_schedule(data, schedule_settings, log_file_name):
         subjects = split_subjects(subjects_df, teachers, classes_id)
         classrooms = create_classrooms(classrooms_df)
 
+        # TODO: fix; somhere schedule is not validating, check if settings are correct, they aren't saved rn
         schedule = Schedule(version=version).create(
             classes_id=classes_id,
             classes_start_hour_index=classes_start_hour_index,
@@ -93,34 +91,13 @@ def generate_schedule(data, schedule_settings, log_file_name):
             break
 
     # schedule visualisation using tkinter
-    if not tkinter_schedule_vis.tkinter_schedule_vis(
+    if not tkinter_schedule_vis(
         schedule=schedule,
         days=days,
         dir_name=f'{log_file_name}',
         capture_name='FinalCapture',
+        capture=True
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
     return schedule.data
-
-
-now = datetime.now()
-time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
-data = load_data()
-
-schedule_settings = {
-    "days": ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-    "min_lessons_per_day": 7,
-    "max_lessons_per_day": 10,
-}
-
-if data:
-    ss = generate_schedule(
-        data=data,
-        schedule_settings=schedule_settings,
-        log_file_name=time_str
-    )
-
-    file_path = os.path.join(settings.BASE_DATA_PATH, f'schedule_{time_str}')
-    info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path}
-    schedule_to_excel(schedule_to_json(ss, file_path), data, info, file_path)

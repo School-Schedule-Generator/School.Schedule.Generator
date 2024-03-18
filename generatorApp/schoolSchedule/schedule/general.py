@@ -1,8 +1,6 @@
 import copy
-
-from subject import Subject
-from debug_log import *
-from tkinter_schedule_vis import tkinter_schedule_vis
+from ..subject import Subject
+from ..debug_log import *
 
 
 def create_class_schedule(days):

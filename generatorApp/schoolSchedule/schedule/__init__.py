@@ -1,10 +1,11 @@
 import copy
 import numpy as np
 import pandas as pd
-from debug_log import debug_log
-from tkinter_schedule_vis import tkinter_schedule_vis
+from ..debug_log import debug_log
+from ..load_data import schedule_to_json
+from ..tkinter_schedule_vis import tkinter_schedule_vis
 from math import ceil
-from subject import Subject
+from ..subject import Subject
 
 
 class Schedule:
@@ -105,6 +106,7 @@ class Schedule:
             s = []
             for teacher_id in teachers.keys():
                 for class_id in classes_id:
+                    print(type(class_id), type(teacher_id))
                     if len(subjects[teacher_id][class_id]) != 0:
                         count_of_subjects += len(subjects[teacher_id][class_id])
                         for sub in subjects[teacher_id][class_id]:
@@ -293,12 +295,12 @@ class Schedule:
                         subject.teachers_id = [subject.teachers_id[0]]
                         subject.group = 1
 
-                        # tkinter_schedule_vis(
-                        #     self,
-                        #     days,
-                        #     capture_name=f'splitting_{tk_capture_count}',
-                        #     dir_name=log_file_name,
-                        # )
+                        tkinter_schedule_vis(
+                            self,
+                            days,
+                            capture_name=f'splitting_{tk_capture_count}',
+                            dir_name=log_file_name,
+                        )
                         tk_capture_count += 1
 
         tk_capture_count = 0

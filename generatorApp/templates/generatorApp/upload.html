@@ -6,18 +6,19 @@
 </head>
 <body>
 
+{% if messages %}
+    {% for message in messages %}
+        <h3 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h3>
+    {% endfor %}
+{% endif %}
+
+<h2><b>{{ file_name }}</b></h2>
+
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="file">
     <button type="submit">Upload</button>
 </form>
 
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
 </body>
 </html>

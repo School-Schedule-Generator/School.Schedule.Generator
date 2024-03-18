@@ -8,19 +8,39 @@ import json
 import sqlite3
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
-from settings import *
+from .settings import *
+
+
+def table_import_validation(dataframes, table):
+    if len(set(settings.COLUMN_NAMES[table])) < len(set(dataframes[table].columns.values)):
+        print(
+            f"There is too many columns in {table}\n"
+            f"Unwanted columns: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}",
+            file=sys.stderr
+        )
+        return False
+    elif set(settings.COLUMN_NAMES[table]) != set(dataframes[table].columns.values):
+        print(
+            f"Column names in passed in data file: \"{table}\" don't mach default schedule column names:\n"
+            f"Passed in: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}\n"
+            f"Needed: {set(settings.COLUMN_NAMES[table]) - set(dataframes[table].columns.values)}",
+            file=sys.stderr
+        )
+        return False
+
+    return True
 
 
 def load_data(
         path=None,
         tables=settings.DF_NAMES,
-        file_type='xlsx',
+        dtype='xlsx',
         schedule_id=None
 ):
     """
     :param path: path to either SQL database or folder with tables of type CSV or Excel
     :param tables: list of files/tables
-    :param file_type: type of file to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values) or sql, defaults to xlsx
+    :param dtype: type of data to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values) or sql, defaults to xlsx
     :param schedule_id: id of the schedule to pull from sql database
     :return: list of pandas dataframes or False if files don't match schedule data
     """
@@ -33,77 +53,68 @@ def load_data(
     elif not settings.DEBUG and path is None:
         path = settings.BASE_DATA_PATH
 
-    files_in_directory = os.listdir(path)
+    dataframes = {}
 
-    if file_type == 'sql':
+    if dtype == 'sql':
         try:
             conn = sqlite3.connect(settings.DATABASE_NAME)
         except sqlite3.Error:
             print(f'Failed to connect to database...', file=sys.stderr)
             return False
 
-    dataframes = {}
-    for table in tables:
-        file_exists = False
-        for file in files_in_directory:
-            if file.startswith(table):
-                file_exists = True
+        for table in tables:
+            columns = settings.SQLTABLES[table]['Columns']
+            sql_table = settings.SQLTABLES[table]['Name']
 
-                if file_type == 'sql':
-                    columns = settings.settings.SQLTABLES_NAMES[table]['Columns']
-                    table_name = settings.SQLTABLES_NAMES[table]['Name']
-                    sql_query = pd.read_sql_query(f'SELECT {", ".join(columns)} FROM {table_name} WHERE schedule_id={schedule_id}', conn)
+            query_db = pd.read_sql_query(f'SELECT {", ".join(columns)} FROM {sql_table} WHERE schedule_id_id={schedule_id}', conn)
 
-                    dataframes[table] = pd.DataFrame(sql_query, columns=columns)
-                elif file_type == 'xlsx':
-                    try:
-                        dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + file_type))
-                    except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.xlsx file or change directory of your\
-                         data.', file=sys.stderr)
+            column_mapper = dict(zip(settings.SQL_COLUMN_NAMES[table], settings.COLUMN_NAMES[table]))
+            query_db = query_db.rename(columns=column_mapper)
+
+            dataframes[table] = pd.DataFrame(query_db, columns=settings.COLUMN_NAMES[table])
+    else:
+        files_in_directory = os.listdir(path)
+        for table in tables:
+            file_exists = False
+            for file in files_in_directory:
+                if file.startswith(table):
+                    file_exists = True
+                    if dtype == 'xlsx':
+                        try:
+                            dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + dtype))
+                        except FileNotFoundError:
+                            print(f'There is one or more files missing, please pass in: {file}.xlsx file or change directory of your\
+                             data.', file=sys.stderr)
+                            return False
+                    elif dtype == 'ods':
+                        try:
+                            dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + 'ods'), engine="odf")
+                        except FileNotFoundError:
+                            print(f'There is one or more files missing, please pass in: {file}.ods file or change directory\
+                             of your data.', file=sys.stderr)
+                            return False
+                    elif dtype == 'csv':
+                        try:
+                            dataframes[table] = pd.read_csv(os.path.join(path, table + '.' + dtype))
+                        except FileNotFoundError:
+                            print(f'There is one or more files missing, please pass in: {file}.csv file or change directory\
+                             of your data.', file=sys.stderr)
+                            return False
+                    else:
+                        print(f'File type: {dtype} is not suported, please pass in files in .xlsx, .ods or .csv',
+                              file=sys.stderr)
                         return False
-                elif file_type == 'ods':
-                    try:
-                        dataframes[table] = pd.read_excel(os.path.join(path, table + '.' + 'ods'), engine="odf")
-                    except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.ods file or change directory\
-                         of your data.', file=sys.stderr)
-                        return False
-                elif file_type == 'csv':
-                    try:
-                        dataframes[table] = pd.read_csv(os.path.join(path, table + '.' + file_type))
-                    except FileNotFoundError:
-                        print(f'There is one or more files missing, please pass in: {file}.csv file or change directory\
-                         of your data.', file=sys.stderr)
-                        return False
-                else:
-                    print(f'File type: {file_type} is not suported, please pass in files in .xlsx, .ods or .csv',
-                          file=sys.stderr)
-                    return False
 
-                if len(set(settings.COLUMN_NAMES[table])) < len(set(dataframes[table].columns.values)):
-                    print(
-                        f"There is too many columns in {table}\n"
-                        f"Unwanted columns: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}",
-                        file=sys.stderr
-                    )
-                    return False
+            if not table_import_validation(dataframes, table):
+                return False
 
-                elif set(settings.COLUMN_NAMES[table]) != set(dataframes[table].columns.values):
-                    print(
-                        f"Column names in passed in data file: \"{table}\" don't mach default schedule column names:\n"
-                        f"Passed in: {set(dataframes[table].columns.values) - set(settings.COLUMN_NAMES[table])}\n"
-                        f"Needed: {set(settings.COLUMN_NAMES[table]) - set(dataframes[table].columns.values)}",
-                        file=sys.stderr
-                    )
-                    return False
-
-        if not file_exists:
-            print(f'There is one or more files missing, please pass in: {file} file or change directory of your data.', file=sys.stderr)
-            return False
+            if not file_exists:
+                print(f'There is one or more files missing, please pass in: {file} file or change directory of your data.', file=sys.stderr)
+                return False
 
     dataframes['SSG_SUBJECTS']['teachers_id'] = dataframes['SSG_SUBJECTS']['teachers_id'].apply(ast.literal_eval)
     dataframes['SSG_SUBJECTS']['classroom_types'] = dataframes['SSG_SUBJECTS']['classroom_types'].apply(ast.literal_eval)
+    dataframes['SSG_SUBJECTS']['teachers_id'] = dataframes['SSG_SUBJECTS']['teachers_id'].apply(lambda x: [int(i) for i in x])
 
     dataframes['SSG_TEACHERS']['start_hour_index'] = dataframes['SSG_TEACHERS']['start_hour_index'].apply(ast.literal_eval)
     dataframes['SSG_TEACHERS']['end_hour_index'] = dataframes['SSG_TEACHERS']['end_hour_index'].apply(ast.literal_eval)
@@ -150,15 +161,14 @@ def class_to_json(obj):
     return todict(obj)
 
 
-#TODO:
-#naprawic bledy z json oraz inne z generowaniem planu lekcji jak sa np. z ładowaniem danych itp
 def schedule_to_json(schedule, file_path):
     schedule_dict = class_to_json(schedule)
-    with open(f'{file_path}.json', 'a') as file:
-        file.write('')
-        json.dump(schedule_dict, file)
+    if file_path:
+        with open(f'{file_path}.json', 'a') as file:
+            file.write('')
+            json.dump(schedule_dict, file)
 
-    return schedule_dict
+    return json.dumps(schedule_dict)
 
 
 def schedule_to_excel(schedule_dict, data, info, file_path):
@@ -207,7 +217,7 @@ def schedule_to_excel(schedule_dict, data, info, file_path):
         for lesson in range(len(lesson_hours_df)):
             ws[f'A{lesson + 2}'] = f"{lesson+1}."
 
-        class_info = classes_df.loc[classes_df['Class_id'] == class_name]
+        class_info = classes_df.loc[classes_df['class_id'] == class_name]
         ws[f'A{len(lesson_hours_df) + 3}'] = f"Class:"
         try:
             ws[f'B{len(lesson_hours_df) + 3}'] =  f"{class_info['grade'].values[0]}{class_info['class_signature'].values[0]}"

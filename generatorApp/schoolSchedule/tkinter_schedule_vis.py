@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkcap
 import os
-from settings import settings
+from .settings import settings
 
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
@@ -101,7 +101,7 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         root,
                         text=f"subjects id {subjects_ids}\n"
                         f"teacher: {teachers}\n"
-                        f"lesson_hours_id: {subjects_list[0].lesson_hour_id}\n"
+                        f"lesson_hour_id: {subjects_list[0].lesson_hour_id}\n"
                         f"classrooms_id: {classrooms}",
                         font=("Arial", 8),
                         bg=color

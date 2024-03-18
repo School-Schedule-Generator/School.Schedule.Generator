@@ -1,4 +1,4 @@
-from settings import settings
+from .settings import settings
 
 
 def debug_log(file_name, *args, **kwargs):
@@ -8,7 +8,7 @@ def debug_log(file_name, *args, **kwargs):
     :param kwargs: kwargs for print
     :description: functions is extension to print as it does the same but writes all of it in a file
     """
-    if not settings.DEBUG or not settings.SAVELOG:
+    if not settings.DEBUG:
         return
     print(*args, **kwargs)
     dir_name = f'logs/{file_name}'

@@ -366,7 +366,6 @@ SSG_SUBJECTS:
 * class_id - no default - has to exist in SSG_CLASSES
 * subject_count_in_week - default 1 - number of times you want to repeat this subject
 * number_of_groups - default 1 - number of groups the subject splits class to
-* subject_length - no use in code - column has no use
 * lesson_hours_id - this has to always be NULL
 * teachers_id - list of teachers that can take this subject (written like so: [a, b])
 * classroom_id - this has to always be NULL

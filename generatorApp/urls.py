@@ -5,13 +5,15 @@ from django.conf.urls.static import static
 
 app_name = "generatorApp"
 urlpatterns = [
-    path('login-register/', views.login_register, name='login_register'),
+    path('home/', views.home, name='home'),
+    path('login-register/', views.login_register, name='login-register'),
     path('login-register/login/', views.login_page, name='login'),
     path('login-register/register/', views.register_page, name='register'),
-    path('home/', views.home, name='home'),
-    path('upload/', views.upload, name='upload'),
-    path('upload/<int:schedule_id>/<str:file_name>', views.upload, name='upload-file-name'),
-    path('test/', views.upload, name='test'),
+    path('logout', views.logout_page, name='logout'),
+    path('upload/<int:schedule_id>', views.upload, name='upload'),
+    path('upload/<str:file_name>/<int:schedule_id>', views.get_upload_file, name='get-upload-file'),
+    path('settings/<int:schedule_id>', views.schedule_settings, name='settings'),
+    path('create_schedule', views.create_schedule, name='create-schedule'),
 ]
 
 if settings.DEBUG:

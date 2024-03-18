@@ -1,5 +1,5 @@
-from debug_log import *
-from tkinter_schedule_vis import tkinter_schedule_vis
+from ...debug_log import *
+from ...tkinter_schedule_vis import tkinter_schedule_vis
 
 
 def update_min_day_len(self, conditions, days, teachers, log_file_name):
@@ -49,7 +49,8 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
 
                 first_lesson_index = self.find_first_lesson_index(schedule_at_day, log_file_name)
                 if first_lesson_index is None:
-                    debug_log(log_file_name, 'DEBUG: day at max move to first_lesson_index')
+                    debug_log(log_file_name, 'DEBUG: lesson from longest day moved to first_lesson_index')
+                    first_lesson_index = -1
 
                 max_day_schedule = self.data[class_id][days[max_len_day_i]]
 
@@ -67,6 +68,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                 #            0             |            0
                 #           -1             |           -1
                 #            0             |           -1
+
                 if self.safe_move(
                     teachers_id=max_day_schedule[-1][0].teachers_id,
                     day_from=days[max_len_day_i],
@@ -228,6 +230,7 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                     break
 
             if self.get_num_of_lessons(schedule_at_day, log_file_name) < conditions.data['min_lessons_per_day']:
+                print('*' * 10, '\n', self.valid, '*' * 10, '\n', )
                 self.valid = False
                 return self
 

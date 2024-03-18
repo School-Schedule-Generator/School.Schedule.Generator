@@ -133,3 +133,5 @@ INTERNAL_IPS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = './generatorApp/media'
+
+LOGIN_URL = 'login-register/'
