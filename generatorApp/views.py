@@ -4,10 +4,13 @@ from datetime import datetime
 import pandas as pd
 from django.shortcuts import render, HttpResponseRedirect
 from .models import *
-from django.urls import reverse
+from .forms import *
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
+from django.views.generic import CreateView# dodanie generic views
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -18,6 +21,12 @@ from .schoolSchedule.generate import generate_schedule
 
 def home(request):
     return render(request, 'generatorApp/home.html')
+
+
+class LoginUserView(LoginView):
+    form_class = LoginForm
+    template_name = 'generatorApp/login.html'
+    success_url = reverse_lazy('generatorApp:home')
 
 
 def login_register(request):

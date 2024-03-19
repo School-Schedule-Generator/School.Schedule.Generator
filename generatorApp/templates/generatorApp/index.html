@@ -4,16 +4,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{% static 'nazwapliku.css' %}">
-<!--    blok aby umozliwic dodawanie stlyi, tytulu itp na dziedziczonych stronach-->
+    <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- title link i font  -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet">
     {% block head %}
+        <title>SSG</title>
     {% endblock %}
 </head>
 <body>
-<!--miejsce na navbar (tylko navbar)-->
+<div class="nav nav-top">
+    <div id="logo">SSG</div>
+    <ul>
+        <li><a href="">Log in</a></li>
+        <li><a href="">Documentation</a></li>
+        <li><a href="">Schedules</a></li>
+    </ul>
+</div>
 
-{% block content %}
-{% endblock %}
+<div class="content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="{% static 'generatorApp/script.js' %}"></script>
 
 </body>
 </html>

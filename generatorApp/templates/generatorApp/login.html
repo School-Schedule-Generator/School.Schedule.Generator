@@ -1,0 +1,29 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/login_register.css' %}">
+    <title>Log in</title>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'generatorApp:login' %}">
+    {% csrf_token %}
+    <div>Log in</div>
+
+    {{ form.username_or_email }}
+    {{ form.password }}
+
+    <input type="submit" value="Log in">
+</form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}
