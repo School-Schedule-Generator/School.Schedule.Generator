@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView# dodanie generic views
+from django.views.generic import FormView # dodanie generic views
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -29,34 +29,40 @@ class LoginUserView(LoginView):
     success_url = reverse_lazy('generatorApp:home')
 
 
-def login_register(request):
-    if request.user.is_authenticated:
-        messages.success(request, f'You are logged as {request.user.username}')
-        return HttpResponseRedirect(reverse('generatorApp:home'))
-
-    return render(request, 'generatorApp/login_register.html', {})
+class RegisterUserView(FormView):
+    form_class = RegisterForm
+    template_name = 'generatorApp/register.html'
+    success_url = reverse_lazy('generatorApp:home')
 
 
-def login_page(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+# def login_register(request):
+#     if request.user.is_authenticated:
+#         messages.success(request, f'You are logged as {request.user.username}')
+#         return HttpResponseRedirect(reverse('generatorApp:home'))
+#
+#     return render(request, 'generatorApp/login_register.html', {})
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
 
-        if user is not None:
-            login(request, user)
-            messages.success(request, f'You are logged as {user.username}')
-            return HttpResponseRedirect(reverse('generatorApp:home'))
-        else:
-            messages.error(request, 'Login failed. Please check your username and password.')
-            return HttpResponseRedirect(reverse('generatorApp:login_register'))
-
-    return HttpResponseRedirect(reverse('generatorApp:login_register'))
+# def login_page(request):
+#     if request.method == 'POST':
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+#
+#         user = authenticate(
+#             request,
+#             username=username,
+#             password=password
+#         )
+#
+#         if user is not None:
+#             login(request, user)
+#             messages.success(request, f'You are logged as {user.username}')
+#             return HttpResponseRedirect(reverse('generatorApp:home'))
+#         else:
+#             messages.error(request, 'Login failed. Please check your username and password.')
+#             return HttpResponseRedirect(reverse('generatorApp:login_register'))
+#
+#     return HttpResponseRedirect(reverse('generatorApp:login_register'))
 
 
 def register_page(request):

@@ -43,16 +43,27 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
+    username = forms.CharField(label='', widget=forms.TextInput({'class': 't', 'id': 'username', 'name': 'username',
+                                                                                'placeholder': 'username'}))
+    email = forms.EmailField(label='', widget=forms.EmailInput(attrs={'class': 't', 'id': 'email', 'name': 'email',
+                                                                                     'placeholder': 'email'}))
+    password1 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password',
+                                                                                           'name': 'password',
+                                                                                           'placeholder': 'password'}))
+    password2 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'repeat-password',
+                                                                                           'name': 'repeat-password',
+                                                                                           'placeholder': 'repeat password'}))
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
-    # def save(self, commit=True):
-    #     user = super(RegisterForm, self).save(commit=False)
-    #     user.email = self.cleaned_data['email']
-    #     if commit:
-    #         user.save()
-    #     return user
+    def save(self, commit=True):
+        user = super(RegisterForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
 
 
 class ScheduleListForm(ModelForm):
