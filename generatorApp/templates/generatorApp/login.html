@@ -3,17 +3,20 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/login_register.css' %}">
-    <title>Log in</title>
+    <title>log in</title>
 {% endblock %}
 
 {% block content %}
 
-<form method="POST" action="{% url 'generatorApp:login' %}">
+<form method="POST">
+{#action="{% url 'generatorApp:login' %}" jesli cos nie bedzie dziala - sprobowac dodac do froma#}
     {% csrf_token %}
     <div>Log in</div>
 
     {{ form.username_or_email }}
     {{ form.password }}
+
+    <p style="opacity: .5; margin: 1rem;">you don't you have account? <a href="{% url 'generatorApp:register' %}">Register</a></p>
 
     <input type="submit" value="Log in">
 </form>

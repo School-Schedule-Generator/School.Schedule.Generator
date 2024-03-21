@@ -1,0 +1,53 @@
+h1 {
+    font-size: 500%;
+    text-shadow: 0 0 10px #ffddff, 0 0 30px #ffbbff;
+}
+
+h2 {
+    font-size: 150%;
+    color: #ffbbff;
+    line-height: 150%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 1rem;
+    text-align: center;
+    user-select: none;
+}
+
+.second-screen {
+    position: absolute;
+    backdrop-filter: grayscale(100%);
+    top: 100vh;
+    padding: 3rem;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blocks {
+    font-size: 120%;
+    color: #a1a1a1;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 50% 50%;
+}
+
+.blocks div {
+    width: 15vw;
+    height: 15vh;
+    background-color: #00000088;
+    padding: 1rem;
+    margin: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.blocks div:first-child {
+    background-color: #00000000;
+    color: #ddd;
+    font-size: 150%;
+}

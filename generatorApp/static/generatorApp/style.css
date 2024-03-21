@@ -11,11 +11,10 @@ body {
     font-style: normal;
     background: linear-gradient(to right bottom, #302030, #101020);
     width: 100vw;
-    min-height: 200vh;
+    min-height: 100vh;
     color: white;
     overflow-X: hidden;
     background-attachment: fixed;
-
 }
 
 ::-webkit-scrollbar {
@@ -39,6 +38,7 @@ body {
     left: 0;
     transition: box-shadow .2s ease-in-out, background-color .2s ease-in-out;
     display: flex;
+    z-index: 100;
 }
 
 #logo {
@@ -108,8 +108,15 @@ a:hover::before {
 
 .content {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    padding: 0 10rem 0 10rem;
+}
+
+.content p {
+    /* padding: 0 15rem 0 15rem; */
+    margin-bottom: 10vh;
 }

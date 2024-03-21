@@ -2,21 +2,27 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'nazwapliku.css' %}">
+    <link rel="stylesheet" href="{% static 'generatorApp/home.css' %}">
+    <title>home</title>
 {% endblock %}
 
 {% block content %}
 
-home
-<br>
-
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
+<h1>School Schedule Generator</h1>
+    <h2>Introducing our School Schedule Generator tailored for primary and middle schools. Easily generate optimized schedules for each class, ensuring best organization of lessons throughout the week. Simplify your school's scheduling complexities effortlessly with our intuitive platform.
+    <br>
+    dziewienciu na dziesiencu dętystuw poleca naszom aplikacje</h2>
+<div class="second-screen">
+    <div class="blocks">
+        <div>How our platform can help you:</div>
+        <div>Seamless Data Integration: Easily incorporate your school's data into our system.</div>
+        <div>Secure Import: Import your information securely, ensuring privacy and confidentiality.</div>
+        <div>Automatic Matching: Our platform automatically matches teachers and classes, guaranteeing accuracy and efficiency.</div>
+        <div>Efficient Schedule Creation: Experience short creation times when generating schedules.</div>
+        <div>Flexibility: Set specific days and hours for each teacher, accommodating your school's unique requirements.</div>
+        <div>Customization: Tailor schedules to fit your school's individual needs and preferences.</div>
+        <div>guwno</div>
+    </div>
+</div>
 
 {% endblock %}
