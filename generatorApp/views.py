@@ -7,10 +7,10 @@ from .models import *
 from .forms import *
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView, ListView
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -38,6 +38,34 @@ class RegisterUserView(FormView):
 @login_required()
 class LogoutUserView(LogoutView):
     next_page = reverse_lazy('generatorApp:home')
+
+
+class DocsView(TemplateView):
+    template_name = 'generatorApp/docs.html'
+
+
+class ScheduleListView(ListView):
+    model = ScheduleList
+    template_name = 'generatorApp/schedule_list.html'
+
+
+class ScheduleFormView(FormView):
+    form_class = ScheduleListForm
+    template_name = 'generatorApp/schedule_form.html'
+    success_url = 'generatorApp/schedule_form.html'
+
+
+def schedules(request):
+    schedule_list_view = ScheduleListView.as_view()
+    schedule_form_view = ScheduleFormView.as_view()
+    return render(
+        request,
+        'generatorApp/schedules.html',
+        context={
+            'schedule_list': schedule_list_view(request),
+            'schedule_form': schedule_form_view(request)
+        }
+    )
 
 
 def upload_file(file_name, file, schedule_id):

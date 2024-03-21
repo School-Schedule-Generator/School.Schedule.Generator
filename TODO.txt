@@ -30,3 +30,8 @@ zrobic rozwijajacy sie dropdown z mozliwoscia zaznaczenia kilku dni tygodnia
 Dodac np podkreslenie w navbarze na odnosnik na którym sie obecnie znajduje user
 .....................
 ***
+
+pliki ktore moga byc pozniej nie przydatne:
+setting.html
+upload.html
+create_schedule.html

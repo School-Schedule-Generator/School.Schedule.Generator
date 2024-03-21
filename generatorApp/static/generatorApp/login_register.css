@@ -52,3 +52,19 @@ form input[type = "submit"]:hover {
     cursor: pointer;
     background-color: #9090c088;
 }
+
+
+.content {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 10rem 0 10rem;
+}
+
+.content p {
+    /* padding: 0 15rem 0 15rem; */
+    margin-bottom: 10vh;
+}
