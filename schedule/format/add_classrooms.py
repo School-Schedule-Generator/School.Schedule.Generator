@@ -1,7 +1,3 @@
-from debug_log import *
-from tkinter_schedule_vis import tkinter_schedule_vis
-
-
 def add_classrooms(self, classrooms, teachers, days):
     """
     :param self:

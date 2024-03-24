@@ -1,3 +1,4 @@
+import os.path
 from datetime import datetime
 from itertools import product
 from load_data import *
@@ -9,26 +10,6 @@ from subject import *
 from teacher import *
 from tkinter_schedule_vis import *
 
-import tkinter_schedule_vis
-
-# TODO-LIST:
-# ---------------------------------------------------------------------------------------------------------------------
-
-# WEB
-# ***********
-    # checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w planie z iloscia leckji mozliwych wedlug conditions)
-
-    # nauczyciele i wychowacy wybierani z inputa usera na podstawie listy z teachers_db
-
-    # przy tworzeniu klas i subjektow user będzie miał wybór dla wychowacy/nauczyciela z tylko tych którzy mają w teachers
-    # pozwolenie na dany przedmiot
-    # nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
-
-    # zmienianie dni w których mogą być lekcje
-# ***********
-
-# ---------------------------------------------------------------------------------------------------------------------
-
 
 def permutations(iterable, r=None):
     pool = tuple(iterable)
@@ -39,21 +20,22 @@ def permutations(iterable, r=None):
             yield tuple(pool[i] for i in indices)
 
 
-def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_file_name):
+def generate_schedule(data, schedule_settings, log_file_name):
     """
     :param data: list of data in strict order of: [lesson_hours_df, subject_names_df, subjects_df, teachers_df, classes_df, classrooms_df]
-    :param days: list of days that the lessons can occur
     :param log_file_name: current time for logging
-    :param min_lessons_per_day: minimum number of lessons per day
-    :param max_lessons_per_day: maximum number of lessons per day
+    :param schedule_settings: dictionary of settings for schedule
     :return: generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
     in the same time
     """
 
+    min_lessons_per_day, max_lessons_per_day = schedule_settings["min_lessons_per_day"], schedule_settings["max_lessons_per_day"]
+    days = schedule_settings["days"]
+
     # Creating directory for log files
     if not os.path.exists(f'logs/{log_file_name}'):
         os.makedirs(f'logs/{log_file_name}')
-    with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
+    with open(f'logs/{log_file_name}/.log', 'w') as f:
         pass
 
     # Creating global schedule conditions
@@ -80,6 +62,7 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
         subjects = split_subjects(subjects_df, teachers, classes_id)
         classrooms = create_classrooms(classrooms_df)
 
+        # TODO: fix; somhere schedule is not validating, check if settings are correct, they aren't saved rn
         schedule = Schedule(version=version).create(
             classes_id=classes_id,
             classes_start_hour_index=classes_start_hour_index,
@@ -109,7 +92,7 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
             break
 
     # schedule visualisation using tkinter
-    if not tkinter_schedule_vis.tkinter_schedule_vis(
+    if not tkinter_schedule_vis(
         schedule=schedule,
         days=days,
         dir_name=f'{log_file_name}',
@@ -120,13 +103,21 @@ def generate_schedule(data, days, min_lessons_per_day, max_lessons_per_day, log_
 
     return schedule.data
 
+if __name__ == '__main__':
+    now = datetime.now()
+    time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
+    data = load_data(time_str)
+    if data:
+        schedule_settings = {
+            'days': ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+            'min_lessons_per_day': 7,
+            'max_lessons_per_day': 10
+        }
 
-now = datetime.now()
-time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
-ss = generate_schedule(
-    data=load_data(),
-    days=['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-    min_lessons_per_day=7,
-    max_lessons_per_day=10,
-    log_file_name=time_str
-)
+        schedule = generate_schedule(
+            data=data,
+            schedule_settings=schedule_settings,
+            log_file_name=time_str
+        )
+
+        schedule_to_excel(class_to_json(schedule), data, {'Title': 'Test Schedule Generation', 'Date': time_str}, f'logs/{time_str}/schedule')

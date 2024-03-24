@@ -1,11 +1,8 @@
-from debug_log import debug_log
-
-
 class Subject:
     """
     subject from subjects dataframe turned into an object
     """
-    def __init__(self, subject_id=-1, subject_name_id=None, class_id=None, number_of_groups=0, subject_length=0,
+    def __init__(self, subject_id=-1, subject_name_id=None, class_id=None, number_of_groups=0,
                  lesson_hour_id=None, teachers_id=None, classroom_id=None, is_empty=False,
                  movable=True, group=None, max_stack=None, classroom_types=[],
                  log_file_name=''):
@@ -16,7 +13,6 @@ class Subject:
         self.subject_name_id = subject_name_id
         self.class_id = class_id
         self.number_of_groups = number_of_groups
-        self.subject_length = subject_length
         self.lesson_hour_id = lesson_hour_id
         self.teachers_id = teachers_id
         self.classroom_id = classroom_id
@@ -37,26 +33,32 @@ def split_subjects(subjects_df, teachers, classes_id):
 
     subject_per_teacher_per_class = {}
     for teacher_id in teachers:
-        subject_per_teacher_df = subjects_df[subjects_df['teachers_ID'].apply(lambda x: teacher_id in x)]
+        subject_per_teacher_df = subjects_df[subjects_df['teachers_id'].apply(lambda x: teacher_id in x)]
 
         subject_per_teacher_per_class[teacher_id] = {}
 
+        # TUTAJ JEST BŁĄD
+        # ogólnie to nie dodają się w tej funkcji subjecty w ogóle
+        # wydaje mi się że błąd jest w tym że typy kolumn są różne że np int jest stringiem czasami itd
+        # jeśli to jest prawda to w całym kodzie albo poprostu tam gdzie w schedule formatujemy dane do klas
+        # będzie trzeba zrobić takie cośki jak w 50 linijce tutaj (chodzi mi o cast do inta)
+        # dodałem tu już casty w appendowaniu (linijki 56-63) subjecta ale nadal nie ma żadnego subjecta bo problem jest w tej 50tej linijce
+        # zdebuguj to i zobacz o co chodzi
         for class_id in classes_id:
             subject_per_teacher_per_class[teacher_id][class_id] = []
 
-            subject_per_teacher_classes_df = subject_per_teacher_df[subject_per_teacher_df['class_ID'] == class_id]
+            subject_per_teacher_classes_df = subject_per_teacher_df[subject_per_teacher_df['class_id'] == class_id]
 
             for index, row in subject_per_teacher_classes_df.iterrows():
                 for _ in range(row['subject_count_in_week']):
                     subject_per_teacher_per_class[teacher_id][class_id].append(
                         Subject(
-                            subject_id=row['subject_ID'],
-                            subject_name_id=row['subject_name_ID'],
-                            class_id=row['class_ID'],
-                            number_of_groups=row['number_of_groups'],
-                            teachers_id=[x for x in row['teachers_ID']],
-                            subject_length=row['subject_length'],
-                            max_stack=row['max_stack'],
+                            subject_id=int(row['subject_id']),
+                            subject_name_id=int(row['subject_name_id']),
+                            class_id=int(row['class_id']),
+                            number_of_groups=int(row['number_of_groups']),
+                            teachers_id=[int(x) for x in row['teachers_id']],
+                            max_stack=int(row['max_stack']),
                             classroom_types=row['classroom_types']
                         )
                     )

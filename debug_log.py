@@ -12,7 +12,7 @@ def debug_log(file_name, *args, **kwargs):
         return
     print(*args, **kwargs)
     dir_name = f'logs/{file_name}'
-    with open(f'{dir_name}/{file_name}.txt', 'a') as f:
+    with open(f'{dir_name}/.log', 'a') as f:
         f.write('------------------------------------\n')
         for arg in args:
             f.write(str(arg)+' ')

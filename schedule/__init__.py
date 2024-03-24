@@ -293,12 +293,12 @@ class Schedule:
                         subject.teachers_id = [subject.teachers_id[0]]
                         subject.group = 1
 
-                        # tkinter_schedule_vis(
-                        #     self,
-                        #     days,
-                        #     capture_name=f'splitting_{tk_capture_count}',
-                        #     dir_name=log_file_name,
-                        # )
+                        tkinter_schedule_vis(
+                            self,
+                            days,
+                            capture_name=f'splitting_{tk_capture_count}',
+                            dir_name=log_file_name,
+                        )
                         tk_capture_count += 1
 
         tk_capture_count = 0

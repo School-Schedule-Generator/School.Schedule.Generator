@@ -6,7 +6,7 @@ from settings import settings
 
 def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log_0', capture=True):
 
-    if (not settings.TKCAPTURE and not capture) and not settings.DEBUG:
+    if not (settings.TKCAPTURE and capture and settings.DEBUG):
         return False
 
     def get_invalid_data(day_to, lesson_index, class_id, group):
@@ -20,11 +20,6 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         continue
                     if subject.group is not None and class_schedule_id == class_id and subject.group == group:
                         continue
-
-                    # print(len(subjects_list))
-                    # print(subject)
-                    # print(subject.teachers_id)
-                    # for teacher_id in subject.teachers_id:
                     same_time_teachers.append(subject.teachers_id[0])
 
                     if subject.classroom_id is not None:
@@ -101,7 +96,7 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         root,
                         text=f"subjects id {subjects_ids}\n"
                         f"teacher: {teachers}\n"
-                        f"lesson_hours_id: {subjects_list[0].lesson_hour_id}\n"
+                        f"lesson_hour_id: {subjects_list[0].lesson_hour_id}\n"
                         f"classrooms_id: {classrooms}",
                         font=("Arial", 8),
                         bg=color
