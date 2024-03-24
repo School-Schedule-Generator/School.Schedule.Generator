@@ -10,7 +10,10 @@ urlpatterns = [
     path('register/', views.RegisterUserView.as_view(), name='register'),
     path('logout/', views.LogoutUserView, name='logout'),
     path('docs/', views.DocsView.as_view(), name='docs'),
-    path('schedules/', views.schedules, name='schedules'),
+    path('schedules/', views.SchedulesView.as_view(), name='schedules'), # bedzie nie potrzebne
+    # aby na podstawie usera znalezc tylko jego plany w linku uzywamy jego nazwy
+    path('schedules/<str:user_name>', views.SchedulesView.as_view(), name='schedules'),
+    path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedules'),
 
     path('upload/<int:schedule_id>', views.upload, name='upload'),
     path('upload/<str:file_name>/<int:schedule_id>', views.get_upload_file, name='get-upload-file'),

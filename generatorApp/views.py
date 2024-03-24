@@ -44,28 +44,13 @@ class DocsView(TemplateView):
     template_name = 'generatorApp/docs.html'
 
 
-class ScheduleListView(ListView):
+# dodac login required
+# wszedzie gdzie jest uzywany odnosnik url do tego odac user name jako parametr
+class SchedulesView(ListView, FormView):
     model = ScheduleList
-    template_name = 'generatorApp/schedule_list.html'
-
-
-class ScheduleFormView(FormView):
     form_class = ScheduleListForm
-    template_name = 'generatorApp/schedule_form.html'
-    success_url = 'generatorApp/schedule_form.html'
-
-
-def schedules(request):
-    schedule_list_view = ScheduleListView.as_view()
-    schedule_form_view = ScheduleFormView.as_view()
-    return render(
-        request,
-        'generatorApp/schedules.html',
-        context={
-            'schedule_list': schedule_list_view(request),
-            'schedule_form': schedule_form_view(request)
-        }
-    )
+    context_object_name = 'schedule_list'
+    template_name = 'generatorApp/schedules.html'
 
 
 def upload_file(file_name, file, schedule_id):

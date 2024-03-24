@@ -4,17 +4,35 @@
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
     <title>schedules</title>
+    <style>
+        .main{
+            margin-left: 40%;
+            margin-top: 15%;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-    {% include 'generatorApp/schedule_list.html' %}
-    {% include 'generatorApp/schedule_form.html' %}
+<div class="main">
+    <form method="POST">
+        {% csrf_token %}
+        <div>Create new schedule</div>
 
-    <div style="float: left; width: 20%; color: white;">
-        {{ schedule_list }}
+        {{ form }}
+
+        <input type="submit" value="Create">
+    </form>
+
+    <br>
+    <br>
+
+    <div>
+        <h3>List of your schedules</h3>
+        <ol>
+            {% for schedule in schedule_list %}
+                <li><a href="{% url 'generatorApp:schedules' %}">{{ schedule.name }}, {{ schedule.created_date }}</a></li>
+            {% endfor %}
+        </ol>
     </div>
-    
-    <div style="float: left; width: 80%; color: white;">
-        {{ schedule_form }}
-    </div>
+</div>
 {% endblock %}

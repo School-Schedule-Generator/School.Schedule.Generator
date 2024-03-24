@@ -9,6 +9,7 @@ import ast
 class ScheduleList(models.Model):
     user_id = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=800, null=True)
     created_date = models.DateTimeField(default=timezone.now)
     content = models.TextField()
 

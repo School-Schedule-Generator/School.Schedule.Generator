@@ -67,9 +67,17 @@ class RegisterForm(UserCreationForm):
 
 
 class ScheduleListForm(ModelForm):
+    name = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'name', 'name': 'name',
+                                                                   'placeholder': 'name'}))
+    description = forms.CharField(label='', required=False, widget=forms.Textarea(attrs={
+                                                                                    'class': 't', 'id': 'description',
+                                                                                    'name': 'description',
+                                                                                    'placeholder': 'description of your schedule(not required)'
+                                                                                    }))
+
     class Meta:
         model = ScheduleList
-        fields = ['name']
+        fields = ['name', 'description']
 
 
 class ClassroomTypesForm(ModelForm):
