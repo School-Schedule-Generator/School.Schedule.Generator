@@ -1,6 +1,6 @@
 # school_class.py
   
-This file contains class SchoolClass
+This file contains SchoolClass class
 
 ---
 
@@ -31,4 +31,4 @@ This file contains class SchoolClass
       : turn pandas df data to class instances  
 
       * Return:
-      : returns dict of every class
+      : dict of every class

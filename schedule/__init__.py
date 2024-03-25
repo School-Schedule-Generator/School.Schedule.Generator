@@ -185,7 +185,7 @@ class Schedule:
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
                                             teachers_id=subject.teachers_id,
-                                            day_to=day,
+                                            day=day,
                                             lesson_index=first_lesson_index - 1
                                         )
                                 ):
@@ -201,7 +201,7 @@ class Schedule:
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
                                             teachers_id=subject.teachers_id,
-                                            day_to=day,
+                                            day=day,
                                             lesson_index=lesson_index
                                         )
                                 ):
@@ -245,10 +245,9 @@ class Schedule:
         self.valid = False
         return self
 
-    def split_to_groups(self, days, conditions, log_file_name):
+    def split_to_groups(self, days, log_file_name):
         """
         :param days: list of days used in schedule
-        :param conditions: global conditions of schedule
         :param log_file_name: file name for run information
         :return: schedule with split subjects
         """

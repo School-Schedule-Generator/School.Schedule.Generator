@@ -120,4 +120,4 @@ if __name__ == '__main__':
             log_file_name=time_str
         )
 
-        schedule_to_excel(class_to_json(schedule), data, {'Title': 'Test Schedule Generation', 'Date': time_str}, f'logs/{time_str}/schedule')
+        schedule_to_excel(class_to_dict(schedule), data, {'Title': 'Test Schedule Generation', 'Date': time_str}, f'logs/{time_str}/schedule')

@@ -1,6 +1,6 @@
-def are_teachers_taken(self, teachers_id, day_to, lesson_index):
+def are_teachers_taken(self, teachers_id, day, lesson_index):
     same_time_teachers = self.get_same_time_teacher(
-        day_to=day_to,
+        day_to=day,
         lesson_index=lesson_index,
     )
 

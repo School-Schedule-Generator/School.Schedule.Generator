@@ -28,7 +28,7 @@ def split_subjects(subjects_df, teachers, classes_id):
     :param subjects_df: dataframe of all subjects
     :param teachers: list of school_classes
     :param classes_id: list of ids of classes
-    :return: returns split per teacher lists of subjects
+    :return: split per teacher lists of subjects
     """
 
     subject_per_teacher_per_class = {}
@@ -36,14 +36,6 @@ def split_subjects(subjects_df, teachers, classes_id):
         subject_per_teacher_df = subjects_df[subjects_df['teachers_id'].apply(lambda x: teacher_id in x)]
 
         subject_per_teacher_per_class[teacher_id] = {}
-
-        # TUTAJ JEST BŁĄD
-        # ogólnie to nie dodają się w tej funkcji subjecty w ogóle
-        # wydaje mi się że błąd jest w tym że typy kolumn są różne że np int jest stringiem czasami itd
-        # jeśli to jest prawda to w całym kodzie albo poprostu tam gdzie w schedule formatujemy dane do klas
-        # będzie trzeba zrobić takie cośki jak w 50 linijce tutaj (chodzi mi o cast do inta)
-        # dodałem tu już casty w appendowaniu (linijki 56-63) subjecta ale nadal nie ma żadnego subjecta bo problem jest w tej 50tej linijce
-        # zdebuguj to i zobacz o co chodzi
         for class_id in classes_id:
             subject_per_teacher_per_class[teacher_id][class_id] = []
 

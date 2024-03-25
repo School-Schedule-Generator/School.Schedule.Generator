@@ -1,46 +1,33 @@
 # schedule/__init__.py
   
-This file contains Schedule class
+This file contains Schedule class functions for checking if conditions are met
 
 ---
 
-## SchoolClass
-* ### Params:
-    * version: schedule_version
-    * valid: is this schedule version valid
-    * data: schedule data; dict type
-
-* ### Functions
-  * ### push_class_schedule
+## Functions
+  * ### are_teachers_taken
     * ***Params***:
-        * class_id: id of passed in class
-        * class_schedule: schedule of class to push
+        * teachers_id: teachers id
+        * day: day of new subject position
+        * lesson_index: index of new subject position
 
     * Usage:
-    : self.data[class_id] = class_schedule
+    : check if teachers at passed in new position have already lessons.
+    This function is for checking if it's possible to change subject position
 
     * Return:
-    : None
-  
-  * ### create
-      * ***Params***:
-          * classes_id: list of ids
-          * classes_start_hour_index: dict of hours when class starts
-          * conditions: global conditions of schedule
-          * days: list of days with lessons in
-          * days_ordered: list of days but with order wich in the teachers are added in
-          * subjects: split per teacher split per class subjects
-          * teachers: list of teachers (obj)
-          * log_file_name: file name for run information
+    : True/False depending on if teachers have already lessons at passed in position
 
-      * Return:
-      : structured and logical schedule, or False if valid == False.  
-      Generation doesn't use any randomnes
-  
-  * ### split_to_groups
+  * ### check_teacher_conditions
     * ***Params***:
-        * days: list of days used in schedule
-        * log_file_name: file name for run information
+        * teachers_id: teachers id
+        * day: day of teachers new subject position
+        * days: list of days
+        * lesson_index: index of new subject position
+        * teachers: list of all teachers
+
+    * Usage:
+    : if teacher had a subject at passed position, would it conflict with his working conditions
 
     * Return:
-    : schedule with split subjects
+    : True if conditions are met, else False
