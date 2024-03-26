@@ -8,9 +8,10 @@ from .forms import *
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.views import View
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.decorators import login_required
-from django.views.generic import FormView, TemplateView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView, TemplateView, ListView, CreateView
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -29,15 +30,27 @@ class LoginUserView(LoginView):
     success_url = reverse_lazy('generatorApp:home')
 
 
-class RegisterUserView(FormView):
+class RegisterUserView(CreateView):
     form_class = RegisterForm
     template_name = 'generatorApp/register.html'
     success_url = reverse_lazy('generatorApp:home')
 
+    def form_valid(self, form):
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        user = form.save(commit=False)
+        user.set_password(password)
+        user.save()
+        auth_user = authenticate(username=username, password=password)
+        login(self.request, auth_user)
+        return redirect(self.success_url)
 
-@login_required()
-class LogoutUserView(LogoutView):
-    next_page = reverse_lazy('generatorApp:home')
+
+class LogoutUserView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse('generatorApp:home'))
 
 
 class DocsView(TemplateView):
@@ -51,6 +64,15 @@ class SchedulesView(ListView, FormView):
     form_class = ScheduleListForm
     context_object_name = 'schedule_list'
     template_name = 'generatorApp/schedules.html'
+    # extra_context = {'labels': [
+    #     'lesson_hours',
+    #     'classroom_types',
+    #     'classrooms',
+    #     'teachers',
+    #     'classes',
+    #     'subject_names',
+    #     'subjects'
+    # ]}
 
 
 def upload_file(file_name, file, schedule_id):
@@ -193,7 +215,6 @@ def upload_file(file_name, file, schedule_id):
     return True
 
 
-@login_required()
 def get_upload_file(request, file_name=None, schedule_id=None):
     if request.method == 'POST' and request.FILES['file']:
         file_names = [
@@ -245,7 +266,6 @@ def get_upload_file(request, file_name=None, schedule_id=None):
     return render(request, 'generatorApp/upload.html', context={'file_name': file_name})
 
 
-@login_required()
 def create_schedule(request):
     if request.method == 'POST':
         schedule = ScheduleList.objects.create(
@@ -259,7 +279,6 @@ def create_schedule(request):
     return render(request, 'generatorApp/create_schedule.html')
 
 
-@login_required()
 def upload(request, schedule_id=None):
     if schedule_id is None:
         return render(request, 'generatorApp/create_schedule.html')
@@ -267,7 +286,6 @@ def upload(request, schedule_id=None):
     return redirect(f'/upload/lesson_hours/{schedule_id}')
 
 
-@login_required()
 def schedule_settings(request, schedule_id=None):
     settings = ScheduleSettings.objects.get(schedule_id=schedule_id)
 

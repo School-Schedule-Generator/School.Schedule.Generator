@@ -1,19 +1,20 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 app_name = "generatorApp"
 urlpatterns = [
     path('home/', views.home, name='home'),
-    path('login/', views.LoginUserView.as_view(), name='login'),
-    path('register/', views.RegisterUserView.as_view(), name='register'),
-    path('logout/', views.LogoutUserView, name='logout'),
+    path('accounts/login/', views.LoginUserView.as_view(), name='login'),
+    path('accounts/register/', views.RegisterUserView.as_view(), name='register'),
+    path('accounts/logout/', views.LogoutUserView.as_view(), name='logout'),
     path('docs/', views.DocsView.as_view(), name='docs'),
     path('schedules/', views.SchedulesView.as_view(), name='schedules'), # bedzie nie potrzebne
     # aby na podstawie usera znalezc tylko jego plany w linku uzywamy jego nazwy
-    path('schedules/<str:user_name>', views.SchedulesView.as_view(), name='schedules'),
-    path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedules'),
+    # path('schedules/<str:user_name>', views.SchedulesView.as_view(), name='schedules'),
+    # path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedules'),
 
     path('upload/<int:schedule_id>', views.upload, name='upload'),
     path('upload/<str:file_name>/<int:schedule_id>', views.get_upload_file, name='get-upload-file'),

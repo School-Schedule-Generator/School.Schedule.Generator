@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.db.models import Q
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -10,35 +11,26 @@ from .models import *
 
 
 class LoginForm(AuthenticationForm):
-    username_or_email = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'login', 'name': 'login',
+    username = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'login', 'name': 'login',
                                                                          'placeholder': 'username or mail'}))
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password', 'name': 'password',
                                                                     'placeholder': 'password'}))
 
 # nie wiem czy logowanie przez maila bedzie dzialac
     def clean(self):
-        username_or_email = self.cleaned_data.get('username_or_email')
+        username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
-        user = None
+        ogg = User.objects.filter(
+            Q(email=username) | Q(username=username)
+        ).first()
 
-        if username_or_email and password:
-            if '@' in username_or_email:
-                try:
-                    user = User.objects.get(email=username_or_email)
-                except User.DoesNotExist:
-                    user = None
+        if ogg and password:
+            self.user_cache = authenticate(username=ogg.username, password=password)
+
+            if self.user_cache is None:
+                raise forms.ValidationError('Invalid login or password.')
             else:
-                user = authenticate(username=username_or_email, password=password)
-
-        if user is None:
-            raise forms.ValidationError('Invalid username/email or password.')
-        elif not user.check_password(password):
-            raise forms.ValidationError('Invalid username/email or password.')
-        elif user.is_active:
-            raise forms.ValidationError('This user is active.')
-        else:
-            self.user_cache = user
-
+                self.confirm_login_allowed(self.user_cache)
         return self.cleaned_data
 
 
@@ -57,13 +49,6 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-
-    def save(self, commit=True):
-        user = super(RegisterForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-        return user
 
 
 class ScheduleListForm(ModelForm):

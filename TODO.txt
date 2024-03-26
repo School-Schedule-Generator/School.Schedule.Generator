@@ -15,7 +15,7 @@ sprawdzanie w widokach czy user jest zalogowany
 Wylogowywanie usera
 zmienic formularze
 
-!!W navbarze wyswieltac log in i register obok siebie aby bylo do wyboru zamiast tylko log in
+ustwic validaotry do hasla i logina dla usera
 
 do modelu shcedlue list dodac pole description aby opisac plan
 
@@ -30,8 +30,3 @@ zrobic rozwijajacy sie dropdown z mozliwoscia zaznaczenia kilku dni tygodnia
 Dodac np podkreslenie w navbarze na odnosnik na którym sie obecnie znajduje user
 .....................
 ***
-
-pliki ktore moga byc pozniej nie przydatne:
-setting.html
-upload.html
-create_schedule.html

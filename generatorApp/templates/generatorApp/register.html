@@ -8,8 +8,7 @@
 
 {% block content %}
 
-<form method="POST">
-{# action="{% url 'generatorApp:login' %}" nie potrzebne prawdopodobnie#}
+<form method="POST" >
     {% csrf_token %}
     <div>Register</div>
 

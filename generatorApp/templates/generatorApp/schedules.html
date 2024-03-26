@@ -29,9 +29,20 @@
     <div>
         <h3>List of your schedules</h3>
         <ol>
-            {% for schedule in schedule_list %}
-                <li><a href="{% url 'generatorApp:schedules' %}">{{ schedule.name }}, {{ schedule.created_date }}</a></li>
-            {% endfor %}
+            {% if schedule_list %}
+                {% for schedule in schedule_list %}
+                    <li>
+                        <a href="{% url 'generatorApp:schedules' %}">{{ schedule.name }}, {{ schedule.created_date }}</a>
+                        <ol>
+                            {% for label in labels %}
+                                <li><a href="{% url 'generatorApp:schedules' %}">{{ label }}</a></li>
+                            {% endfor %}
+                        </ol>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p>It seems to you don't ave any schedules :<</p>
+            {% endif %}
         </ol>
     </div>
 </div>

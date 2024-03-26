@@ -9,11 +9,10 @@
 {% block content %}
 
 <form method="POST">
-{#action="{% url 'generatorApp:login' %}" jesli cos nie bedzie dziala - sprobowac dodac do froma#}
     {% csrf_token %}
     <div>Log in</div>
 
-    {{ form.username_or_email }}
+    {{ form.username }}
     {{ form.password }}
 
     <p style="opacity: .5; margin: 1rem;">You don't you have account? <a href="{% url 'generatorApp:register' %}">Register</a></p>

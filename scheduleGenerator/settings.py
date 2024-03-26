@@ -132,6 +132,10 @@ INTERNAL_IPS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = './generatorApp/media'
+MEDIA_ROOT = './generatorApp/media/'
 
-LOGIN_URL = 'generatorApp:login'
+LOGIN_URL = '/accounts/login/'
+
+LOGIN_REDIRECT_URL = '/home/'
+
+LOGOUT_REDIRECT_URL = '/home/'
