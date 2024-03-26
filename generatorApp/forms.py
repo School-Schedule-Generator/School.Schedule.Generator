@@ -7,8 +7,6 @@ from django.contrib.auth.models import User
 
 from .models import *
 
-# na razie formularze w ten sposob, jak bedzie to sie pozmienia w zaleznosci od potrzeb
-
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'login', 'name': 'login',
@@ -16,7 +14,6 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password', 'name': 'password',
                                                                     'placeholder': 'password'}))
 
-# nie wiem czy logowanie przez maila bedzie dzialac
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
@@ -55,10 +52,8 @@ class ScheduleListForm(ModelForm):
     name = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'name', 'name': 'name',
                                                                    'placeholder': 'name'}))
     description = forms.CharField(label='', required=False, widget=forms.Textarea(attrs={
-                                                                                    'class': 't', 'id': 'description',
-                                                                                    'name': 'description',
-                                                                                    'placeholder': 'description of your schedule(not required)'
-                                                                                    }))
+        'class': 't', 'id': 'description', 'name': 'description',
+        'placeholder': 'description of your schedule(not required)'}))
 
     class Meta:
         model = ScheduleList

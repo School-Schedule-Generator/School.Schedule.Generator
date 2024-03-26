@@ -13,7 +13,7 @@ urlpatterns = [
     path('docs/', views.DocsView.as_view(), name='docs'),
     path('schedules/', views.SchedulesView.as_view(), name='schedules'), # bedzie nie potrzebne
     # aby na podstawie usera znalezc tylko jego plany w linku uzywamy jego nazwy
-    # path('schedules/<str:user_name>', views.SchedulesView.as_view(), name='schedules'),
+    path('schedules/<str:user_name>', views.SchedulesView.as_view(), name='schedules'),
     # path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedules'),
 
     path('upload/<int:schedule_id>', views.upload, name='upload'),

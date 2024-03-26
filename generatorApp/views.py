@@ -59,20 +59,25 @@ class DocsView(TemplateView):
 
 # dodac login required
 # wszedzie gdzie jest uzywany odnosnik url do tego odac user name jako parametr
-class SchedulesView(ListView, FormView):
-    model = ScheduleList
+class SchedulesView(LoginRequiredMixin, FormView):
     form_class = ScheduleListForm
-    context_object_name = 'schedule_list'
     template_name = 'generatorApp/schedules.html'
-    # extra_context = {'labels': [
-    #     'lesson_hours',
-    #     'classroom_types',
-    #     'classrooms',
-    #     'teachers',
-    #     'classes',
-    #     'subject_names',
-    #     'subjects'
-    # ]}
+    success_url = reverse_lazy('generatorApp:schedules')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # bierzemy plany nalezace tylko do tego usera
+        context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
 
 
 def upload_file(file_name, file, schedule_id):

@@ -8,16 +8,8 @@ pozwolenie na dany przedmiot
 nauczyciel zw musi być ustawiany na takiego który jest rzeczywiście wychowawcą danej klasy
 
 dodac username do url jako zmienna
-dodac ostylowane templaty i zmienic widoki to logowania oraz wylogowywania oraz zmienic LOGIN_URL w settings
-logowanie za pomoca maila lub username
-
-sprawdzanie w widokach czy user jest zalogowany
-Wylogowywanie usera
-zmienic formularze
 
 ustwic validaotry do hasla i logina dla usera
-
-do modelu shcedlue list dodac pole description aby opisac plan
 
 Add button for exporting to excel (info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path})
 Naprawić model subjects : class_id nie działa
@@ -28,5 +20,6 @@ checking conditions passed in by user (ilosc godzin lekcyjnych nauczyciela w pla
 w formularzu settings.html min value nie może być większe od max, zrób check w js
 zrobic rozwijajacy sie dropdown z mozliwoscia zaznaczenia kilku dni tygodnia
 Dodac np podkreslenie w navbarze na odnosnik na którym sie obecnie znajduje user
+Do formularza logowania dodac opcje remember me oraz opcje dla idiotow ktorzy zapomnieli hasla
 .....................
 ***
