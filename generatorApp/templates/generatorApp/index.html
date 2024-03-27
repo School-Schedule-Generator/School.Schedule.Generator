@@ -16,7 +16,7 @@
 </head>
 <body>
 <div class="nav nav-top">
-    <div id="logo">SSG</div>
+    <a href="{% url 'generatorApp:home' %}" id="logo">SSG</a>
     <ul>
         <li>
         {% if user.is_authenticated %}
@@ -25,8 +25,8 @@
             <a href="{% url 'generatorApp:login' %}">Log in</a>
         {% endif %}</li>
         <li><a href="{% url 'generatorApp:docs' %}">Docs</a></li>
-        <li><a href="{% url 'generatorApp:schedules' user_name=user.username %}">Schedules</a></li>
-        <li><a href="{% url 'generatorApp:home' %}">Home</a></li>
+        <li><a {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
+        {% else %} href="{% url 'generatorApp:schedules_base' %}" {% endif %}>Schedules</a></li>
     </ul>
 </div>
 

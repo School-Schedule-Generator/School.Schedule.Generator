@@ -28,12 +28,14 @@ class LoginUserView(LoginView):
     form_class = LoginForm
     template_name = 'generatorApp/login.html'
     success_url = reverse_lazy('generatorApp:home')
+    next_page = reverse_lazy('generatorApp:home')
 
 
 class RegisterUserView(CreateView):
     form_class = RegisterForm
     template_name = 'generatorApp/register.html'
     success_url = reverse_lazy('generatorApp:home')
+    next_page = reverse_lazy('generatorApp:home')
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')
@@ -47,7 +49,7 @@ class RegisterUserView(CreateView):
 
 
 class LogoutUserView(LoginRequiredMixin, View):
-
+    login_url = reverse_lazy('generatorApp:login')
     def get(self, request):
         logout(request)
         return HttpResponseRedirect(reverse('generatorApp:home'))
@@ -57,16 +59,32 @@ class DocsView(TemplateView):
     template_name = 'generatorApp/docs.html'
 
 
-# dodac login required
-# wszedzie gdzie jest uzywany odnosnik url do tego odac user name jako parametr
-class SchedulesView(LoginRequiredMixin, FormView):
+class SchedulesListView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
     form_class = ScheduleListForm
     template_name = 'generatorApp/schedules.html'
-    success_url = reverse_lazy('generatorApp:schedules')
+    success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_success_url(self):
+        username = self.request.user.username
+        success_url = f'{self.success_url}{username}'
+        return success_url
+
+    def form_valid(self, form):
+        name = form.cleaned_data.get('name')
+        description = form.cleaned_data.get('description')
+
+        schedule = ScheduleList.objects.create(
+            user_id=self.request.user,
+            name=name,
+            description=description,
+            content=''
+        )
+        schedule.save()
+        return redirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # bierzemy plany nalezace tylko do tego usera
         context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
         context['labels'] = [
             'lesson_hours',
