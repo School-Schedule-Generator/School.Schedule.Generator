@@ -30,4 +30,4 @@ This file contains Schedule class functions for checking if conditions are met
     : if teacher had a subject at passed position, would it conflict with his working conditions
 
     * Return:
-    : True if conditions are met, else False
+    : True if conditions are met; else False
