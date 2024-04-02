@@ -1,199 +1,123 @@
-# generate.py
+# schedule/general.py
+
+Ten plik zawiera ogólne funkcje klasy Harmonogram
+
+---
+
+## Funkcje
+  * ### create_class_schedule
+    * ***Parametry***:
+        * days: lista dni, w których mogą odbywać się lekcje
+
+    * Zwraca:
+    : pusty harmonogram dla podanych dni
   
-This file contains generate function and test usage of program
+  * ### move_subject_to_day
+    * ***Parametry***:
+        * class_id: id aktualnej klasy
+        * day_to: dzień, na który przesunięto przedmiot
+        * day_from: aktualna pozycja przedmiotu
+        * subject_position: pozycja przedmiotu w dniu
+        * subject_to_position: może być -1 lub indeksem pierwszej lekcji; 
+      decyduje, gdzie przesunięto przedmiot
 
----
+    * Użycie:
+    : self.data[class_id] = class_schedule
 
-## generate
-  * ***Params***:
-      * data: list of data in strict order of:  
-        ```python
-        [  
-            lesson_hours_df,  
-            subject_names_df,  
-            subjects_df,  
-            teachers_df,  
-            classes_df,  
-            classrooms_df  
-        ] 
-        ```
-        
-      * log_file_name: current time for logging
-      * schedule_settings: dictionary of settings for schedule
+    * Zwraca:
+    : True, jeśli przesunięcie było udane, w przeciwnym razie False
+  
+  * ### swap_subject_in_groups
+    * ***Parametry***:
+        * group: id grupy (nie indeks)
+        * subjects_list_x, subjects_list_y: przedmioty do zamiany miejscami
+
+    * Użycie:
+    : zamienia pozycje przedmiotów
+
+    * Zwraca:
+    : None
+  
+  * ### safe_move
+    * ***Parametry***:
+        * teachers_id: identyfikatory nauczycieli do sprawdzenia
+        * day_from: dzień, z którego pobieramy przedmiot
+        * day_to: dzień, do którego dodajemy przedmiot
+        * subject_position: stara pozycja przedmiotu
+        * subject_new_position: nowa pozycja, do której dodajemy przedmiot
+        * class_id: klasa, do której przesunięto przedmiot
+        * days: lista dni
+        * teachers: lista wszystkich nauczycieli
+        * group: grupa klasy do przemieszczenia
+        * log_file_name: nazwa pliku dla informacji o działaniu
+
+    * Użycie:
+    : przed próbą przesunięcia za pomocą move_subject_to_day(), funkcja sprawdza, czy operacja jest możliwa
+    i powiadamia program
+
+    * Zwraca:
+    : bool; czy operacja powiodła się
+
+  * ### get_same_time_teacher
+    * ***Parametry***:
+        * day: dzień przedmiotu
+        * lesson_index: indeks przedmiotu
+
+    * Zwraca:
+    : lista nauczycieli, którzy prowadzą lekcję w danym dniu o danym indeksie lekcji
+  
+  * ### get_same_time_classrooms
+    * ***Parametry***:
+        * day: dzień przedmiotu
+        * lesson_index: indeks przedmiotu
+
+    * Zwraca:
+    : lista sal lekcyjnych, w których odbywa się lekcja w danym dniu o danym indeksie lekcji
+
+  * ### get_stacked_lessons
+    * ***Parametry***:
+        * class_id: id klasy
+        * day: dzień przedmiotu
+        * group: grupa przedmiotu
+        * lesson_index: indeks przedmiotu; jeśli == 0, to domyślnie przyjmuje pierwszy indeks lekcji
+        * log_file_name: nazwa pliku dla informacji o działaniu
+
+    * Użycie:
+    : sprawdza, czy przedmiot osiągnął limit max_stack
+
+    * Zwraca:
+    : lista tego samego typu przedmiotów kolejno, ostatnie indeksy godzin lekcyjnych w stosie
+
+  * ### find_another_grouped_lessons
+    * ***Parametry***:
+        * class_id: id klasy
+        * lesson_day: dzień przedmiotu
+        * number_of_groups: liczba grup tego przedmiotu
+        * lesson_index: indeks przedmiotu
+        * days: lista dni
+
+    * Użycie:
+    : sprawdza, czy któraś lekcja jest podzielona na grupy, 
+    jest to dla zamiany grupowanej lekcji, aby nauczyciel nie miał 2 lekcji równocześnie
+
+    * Zwraca:
+    : lista lekcji grupowanych, które można zamienić z inną lekcją grupowaną
+
+  * ### find_first_lesson_index
+    * ***Parametry***:
+        * schedule_at_day: schedule[klasa_id][dzień]
+        * log_file_name
     
-  * Usage:
-  : generates a full schedule for all the classes where none of the same elements (teachers/clasrooms) appears
-    in the same time
+    * Użycie:
+    : znajduje pierwszy indeks lekcji, jeśli jest pusty przedmiot, indeks nie będzie równy 0
     
-  * Return:
-  : Schedule instance
+    * Zwraca:
+    : indeks lub None, jeśli dzień jest pusty
 
---- 
-
-# File explained line-by-line:
-
-## Starting from line 106:
-
-### Set data for logs
-```python
-    now = datetime.now()
-    time_str = now.strftime("%Y-%m-%d %H-%M-%S.%f")
-```
-
-### Load data 
-and proceede if data loaded propearly
-```python
-    data = load_data(time_str)
-    if data:
-        (...)
-    else:
-        print("Error; couldn't load data", file=sys.stderr)
-```
-
-### Set settings
-```python
-    schedule_settings = {
-            'days': ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-            'min_lessons_per_day': 7,
-            'max_lessons_per_day': 10
-        }
-```
-
-### Generate schedule
-```python
-    schedule = generate_schedule(
-            data=data,
-            schedule_settings=schedule_settings,
-            log_file_name=time_str
-        )
-```
-
----
-## Now we get to the function:
-
-
-### Define helping function
-This function returns tuple of every possible order of list items,
-it's important for creating day orders in later part of program.
-```python
-    def permutations(iterable, r=None):
-    pool = tuple(iterable)
-    n = len(pool)
-    r = n if r is None else r
-    for indices in product(range(n), repeat=r):
-        if len(set(indices)) == r:
-            yield tuple(pool[i] for i in indices)
-```
-
-### Pull settings from dict
-```python
-    min_lessons_per_day, max_lessons_per_day = schedule_settings["min_lessons_per_day"], schedule_settings["max_lessons_per_day"]
-    days = schedule_settings["days"]
-```
-
-### Create directory for log files
-```python
-    if not os.path.exists(f'logs/{log_file_name}'):
-        os.makedirs(f'logs/{log_file_name}')
-    with open(f'logs/{log_file_name}/.log', 'w') as f:
-        pass
-```
-
-### Create global schedule conditions
-```python
-    conditions = ScheduleConditions(min_lessons_per_day=min_lessons_per_day, max_lessons_per_day=max_lessons_per_day)
-```
-
-### Set schedule variable
-```python
-    schedule = False
-```
-
-### Loop through every combination of days
-Days order is only thing that makes schedule generation random,
-so if we loop through every possible order, until we get working schedule,
-we can be sure that we didn't miss anything
-```python
-    for i, days_order in enumerate(permutations(days, len(days))):
-        version = i
-```
-
-### Split data to separate dataframes
-```python
-    [
-        lesson_hours_df,
-        subject_names_df,
-        subjects_df,
-        teachers_df,
-        classes_df,
-        classrooms_df,
-        classroom_types_df
-    ] = copy.deepcopy(data)
-```
-
-### Gather data from dataframes
-```python
-    classes_id, classes_start_hour_index = SchoolClass.get_classes_data(classes_df)
-    teachers = create_teachers(teachers_df)
-    subjects = split_subjects(subjects_df, teachers, classes_id)
-    classrooms = create_classrooms(classrooms_df)
-```
-
-### Generate schedule
-```python
-    schedule = Schedule(version=version).create(
-        classes_id=classes_id,
-        classes_start_hour_index=classes_start_hour_index,
-        conditions=conditions,
-        days=days,
-        days_ordered=days_order,
-        subjects=subjects,
-        teachers=teachers,
-        log_file_name=log_file_name
-    ).split_to_groups(
-        days,
-        conditions,
-        log_file_name
-    ).format_schedule(
-        conditions,
-        days=days,
-        teachers=teachers,
-        classrooms=classrooms,
-        classes_id=classes_id,
-        classes_start_hour_index=classes_start_hour_index,
-        days_ordered=days_order,
-        log_file_name=log_file_name
-    )
-```
-
-### Log if schedule version was valid
-```python
-    debug_log(log_file_name, f"Version: {version}, Valid: {schedule.valid}, Day order: {days_order}")
-```
-
-### Brake from loop if schedule is valid
-While creating schedule, functions keep track of schedule validation and set schedule valid variable appropriately.
-```python
-    if schedule.valid:
-        break
-```
-
-### Create tkinter visualisation of valid (or last) schedule:
-```python
-    # schedule visualisation using tkinter
-    if not tkinter_schedule_vis(
-        schedule=schedule,
-        days=days,
-        dir_name=f'{log_file_name}',
-        capture_name='FinalCapture',
-        capture=True
-    ):
-        debug_log(log_file_name, 'DEBUG: no tkinter generated')
-
-```
-
-### Return schedule data
-Returning only raw schedule as other things aren't necessary
-```python
-    return schedule.data
-```
+  * ### get_num_of_lessons
+    * ***Parametry***:
+        * schedule_at_day: schedule[klasa_id][dzień]
+        * log_file_name
+    
+    * Zwraca:
+    : liczba niepustych lekcji w danym dniu

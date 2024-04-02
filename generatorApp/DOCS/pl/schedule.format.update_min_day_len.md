@@ -1,19 +1,19 @@
 # schedule/format/update_min_day_len.py
-  
-This file contains update_min_day_len function
+
+Ten plik zawiera funkcję update_min_day_len
 
 ---
 
 ## update_min_day_len
-  * ***Params***:
-      * conditions: global conditions of schedule
-      * days: list of days with lessons in
-      * teachers: list of all teachers
-      * log_file_name: file name for run information
+  * ***Parametry***:
+      * conditions: globalne warunki harmonogramu
+      * days: lista dni z lekcjami
+      * teachers: lista wszystkich nauczycieli
+      * log_file_name: nazwa pliku dla informacji o działaniu
     
-  * Usage:
-  : make use of default conditions (min/max_lessons_per_day);
-  update length of day based on conditions
+  * Użycie:
+  : korzysta z domyślnych warunków (min/max_lessons_per_day);
+  aktualizuje długość dnia na podstawie warunków
     
-  * Return:
+  * Zwraca:
   : self

@@ -1,17 +1,17 @@
 # schedule/format/add_classrooms.py
-  
-This file contains add_classrooms function
+
+Ten plik zawiera funkcję add_classrooms
 
 ---
 
 ## add_classrooms
-  * ***Params***:
-      * classrooms: list of classrooms
-      * teachers: list of all teachers in schedule
-      * days: list of days
+  * ***Parametry***:
+      * classrooms: lista sal lekcyjnych
+      * teachers: lista wszystkich nauczycieli w harmonogramie
+      * days: lista dni
     
-  * Usage:
-  : assigns classrooms to subjects
+  * Użycie:
+  : przypisuje sale lekcyjne do przedmiotów
     
-  * Return:
+  * Zwraca:
   : self

@@ -1,33 +1,33 @@
-# schedule/__init__.py
-  
-This file contains Schedule class functions for checking if conditions are met
+# schedule/return_conditions.py
+
+Ten plik zawiera funkcje klasy Harmonogram do sprawdzania, czy warunki są spełnione
 
 ---
 
-## Functions
+## Funkcje
   * ### are_teachers_taken
-    * ***Params***:
-        * teachers_id: teachers id
-        * day: day of new subject position
-        * lesson_index: index of new subject position
+    * ***Parametry***:
+        * teachers_id: identyfikatory nauczycieli
+        * day: dzień nowej pozycji przedmiotu
+        * lesson_index: indeks nowej pozycji przedmiotu
 
-    * Usage:
-    : check if teachers at passed in new position have already lessons.
-    This function is for checking if it's possible to change subject position
+    * Użycie:
+    : sprawdza, czy nauczyciele na nowej pozycji mają już lekcje.
+    Ta funkcja służy do sprawdzania, czy możliwa jest zmiana pozycji przedmiotu
 
-    * Return:
-    : True/False depending on if teachers have already lessons at passed in position
+    * Zwraca:
+    : True/False w zależności od tego, czy nauczyciele mają już lekcje na podanej pozycji
 
   * ### check_teacher_conditions
-    * ***Params***:
-        * teachers_id: teachers id
-        * day: day of teachers new subject position
-        * days: list of days
-        * lesson_index: index of new subject position
-        * teachers: list of all teachers
+    * ***Parametry***:
+        * teachers_id: identyfikatory nauczycieli
+        * day: dzień nowej pozycji przedmiotu nauczyciela
+        * days: lista dni
+        * lesson_index: indeks nowej pozycji przedmiotu
+        * teachers: lista wszystkich nauczycieli
 
-    * Usage:
-    : if teacher had a subject at passed position, would it conflict with his working conditions
+    * Użycie:
+    : jeśli nauczyciel miał przedmiot na podanej pozycji, czy byłby konflikt z jego warunkami pracy
 
-    * Return:
-    : True if conditions are met; else False
+    * Zwraca:
+    : True, jeśli warunki są spełnione; w przeciwnym razie False
