@@ -1,48 +1,48 @@
 # load_data.py
-  
-This file functions for loading and operating on data
+
+Ten plik zawiera funkcje do ładowania i operowania na danych
 
 ---
 
-* ### Functions
+* ### Funkcje
   * ### load_data
-      * ***Params***:
-          * log_file_name: File, where log data is saved
-          * path: path to folder with tables of type CSV or Excel
-          * tables: list of files/tables
-          * dtype: type of data to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values), defaults to xlsx
+      * ***Parametry***:
+          * log_file_name: Plik, gdzie zapisane są dane dziennika
+          * path: ścieżka do folderu z tabelami typu CSV lub Excel
+          * tables: lista plików/tabel
+          * dtype: typ danych do odczytu, może być .xlsx/.ods (plik Excel), .csv (wartości oddzielone przecinkiem), domyślnie xlsx
 
-      * Return:
-      : list of pandas dataframes or False if files don't match schedule data
+      * Zwraca:
+      : lista ramek danych pandas lub False, jeśli pliki nie pasują do danych harmonogramu
   
   * ### class_to_dict
-      * ***Params***:
-          * obj: object
+      * ***Parametry***:
+          * obj: obiekt
       
-      * Usage
-      : turns object into python dict
+      * Użycie
+      : zamienia obiekt na słownik pythona
 
-      * Return:
-      : object in python dict format
+      * Zwraca:
+      : obiekt w formacie słownika pythona
   
   * ### schedule_to_json
-     * ***Params*** 
-        * schedule: Schedule instance
-        * file_path: file path for saving the JSON
+     * ***Parametry*** 
+        * schedule: instancja Harmonogramu
+        * file_path: ścieżka pliku do zapisania JSON
      
-     * Usage
-     : saves schedule into a file   
+     * Użycie
+     : zapisuje harmonogram do pliku   
   
   * ### schedule_to_excel
-      * ***Params***:
-          * schedule_dict: schedule instance in dict format
-          * data: list of raw pandas dataframes (The same order as in generator)
-          * info: Arguments (in dict) to write in title page of schedule excel,
-            set 'Title' key for a big title; defaults to School Schedule
-          * file_path: path where Excel file is saved
+      * ***Parametry***:
+          * schedule_dict: instancja harmonogramu w formacie słownika
+          * data: lista surowych ramek danych pandas (ta sama kolejność jak w generatorze)
+          * info: Argumenty (w formie słownika) do zapisania na stronie tytułowej arkusza harmonogramu,
+            ustaw klucz 'Tytuł' dla dużego tytułu; domyślnie "Harmonogram szkoły"
+          * file_path: ścieżka, gdzie ma zostać zapisany plik Excel
       
-      * Usage
-      : creates Excel file that contains schedule split by classes
+      * Użycie
+      : tworzy plik Excela zawierający harmonogram podzielony na klasy
 
-      * Return:
+      * Zwraca:
       : None

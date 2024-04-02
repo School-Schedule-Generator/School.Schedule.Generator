@@ -1,40 +1,38 @@
-# School Schedule Generator Documentation
+# Dokumentacja SSG
 
-Welcome to the documentation for the School Schedule Generator! 
-This document serves as a comprehensive guide on how to utilize the website, 
-extend its functionalities, and understand the structure of its files.
+Witaj w dokumentacji Generatora Planu Szkolnego! Ten dokument stanowi kompleksowy przewodnik dotyczący korzystania z witryny, rozszerzania jej funkcjonalności oraz zrozumienia struktury plików.
 
-## Introduction
+## Wstęp
 
-The School Schedule Generator is a versatile tool designed to assist students, teachers, 
-and administrators in creating organized schedules tailored to their educational needs. 
-If you're planning class timetables,
-this generator streamlines the process, saving time and effort.
+Generator Planu Szkolnego to wszechstronne narzędzie zaprojektowane, 
+aby pomóc uczniom, nauczycielom i administratorom w tworzeniu zorganizowanych planów dopasowanych do ich potrzeb edukacyjnych. 
+Jeśli planujesz harmonogramy zajęć, ten generator usprawnia proces,
+oszczędzając czas i wysiłek.
 
-## Contents
+## Spis treści
 
-1. [Usage Instructions](#usage-instructions)
-2. [Extending the Generator](#extending-the-generator)
-3. [Description of Generator Files](#description-of-generator-files)
+1. [Instrukcje użytkowania](#instrukcje-użytkowania)
+2. [Rozszerzanie Generatora](expantions_tutorial)
+3. [Opis plików Generatora](files)
 
-## Usage Instructions
+## Instrukcje użytkowania
 
-To make the most of the School Schedule Generator, follow these steps:
+Aby jak najlepiej wykorzystać Generator Planu Szkolnego, postępuj zgodnie z poniższymi krokami:
 
-1. **Accessing the Website:** Visit the website and familiarize yourself with the user interface.
-2. **Inputting Information:** Enter the necessary details such as class names, teachers, time slots, and any other relevant information.
-3. **Generating the Schedule:** Once all information is entered, click on the "Generate Schedule" button to create your customized schedule.
-4. **Review and Adjust:** Review the generated schedule and make any necessary adjustments using the provided editing tools.
-5. **Saving and Exporting:** Save your schedule for future reference or export it in various formats for easy sharing and printing.
+1. **Dostęp do Witryny:** Odwiedź witrynę i zapoznaj się z interfejsem użytkownika.
+2. **Wprowadzanie informacji:** Wprowadź niezbędne dane, takie jak nazwy klas, nauczyciele, przedziały czasowe i inne istotne informacje.
+3. **Generowanie Planu:** Po wprowadzeniu wszystkich informacji, kliknij przycisk "Generuj Plan", aby utworzyć spersonalizowany plan.
+4. **Sprawdzanie i Dostosowywanie:** Przejrzyj wygenerowany plan i dokonaj wszelkich niezbędnych dostosowań za pomocą dostępnych narzędzi edycyjnych.
+5. **Zapisywanie i Eksportowanie:** Zachowaj swój plan do późniejszego odwołania lub wyeksportuj go w różnych formatach, aby łatwo udostępniać i drukować.
 
-## Extending the Generator
+## Rozszerzanie Generatora
 
-The School Schedule Generator is designed to be extensible, 
-allowing users to add new features or customize existing functionalities.  
-To create expansions:
+Generator Planu Szkolnego został zaprojektowany tak, aby można było go rozbudować, 
+umożliwiając użytkownikom dodawanie nowych funkcji lub dostosowywanie istniejących.  
+Aby stworzyć rozbudowy:
 
-1. **Understanding the Codebase:** Familiarize yourself with the structure and organization of the generator's source code.
-2. **Identifying Extension Points:** Locate areas within the codebase where new functionalities can be integrated or existing ones modified.
-3. **Developing Expansions:** Develop your custom features or modifications according to the guidelines provided in the documentation.
-4. **Testing and Integration:** Test your expansions thoroughly to ensure they integrate seamlessly with the existing generator.
-5. **Sharing Your Expansions:** Share your extensions with the community to contribute to the ongoing development of the School Schedule Generator.
+1. **Zrozumienie Kodu Źródłowego:** Zapoznaj się ze strukturą i organizacją kodu źródłowego generatora.
+2. **Identyfikacja Punktów Rozszerzeń:** Zlokalizuj obszary w kodzie źródłowym, gdzie można zintegrować nowe funkcje lub zmodyfikować istniejące.
+3. **Tworzenie Rozszerzeń:** Rozwijaj swoje niestandardowe funkcje lub modyfikacje zgodnie z wytycznymi zawartymi w dokumentacji.
+4. **Testowanie i Integracja:** Przetestuj swoje rozszerzenia dokładnie, aby upewnić się, że integrują się one płynnie z istniejącym generatorem.
+5. **Dzielenie Się Rozszerzeniami:** Podziel się swoimi rozszerzeniami z społecznością, aby przyczynić się do ciągłego rozwoju Generatora Planu Szkolnego.

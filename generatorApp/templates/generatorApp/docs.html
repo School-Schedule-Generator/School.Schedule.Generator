@@ -7,7 +7,45 @@
 {% endblock %}
 
 {% block content %}
-    <h1> JEBAC RZYDUF <br><br><br><br><br> i Grecje</h1>
+    <aside>
+        <ol class="documentation-list">
+            <li><a href="{% url 'generatorApp:docs' lang 'intro' %}">intro</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'classroom' %}">classroom</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'debug_log' %}">debug_log</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'expantions_tutorial' %}">expantions_tutorial</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'generate' %}">generate</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'load_data' %}">load_data</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.format.add_classrooms' %}">schedule.format.add_classrooms</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.format.format_schedule' %}">schedule.format.format_schedule</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.format.update_min_day_len' %}">schedule.format.update<em>min</em>day_len</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.general' %}">schedule.general</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.return_conditions' %}">schedule.return_conditions</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule.__init__' %}">schedule.<strong>init</strong></a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'schedule_conditions' %}">schedule_conditions</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'school_class' %}">school_class</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'settings' %}">settings</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'subject' %}">subject</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'teacher' %}">teacher</a></li>
+            <li><a href="{% url 'generatorApp:docs' lang 'tkinter_schedule_vis' %}">tkinter<em>schedule</em>vis</a></li>
+        </ol>
+    </aside>
 
-    {{ user }}
+    <main>
+        {{ file_content|safe }}
+    </main>
+    
+    <form action="" method="GET" id="languageForm">
+      <select name="language" id="languageSelect">
+        <option value="eng" {% if lang == 'eng' %}selected{% endif %}>English</option>
+        <option value="pl" {% if lang == 'pl' %}selected{% endif %}>Polish</option>
+      </select>
+    </form>
+    
+    <script>
+      document.getElementById("languageSelect").addEventListener("change", function() {
+        document.getElementById("languageForm").submit();
+      });
+    </script>
+
 {% endblock %}
+

@@ -1,4 +1,5 @@
-from django.urls import path, reverse_lazy
+from django.http import HttpResponseRedirect
+from django.urls import path, reverse
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -6,11 +7,13 @@ from django.conf.urls.static import static
 
 app_name = "generatorApp"
 urlpatterns = [
+    path('', views.home, name='home'),
     path('home/', views.home, name='home'),
     path('accounts/login/', views.LoginUserView.as_view(), name='login'),
     path('accounts/register/', views.RegisterUserView.as_view(), name='register'),
     path('accounts/logout/', views.LogoutUserView.as_view(), name='logout'),
-    path('docs/', views.DocsView.as_view(), name='docs'),
+    path('docs/', lambda request: HttpResponseRedirect(reverse('generatorApp:docs', kwargs={'lang': 'eng', 'file': 'intro'})), name='redirect-docs'),
+    path('docs/<str:lang>/<str:file>', views.DocsView.as_view(), name='docs'),
     path('schedules/', views.SchedulesListView.as_view(), name='schedules_base'),
     path('schedules/<str:username>', views.SchedulesListView.as_view(), name='schedules'),
     # path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedule'),

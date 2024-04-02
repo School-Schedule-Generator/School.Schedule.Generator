@@ -1,34 +1,22 @@
 # school_class.py
-  
-This file contains SchoolClass class
+
+Ten plik zawiera funkcję do wizualizacji harmonogramu podczas jego tworzenia
+
+> [!UWAGA]  
+> Najlepiej używać jej tylko w trybie DEBUG.
 
 ---
 
-## SchoolClass
-* ### Params:
-    * class_id
-    * grade (**1**a, **2**a, **2**b)
-    * class_signature (1**a**, 1**b**, 1**c**)
-    * supervising_teacher
+### tkinter_schedule_vis
+  * ***Parametry***:
+      * schedule: instancja harmonogramu
+      * days: lista dni
+      * capture: bool, decyduje, czy funkcja ma wykonać zrzut ekranu wygenerowanego harmonogramu
+      * capture_name: nazwa zrzutu ekranu
+      * dir_name: lokalizacja zapisu zrzutu ekranu 
 
-* ### Functions
-  * get_classes_data
-    * ***Params***:
-        * df: dataframe of classes
+  * Użycie:
+  : generuje wizualizację harmonogramu
 
-    * Usage:
-    : get all class_ids
-
-    * Return:
-    : list of classes ids and dict of hours when class starts
-  
-  * get_school_classes
-      * ***Params***:
-          * class_df: dataframe of all classes
-          * classes_id: list of classes ids
-
-      * Usage:
-      : turn pandas df data to class instances  
-
-      * Return:
-      : dict of every class
+  * Zwraca:
+  : True, jeśli proces zakończył się poprawnie, w przeciwnym razie False

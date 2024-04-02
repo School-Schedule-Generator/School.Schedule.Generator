@@ -1,4 +1,4 @@
-# school_class.py
+# debug_log.py
   
 This file contains function for printing and saving run data in DEBUG
 

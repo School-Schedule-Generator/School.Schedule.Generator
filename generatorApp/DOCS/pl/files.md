@@ -14,5 +14,4 @@
 14. [settings](settings)
 15. [subject](subject)
 16. [teacher](teacher)
-17. [template.py](template.py)
-18. [tkinter_schedule_vis](tkinter_schedule_vis)
+17. [tkinter_schedule_vis](tkinter_schedule_vis)

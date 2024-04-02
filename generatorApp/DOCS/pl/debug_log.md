@@ -1,17 +1,17 @@
-# school_class.py
-  
-This file contains function for printing and saving run data in DEBUG
+# debug_log.py
+
+Ten plik zawiera funkcję do drukowania i zapisywania danych uruchomieniowych w trybie DEBUG
 
 ---
 
 ### debug_log
-  * ***Params***:
-      * file_name: file to log to
-      * args: args for print
-      * kwargs: kwargs for print
+  * ***Parametry***:
+      * file_name: plik do zapisu dziennika
+      * args: argumenty do drukowania
+      * kwargs: argumenty nazwane do drukowania
   
-  * Usage:
-  : functions is extension to print as it does the same but writes all of it in a file (if DEBUG==True)
+  * Użycie:
+  : funkcja jest rozszerzeniem funkcji print, ponieważ robi to samo, ale zapisuje wszystko do pliku (jeśli DEBUG==True)
 
-  * Return:
+  * Zwraca:
   : None

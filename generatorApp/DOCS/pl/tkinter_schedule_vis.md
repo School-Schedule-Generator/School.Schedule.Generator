@@ -1,23 +1,22 @@
 # school_class.py
-  
-This file contains function for visualising schedule while it's creating
 
-> [!NOTE]  
-> Best to use it only in DEBUG mode.
+Ten plik zawiera funkcję do wizualizacji harmonogramu podczas jego tworzenia
+
+> [!UWAGA]  
+> Najlepiej używać jej tylko w trybie DEBUG.
 
 ---
 
 ### tkinter_schedule_vis
-  * ***Params***:
-      * schedule: schedule instance
-      * days: list of days
-      * capture: bool, decides if the function takes a screenshot of the generated schedule
-      * capture_name: name of the screenshot
-      * dir_name: save localisation of the screenshot 
+  * ***Parametry***:
+      * schedule: instancja harmonogramu
+      * days: lista dni
+      * capture: bool, decyduje, czy funkcja ma zrobić zrzut ekranu wygenerowanego harmonogramu
+      * capture_name: nazwa zrzutu ekranu
+      * dir_name: lokalizacja zapisu zrzutu ekranu 
 
-  * Usage:
-  : generates schedule visualisation
+  * Użycie:
+  : generuje wizualizację harmonogramu
 
-  * Return:
-  : True if process finished corectly, otherwise False
-      
+  * Zwraca:
+  : True, jeśli proces zakończył się poprawnie, w przeciwnym razie False

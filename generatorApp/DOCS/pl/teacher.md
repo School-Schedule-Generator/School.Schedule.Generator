@@ -1,23 +1,23 @@
 # teacher.py
-  
-This file contains Teacher class
+
+Ten plik zawiera klasę Teacher
 
 ---
 
 ## Teacher
-* ### Params:
-    * name: teacher name
-    * surname: teacher surname
-    * possible_subjects: list of subjects that the teacher can teach
-    * start_hour_index: hour id, decides when teacher starst lessons (can start later)
-    * end_hour_index: hour id, decides when teacher end lessons (can start earlier)
+* ### Parametry:
+    * name: imię nauczyciela
+    * surname: nazwisko nauczyciela
+    * possible_subjects: lista przedmiotów, które nauczyciel może nauczać
+    * start_hour_index: id godziny, decyduje o rozpoczęciu lekcji przez nauczyciela (może zaczynać później)
+    * end_hour_index: id godziny, decyduje o zakończeniu lekcji przez nauczyciela (może kończyć wcześniej)
 
 ## create_teachers
-  * ***Params***:
-      * teachers_df: dataframe of all teachers
+  * ***Parametry***:
+      * teachers_df: dataframe wszystkich nauczycieli
 
-  * Usage:
-  : turn pandas df data to class instances  
+  * Użycie:
+  : zamienia dane z pandas df na instancje klasy  
 
-  * Return:
-  : dict of every teacher, key - teacher_id
+  * Zwraca:
+  : słownik zawierający każdego nauczyciela, klucz - teacher_id

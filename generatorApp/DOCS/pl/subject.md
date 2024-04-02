@@ -1,34 +1,34 @@
 # subject.py
-  
-This file contains class Subject
+
+Ten plik zawiera klasę Subject
 
 ---
 
 ## Subject
-* ### Params:
+* ### Parametry:
     * subject_id
-    * subject_name_id: id of name
-    * class_id: id of class
-    * number_of_groups: number of groups that the class splits into for this subject
-    * lesson_hour_id: id of lesson hour
-    * teachers_id: id of teacher, if None defaults to [-1]
-    * classroom_id: id of classroom
-    * is_empty: if True, this instance is an empty subject 
-      (used to make space before lessons for class start)
-    * max_stack: number to decide how many subjects of this type can be in a row
-    * movable: decides if this subject can be moved
-    * group: group that this subject is for when class is split into groups
-    * classroom_types: type of classroom
+    * subject_name_id: id nazwy
+    * class_id: id klasy
+    * number_of_groups: liczba grup, na które klasa jest podzielona dla tego przedmiotu
+    * lesson_hour_id: id godziny lekcyjnej
+    * teachers_id: id nauczyciela, jeśli None, domyślnie [-1]
+    * classroom_id: id sali lekcyjnej
+    * is_empty: jeśli True, ta instancja jest pustym przedmiotem 
+      (używane do zrobienia miejsca przed lekcjami na początek zajęć)
+    * max_stack: liczba określająca, ile przedmiotów tego typu może być kolejno
+    * movable: decyduje, czy ten przedmiot można przesuwać
+    * group: grupa, dla której jest ten przedmiot, gdy klasa jest podzielona na grupy
+    * classroom_types: typ sali lekcyjnej
 
-* ### Functions
+* ### Funkcje
   * ### split_subjects
-      * ***Params***:
-          * subjects_df: dataframe of all subjects
-          * teachers: list of school_classes
-          * classes_id: list of ids of classes
+      * ***Parametry***:
+          * subjects_df: dataframe wszystkich przedmiotów
+          * teachers: lista klas szkolnych
+          * classes_id: lista id klas
 
-      * Usage:
-      : turn pandas df data to class instances  
+      * Użycie:
+      : zamienia dane z pandas df na instancje klasy  
 
-      * Return:
-      : split by teachers and by classes ([teacher_id][class_id]) lists of subjects
+      * Zwraca:
+      : podzielone według nauczycieli i klas ([teacher_id][class_id]) listy przedmiotów

@@ -1,38 +1,38 @@
 # settings.py
 
-This file contains all important global variables, and default names  
+Ten plik zawiera wszystkie ważne zmienne globalne oraz domyślne nazwy
 
-Because settings is a constant there is created only one instance
-in the same file as definition, so to import settings, import only 
-that object instance as follows:  
+Ponieważ ustawienia są stałe, tworzona jest tylko jedna instancja
+w tym samym pliku, w którym jest zdefiniowana, dlatego do importowania ustawień
+należy importować tylko tę instancję obiektu, jak pokazano poniżej:  
 `from settings import settings`
 
 ---
-Settings list:
+Lista ustawień:
 * DEBUG
-: decides workflow of program, use in testing
+: decyduje o przebiegu pracy programu, używane podczas testowania
 
 * TKCAPTURE 
-: bool to decide if ou want to generate tkinter captures 
-of schedule in process of creating schedule, 
-more information on this topic in separate chapter
+: bool decydujący, czy chcesz generować zrzuty ekranu tkintera 
+harmonogramu w procesie tworzenia harmonogramu, 
+więcej informacji na ten temat w osobnym rozdziale
 
 * SAVELOG  
-: bool to decide if debuglog saves logs in a file
+: bool decydujący, czy debuglog zapisuje logi do pliku
 
 * BASE_DATA_PATH 
-: base path of all data used by program
+: ścieżka podstawowa wszystkich danych używanych przez program
 
 * TEST_DATA_PATH 
-: path to data used **only** for testing
+: ścieżka do danych używanych **tylko** do testów
 
 * DF_NAMES 
-: list of names of all dataframes
+: lista nazw wszystkich dataframe'ów
 
 * COLUMN_NAMES 
-: dictionary with names of dataframes as keys
-and corresponding names of theirs columns
+: słownik zawierający nazwy dataframe'ów jako klucze
+i odpowiadające im nazwy ich kolumn
 
-> [!NOTE]  
-> Use ***COLUM NAMES*** re-writing the name rather than pulling it out from setting  
-> Do it for readability and consistency
+> [!UWAGA]  
+> Używaj ***COLUMN NAMES*** do ponownego zapisu nazwy zamiast wydobywania jej ze zmiennych ustawień  
+> Rób to dla czytelności i spójności

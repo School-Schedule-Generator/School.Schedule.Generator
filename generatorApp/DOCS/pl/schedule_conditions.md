@@ -1,15 +1,14 @@
 # schedule_conditions.py
-  
-This file contains class ScheduleConditions
+
+Ten plik zawiera klasę ScheduleConditions
 
 ---
 
 ## ScheduleConditions
-* ### Params:
-    * data: dict containing schedule conditions:
-      * min_lessons_per_day: Minimum number of lessons per day
-      * max_lessons_per_day: Maximum number of lessons per day
+* ### Parametry:
+    * data: słownik zawierający warunki harmonogramu:
+      * min_lessons_per_day: Minimalna liczba lekcji dziennie
+      * max_lessons_per_day: Maksymalna liczba lekcji dziennie
 
-* Usage:
-: this class decides general setting of schedule generator
-    
+* Użycie:
+: ta klasa decyduje o ogólnych ustawieniach generatora harmonogramu

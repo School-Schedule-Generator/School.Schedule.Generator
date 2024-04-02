@@ -1,21 +1,21 @@
 # classroom.py
-  
-This file contains Classroom class and function to turn pandas df data to class instances  
+
+Ten plik zawiera klasę Classroom oraz funkcję do zamiany danych z pandas DataFrame na instancje klasy  
 
 ---
 
 ## Classroom
-* ### Params:
-    * classroom_name: name of the classroom, no usage in code
-    * type_id: id of type of classroom, 
-  type is used to divide the classrooms into diffrent lab types
+* ### Parametry:
+    * classroom_name: nazwa sali lekcyjnej, nie używane w kodzie
+    * type_id: id typu sali lekcyjnej, 
+  typ jest używany do podziału sal lekcyjnych na różne typy laboratoriów
 
 ## create_classrooms
-* ***Params***:
-    * classroom_df: raw (pandas) classroom data
+* ***Parametry***:
+    * classroom_df: surowe dane sal lekcyjnych (pandas DataFrame)
 
-* Usage:
-: turn pandas df data to class instances  
+* Użycie:
+: zamienia dane z pandas DataFrame na instancje klasy  
 
-* Return:
-: dictionary of classrooms, key - classroom_id
+* Zwraca:
+: słownik sal lekcyjnych, klucz - classroom_id

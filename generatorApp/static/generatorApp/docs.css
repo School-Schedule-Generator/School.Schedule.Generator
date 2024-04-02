@@ -1,0 +1,14 @@
+aside, main {
+    float: left;
+    position: relative;
+    top: 8rem;
+}
+
+aside {
+    width: 20%;
+    padding-left: 3ch;
+}
+
+main {
+    width: 80%;
+}

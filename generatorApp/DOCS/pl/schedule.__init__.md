@@ -1,46 +1,33 @@
 # schedule/__init__.py
-  
-This file contains Schedule class
+
+Ten plik zawiera funkcje klasy Harmonogram do sprawdzania, czy warunki są spełnione
 
 ---
 
-## SchoolClass
-* ### Params:
-    * version: schedule_version
-    * valid: is this schedule version valid
-    * data: schedule data; dict type
+## Funkcje
+  * ### are_teachers_taken
+    * ***Parametry***:
+        * teachers_id: identyfikatory nauczycieli
+        * day: dzień nowej pozycji przedmiotu
+        * lesson_index: indeks nowej pozycji przedmiotu
 
-* ### Functions
-  * ### push_class_schedule
-    * ***Params***:
-        * class_id: id of passed in class
-        * class_schedule: schedule of class to push
+    * Użycie:
+    : sprawdza, czy nauczyciele na nowej pozycji mają już lekcje.
+    Ta funkcja służy do sprawdzania, czy możliwa jest zmiana pozycji przedmiotu
 
-    * Usage:
-    : self.data[class_id] = class_schedule
+    * Zwraca:
+    : True/False w zależności od tego, czy nauczyciele mają już lekcje na podanej pozycji
 
-    * Return:
-    : None
-  
-  * ### create
-      * ***Params***:
-          * classes_id: list of ids
-          * classes_start_hour_index: dict of hours when class starts
-          * conditions: global conditions of schedule
-          * days: list of days with lessons in
-          * days_ordered: list of days but with order wich in the teachers are added in
-          * subjects: split per teacher split per class subjects
-          * teachers: list of teachers (obj)
-          * log_file_name: file name for run information
+  * ### check_teacher_conditions
+    * ***Parametry***:
+        * teachers_id: identyfikatory nauczycieli
+        * day: dzień nowej pozycji przedmiotu nauczyciela
+        * days: lista dni
+        * lesson_index: indeks nowej pozycji przedmiotu
+        * teachers: lista wszystkich nauczycieli
 
-      * Return:
-      : structured and logical schedule, or False if valid == False.  
-      Generation doesn't use any randomnes
-  
-  * ### split_to_groups
-    * ***Params***:
-        * days: list of days used in schedule
-        * log_file_name: file name for run information
+    * Użycie:
+    : jeśli nauczyciel miał przedmiot na podanej pozycji, czy byłby konflikt z jego warunkami pracy
 
-    * Return:
-    : schedule with split subjects
+    * Zwraca:
+    : True, jeśli warunki są spełnione; w przeciwnym razie False
