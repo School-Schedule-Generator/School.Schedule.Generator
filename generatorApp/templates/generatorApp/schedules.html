@@ -4,6 +4,7 @@
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
     <title>schedules</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         .main{
             margin-left: 40%;
@@ -27,6 +28,15 @@
     <br>
 
     <div>
+        <h3>Sortuj po:</h3>
+        <form method="GET" id="sortForm">
+{#            action=""{% url 'generatorApp:schedules' username=user.username%}#}
+            <select name="sort_by" id="sort_by">
+                <option value="name">Name(A-Z)</option>
+                <option value="created_date">Created date</option>
+            </select>
+{#            <input type="submit" value="Sort by">#}
+        </form>
         <h3>List of your schedules</h3>
         <ol>
             {% if schedule_list %}
@@ -46,4 +56,12 @@
         </ol>
     </div>
 </div>
+
+<script>
+    $(document).ready(()=>{
+        $('#sort_by').change(()=>{
+            $('#sortForm').submit();
+        });
+    });
+</script>
 {% endblock %}

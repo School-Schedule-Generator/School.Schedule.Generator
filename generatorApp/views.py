@@ -24,6 +24,7 @@ def home(request):
     return render(request, 'generatorApp/home.html')
 
 
+#TODO: dodac remember mi i ustawic dlugosc sesji
 class LoginUserView(LoginView):
     form_class = LoginForm
     template_name = 'generatorApp/login.html'
@@ -85,7 +86,11 @@ class SchedulesListView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
         context['labels'] = [
             'lesson_hours',
             'classroom_types',
@@ -98,10 +103,14 @@ class SchedulesListView(LoginRequiredMixin, FormView):
         return context
 
 
+class ScheduleView(LoginRequiredMixin, ListView):
+    pass
+
+
 def upload_file(file_name, file, schedule_id):
     schedule = ScheduleList.objects.get(id=schedule_id)
     try:
-        if file_name == 'classes':
+        if file_name == 'classes':    
             for index, row in file.iterrows():
                 _id, grade, class_signature, supervising_teacher, starting_lesson_hour_id = row.values
 
