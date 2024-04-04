@@ -17,12 +17,14 @@ from django.shortcuts import redirect
 from .schoolSchedule.load_data import load_data, schedule_to_json
 from .schoolSchedule.generate import generate_schedule
 
+from django.core.exceptions import ValidationError
+
 
 def home(request):
     return render(request, 'generatorApp/home.html')
 
 
-#TODO: dodac remember mi i ustawic dlugosc sesji
+# TODO: dodac remember mi i ustawic dlugosc sesji
 class LoginUserView(LoginView):
     form_class = LoginForm
     template_name = 'generatorApp/login.html'
@@ -49,23 +51,25 @@ class RegisterUserView(CreateView):
 
 class LogoutUserView(LoginRequiredMixin, View):
     login_url = reverse_lazy('generatorApp:login')
+
     def get(self, request):
         logout(request)
         return HttpResponseRedirect(reverse('generatorApp:home'))
 
-class DocsView(View):
 
+class DocsView(View):
     docs_path = os.path.join(settings.BASE_DIR, 'generatorApp/DOCS')
 
     def get(self, request, lang, file):
         selected_language = request.GET.get('language', lang)
 
-        file_path = os.path.join(self.docs_path, lang, file+'.md')
+        file_path = os.path.join(self.docs_path, lang, file + '.md')
         file_context = open(file_path, mode="r", encoding="utf-8").read()
         file_context = markdown.markdown(file_context)
 
         if lang != selected_language:
-            return HttpResponseRedirect(reverse('generatorApp:docs', kwargs={'lang': selected_language, 'file': 'intro'}))
+            return HttpResponseRedirect(
+                reverse('generatorApp:docs', kwargs={'lang': selected_language, 'file': 'intro'}))
         return render(request, 'generatorApp/docs.html', {'lang': selected_language, 'file_content': file_context})
 
 
@@ -83,6 +87,9 @@ class SchedulesListView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         name = form.cleaned_data.get('name')
         description = form.cleaned_data.get('description')
+
+        if ScheduleList.objects.filter(user_id=self.request.user, nam=name).exist():
+            raise ValidationError('Schedule with this name exist')
 
         schedule = ScheduleList.objects.create(
             user_id=self.request.user,
@@ -112,30 +119,56 @@ class SchedulesListView(LoginRequiredMixin, FormView):
         return context
 
 
-class ScheduleView(LoginRequiredMixin, ListView):
-    pass
+class ScheduleView(LoginRequiredMixin, TemplateView):
+    template_name = 'generatorApp/schedule.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['schedule'] = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+
+        context['schedule_content'] = json.loads(schedule.content)
+
+        return context
 
 
 def upload_file(file_name, file, schedule_id):
     schedule = ScheduleList.objects.get(id=schedule_id)
     try:
-        if file_name == 'classes':    
+        if file_name == 'classes':
             for index, row in file.iterrows():
                 _id, grade, class_signature, supervising_teacher, starting_lesson_hour_id = row.values
 
                 if not Classes.objects.filter(
-                    _id=_id,
-                    schedule_id=schedule,
-                    supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
-                    starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id, schedule_id=schedule),
-                    grade=grade,
-                    class_signature=class_signature
+                        _id=_id,
+                        schedule_id=schedule,
+                        supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
+                        starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
+                                                                        schedule_id=schedule),
+                        grade=grade,
+                        class_signature=class_signature
                 ).exists():
                     data = Classes.objects.create(
                         _id=_id,
                         schedule_id=schedule,
                         supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
-                        starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id, schedule_id=schedule),
+                        starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
+                                                                        schedule_id=schedule),
                         grade=grade,
                         class_signature=class_signature
                     )
@@ -160,7 +193,8 @@ def upload_file(file_name, file, schedule_id):
                         name=name,
                         type_id=ClassroomTypes.objects.get(id=type_id, schedule_id=schedule)
                 ).exists():
-                    data = Classrooms.objects.create(_id=_id, schedule_id=schedule, name=name, type_id=ClassroomTypes.objects.get(id=type_id))
+                    data = Classrooms.objects.create(_id=_id, schedule_id=schedule, name=name,
+                                                     type_id=ClassroomTypes.objects.get(id=type_id))
                     data.save()
         elif file_name == 'lesson_hours':
             for index, row in file.iterrows():
@@ -190,14 +224,16 @@ def upload_file(file_name, file, schedule_id):
                 if not Teachers.objects.filter(
                         _id=_id,
                         schedule_id=schedule,
-                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id, schedule_id=schedule) if main_classroom_id!='Null' else None,
+                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
+                                                                 schedule_id=schedule) if main_classroom_id != 'Null' else None,
                         end_hour_index=end_hour_index,
                         days=days
                 ).exists():
                     data = Teachers.objects.create(
                         _id=_id,
                         schedule_id=schedule,
-                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id, schedule_id=schedule) if main_classroom_id!='Null' else None,
+                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
+                                                                 schedule_id=schedule) if main_classroom_id != 'Null' else None,
                         name=name,
                         surname=surname,
                         possible_subjects=possible_subjects,
@@ -226,9 +262,11 @@ def upload_file(file_name, file, schedule_id):
                         schedule_id=schedule,
                         classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
                         subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
-                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(lesson_hour_id)!='nan' else None,
+                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
+                            lesson_hour_id) != 'nan' else None,
                         teachers_id=teachers_id,
-                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(classroom_id)!='nan' else None,
+                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
+                            classroom_id) != 'nan' else None,
                         subject_count_in_week=subject_count_in_week,
                         number_of_groups=number_of_groups,
                         max_stack=max_stack,
@@ -239,9 +277,11 @@ def upload_file(file_name, file, schedule_id):
                         schedule_id=schedule,
                         classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
                         subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
-                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(lesson_hour_id)!='nan' else None,
+                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
+                            lesson_hour_id) != 'nan' else None,
                         teachers_id=teachers_id,
-                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(classroom_id)!='nan' else None,
+                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
+                            classroom_id) != 'nan' else None,
                         subject_count_in_week=subject_count_in_week,
                         number_of_groups=number_of_groups,
                         max_stack=max_stack,
@@ -272,7 +312,6 @@ def get_upload_file(request, file_name=None, schedule_id=None):
         except IndexError:
             next_file = False
 
-
         file = request.FILES['file']
         fs = FileSystemStorage()
         fs.save(file.name, file)
@@ -293,7 +332,8 @@ def get_upload_file(request, file_name=None, schedule_id=None):
 
         fs.delete(file.name)
         if not upload_file(file_name, df, schedule_id):
-            messages.error(request, f'Wrong file name or format. Pass in {file_name} again. For help see documentation.')
+            messages.error(request,
+                           f'Wrong file name or format. Pass in {file_name} again. For help see documentation.')
             return HttpResponseRedirect(
                 reverse('generatorApp:get-upload-file', kwargs={'file_name': file_name, 'schedule_id': schedule_id})
             )
@@ -315,7 +355,7 @@ def create_schedule(request):
         )
         schedule.save()
         ScheduleSettings.objects.create(schedule_id=schedule)
-        return  redirect(f'/upload/{schedule.id}')
+        return redirect(f'/upload/{schedule.id}')
 
     return render(request, 'generatorApp/create_schedule.html')
 
@@ -357,10 +397,9 @@ def schedule_settings(request, schedule_id=None):
             schedule.content = schedule_to_json(schedule_pd, file_path=None)
             schedule.save()
 
-
     context = json.loads(settings.content)
     context.update({"schedule_id": schedule_id})
 
     return render(request, 'generatorApp/settings.html', context=context)
 
-#generic views
+# generic views

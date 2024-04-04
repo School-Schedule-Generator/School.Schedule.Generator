@@ -24,9 +24,9 @@
         {% else %}
             <a href="{% url 'generatorApp:login' %}">Log in</a>
         {% endif %}</li>
-        <li><a href="{% url 'generatorApp:docs' 'eng' 'intro' %}">Docs</a></li>
+        <li><a href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Docs</a></li>
         <li><a {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
-        {% else %} href="{% url 'generatorApp:schedules_base' %}" {% endif %}>Schedules</a></li>
+        {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a></li>
     </ul>
 </div>
 

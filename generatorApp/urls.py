@@ -9,14 +9,20 @@ app_name = "generatorApp"
 urlpatterns = [
     path('', views.home, name='home'),
     path('home/', views.home, name='home'),
+
+    #accounts
     path('accounts/login/', views.LoginUserView.as_view(), name='login'),
     path('accounts/register/', views.RegisterUserView.as_view(), name='register'),
     path('accounts/logout/', views.LogoutUserView.as_view(), name='logout'),
+
+    #docs
     path('docs/', lambda request: HttpResponseRedirect(reverse('generatorApp:docs', kwargs={'lang': 'eng', 'file': 'intro'})), name='redirect-docs'),
-    path('docs/<str:lang>/<str:file>', views.DocsView.as_view(), name='docs'),
+    path('docs/<str:lang>/<str:file>/', views.DocsView.as_view(), name='docs'),
+
+    #schedules
     path('schedules/', views.SchedulesListView.as_view(), name='schedules_base'),
-    path('schedules/<str:username>', views.SchedulesListView.as_view(), name='schedules'),
-    path('schedules/<str:user_name>/<int:schedule_id>', views.SchedulesView.as_view(), name='schedule'),
+    path('schedules/<str:username>/', views.SchedulesListView.as_view(), name='schedules'),
+    path('schedules/<str:username>/<str:schedule_name>/', views.ScheduleView.as_view(), name='schedule'),
 
     path('upload/<int:schedule_id>', views.upload, name='upload'),
     path('upload/<str:file_name>/<int:schedule_id>', views.get_upload_file, name='get-upload-file'),
