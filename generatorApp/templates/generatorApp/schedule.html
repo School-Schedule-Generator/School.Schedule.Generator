@@ -32,6 +32,11 @@
             background-color: lightcoral;
             padding: 10px;
         }
+        .subject{
+            background-color: green;
+            padding: 5px;
+            margin-bottom: 3px;
+        }
     </style>
 {% endblock %}
 
@@ -68,11 +73,16 @@
     <main>
         <h3>{{ schedule.name }}</h3>
         <br>
-        <div>Content: </div> <br>
         <div class="schedules">
             {% for class_id, days in schedule_content.items %}
                 <div class="schedule">
-                    <h3 style="float: left; padding-right: 1ch">{{ class_id }}</h3>
+                    <h3 style="float: left; padding-right: 1ch">
+                        {% for class_name in schedule.classes_set.all%}
+                            {% if class_name == class_id %}
+                                <div>{{ class_name }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </h3>
                     <div class="days">
                         {%  for day, subjects in days.items %}
                             <div class="day">
@@ -93,7 +103,13 @@
 {#                                            movable#}
 {#                                            group#}
 {#                                            classroom_types#}
-                                            <div class="subject"> {{ subject.subject_id }} </div>
+                                            <div class="subject">
+                                                <div>Godzina {{ subject.lesson_hour_id }}</div>
+                                                <div>Przedmiot: {{ subject.subject_name_id }}</div>
+                                                <div>Nauczyciel: {{ subject.teachers_id }}</div>
+                                                <div>Klasa: {{ subject.classroom_id }}</div>
+                                                <div>Grupa: {{ subject.group }}</div>
+                                            </div>
                                         {% endfor %}
                                     {% endfor %}
                                 </div>

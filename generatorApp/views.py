@@ -1,4 +1,5 @@
 import os
+import datetime as dt
 from datetime import datetime
 import markdown
 import pandas as pd
@@ -123,10 +124,41 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
     template_name = 'generatorApp/schedule.html'
 
     def get_context_data(self, **kwargs):
+        def schedule_str(schedule):
+            schedule_content = json.loads(schedule.content)
+            for class_id, days in schedule_content.items():
+                for day, subjects in days.items():
+                    for subject_list in subjects:
+                        for subject in subject_list:
+                            subject_name = schedule.subjectnames_set.filter(_id=subject['subject_name_id']).first()
+                            subject['subject_name_id'] = subject_name.name if subject_name else '---'
+
+                            teacher_names = []
+                            for teacher in subject['teachers_id']:
+                                teacher = schedule.teachers_set.filter(_id=teacher).first()
+                                teacher_names.append(f'{teacher.name} {teacher.surname}' if teacher else '--- ---')
+                            subject['teachers_id'] = teacher_names[-1]
+
+                            print(subject['classroom_id'])
+                            classroom = schedule.classrooms_set.filter(_id=subject['classroom_id']).first()
+                            subject['classroom_id'] = classroom.name if classroom else '---'
+
+                            lesson_hour = schedule.lessonhours_set.filter(_id=subject['lesson_hour_id']).first()
+                            if lesson_hour:
+                                start_hour = datetime.strptime(lesson_hour.start_hour, '%H:%M:%S')
+                                end_hour = (start_hour + dt.timedelta(minutes=lesson_hour.duration))
+
+                                subject['lesson_hour_id'] = f'{start_hour.strftime("%H:%M")}-{end_hour.strftime("%H:%M")}'
+                            else:
+                                subject['lesson_hour_id'] = '---'
+
+            return schedule_content
+
         context = super().get_context_data(**kwargs)
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
-        context['schedule'] = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['schedule'] = schedule
+
         sort_by = self.request.GET.get('sort_by')
         if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
             context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
@@ -142,10 +174,9 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
             'subjects'
         ]
 
-        context['schedule_content'] = json.loads(schedule.content)
+        context['schedule_content'] = schedule_str(schedule)
 
         return context
-
 
 def upload_file(file_name, file, schedule_id):
     schedule = ScheduleList.objects.get(id=schedule_id)
