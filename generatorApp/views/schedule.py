@@ -1,77 +1,19 @@
 import os
 import datetime as dt
 from datetime import datetime
-import markdown
 import pandas as pd
 from django.shortcuts import render, HttpResponseRedirect
-from .forms import *
+from ..forms import *
 from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView, ListView, CreateView
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.shortcuts import redirect
-from .schoolSchedule.load_data import load_data, schedule_to_json
-from .schoolSchedule.generate import generate_schedule
-
+from ..schoolSchedule.load_data import load_data, schedule_to_json
+from ..schoolSchedule.generate import generate_schedule
 from django.core.exceptions import ValidationError
-
-
-def home(request):
-    return render(request, 'generatorApp/home.html')
-
-
-# TODO: dodac remember mi i ustawic dlugosc sesji
-class LoginUserView(LoginView):
-    form_class = LoginForm
-    template_name = 'generatorApp/login.html'
-    success_url = reverse_lazy('generatorApp:home')
-    next_page = reverse_lazy('generatorApp:home')
-
-
-class RegisterUserView(CreateView):
-    form_class = RegisterForm
-    template_name = 'generatorApp/register.html'
-    success_url = reverse_lazy('generatorApp:home')
-    next_page = reverse_lazy('generatorApp:home')
-
-    def form_valid(self, form):
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = form.save(commit=False)
-        user.set_password(password)
-        user.save()
-        auth_user = authenticate(username=username, password=password)
-        login(self.request, auth_user)
-        return redirect(self.success_url)
-
-
-class LogoutUserView(LoginRequiredMixin, View):
-    login_url = reverse_lazy('generatorApp:login')
-
-    def get(self, request):
-        logout(request)
-        return HttpResponseRedirect(reverse('generatorApp:home'))
-
-
-class DocsView(View):
-    docs_path = os.path.join(settings.BASE_DIR, 'generatorApp/DOCS')
-
-    def get(self, request, lang, file):
-        selected_language = request.GET.get('language', lang)
-
-        file_path = os.path.join(self.docs_path, lang, file + '.md')
-        file_context = open(file_path, mode="r", encoding="utf-8").read()
-        file_context = markdown.markdown(file_context)
-
-        if lang != selected_language:
-            return HttpResponseRedirect(
-                reverse('generatorApp:docs', kwargs={'lang': selected_language, 'file': 'intro'}))
-        return render(request, 'generatorApp/docs.html', {'lang': selected_language, 'file_content': file_context})
 
 
 class SchedulesListView(LoginRequiredMixin, FormView):
@@ -80,16 +22,14 @@ class SchedulesListView(LoginRequiredMixin, FormView):
     template_name = 'generatorApp/schedules.html'
     success_url = reverse_lazy('generatorApp:schedules_base')
 
-    def get_success_url(self):
-        username = self.request.user.username
-        success_url = f'{self.success_url}{username}'
-        return success_url
-
     def form_valid(self, form):
         name = form.cleaned_data.get('name')
         description = form.cleaned_data.get('description')
 
-        if ScheduleList.objects.filter(user_id=self.request.user, nam=name).exist():
+        username = self.request.user.username
+        self.success_url += f'{username}/{name}'
+
+        if ScheduleList.objects.filter(user_id=self.request.user, name=name).exists():
             raise ValidationError('Schedule with this name exist')
 
         schedule = ScheduleList.objects.create(
@@ -125,6 +65,8 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         def schedule_str(schedule):
+            if not schedule.content:
+                return False
             schedule_content = json.loads(schedule.content)
             for class_id, days in schedule_content.items():
                 for day, subjects in days.items():
@@ -146,7 +88,7 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
                             lesson_hour = schedule.lessonhours_set.filter(_id=subject['lesson_hour_id']).first()
                             if lesson_hour:
                                 start_hour = datetime.strptime(lesson_hour.start_hour, '%H:%M:%S')
-                                end_hour = (start_hour + dt.timedelta(minutes=lesson_hour.duration))
+                                end_hour = (start_hour + dt.timedelta(minutes=45))
 
                                 subject['lesson_hour_id'] = f'{start_hour.strftime("%H:%M")}-{end_hour.strftime("%H:%M")}'
                             else:
@@ -174,9 +116,36 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
             'subjects'
         ]
 
-        context['schedule_content'] = schedule_str(schedule)
+        schedule_str = schedule_str(schedule)
+        context['schedule_content'] = schedule_str if schedule_str else "Please import data!"
 
         return context
+
+
+class LessonHoursView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = LessonHoursForm
+    template_name = 'generatorApp/forms/lesson_hours.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
 
 def upload_file(file_name, file, schedule_id):
     schedule = ScheduleList.objects.get(id=schedule_id)
@@ -353,7 +322,7 @@ def get_upload_file(request, file_name=None, schedule_id=None):
         if file_extension not in allowed_extension:
             fs.delete(file.name)
             messages.error(request, 'Wrong file type')
-            return render(request, 'generatorApp/upload.html', context={})
+            return render(request, 'generatorApp/forms/upload.html', context={})
 
         file_path = os.path.join(settings.MEDIA_ROOT, file.name)
         if file_extension == 'ods':
@@ -375,7 +344,7 @@ def get_upload_file(request, file_name=None, schedule_id=None):
         else:
             return HttpResponseRedirect(reverse('generatorApp:settings', kwargs={'schedule_id': schedule_id}))
 
-    return render(request, 'generatorApp/upload.html', context={'file_name': file_name})
+    return render(request, 'generatorApp/forms/upload.html', context={'file_name': file_name})
 
 
 def create_schedule(request):
@@ -432,5 +401,3 @@ def schedule_settings(request, schedule_id=None):
     context.update({"schedule_id": schedule_id})
 
     return render(request, 'generatorApp/settings.html', context=context)
-
-# generic views

@@ -60,6 +60,15 @@ class ScheduleListForm(ModelForm):
         fields = ['name', 'description']
 
 
+class LessonHoursForm(ModelForm):
+    start_hour = forms.TimeField(label='', widget=forms.TimeInput(attrs={'class': 't', 'id': 'name', 'name': 'start-hour',
+                                                                         'placeholder': 'start hour'}))
+
+    class Meta:
+        model = LessonHours
+        fields = ['start_hour']
+
+
 class ClassroomTypesForm(ModelForm):
     class Meta:
         model = ClassroomTypes
@@ -77,12 +86,6 @@ class TeachersForm(ModelForm):
         model = Teachers
         fields = ['name', 'surname', 'main_classroom_id', 'possible_subjects',
                   'start_hour_index', 'end_hour_index', 'days']
-
-
-class LessonHoursForm(ModelForm):
-    class Meta:
-        model = LessonHours
-        fields = ['start_hour', 'duration']
 
 
 class ClassesForm(ModelForm):

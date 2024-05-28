@@ -1,0 +1,46 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
+    <title>lesson hours</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .main{
+            margin-left: 40%;
+            margin-top: 15%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <h3 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h3>
+            {% endfor %}
+        {% endif %}
+
+        <h2><b>{{ file_name }}</b></h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file">
+            <button type="submit">Upload</button>
+        </form>
+
+
+        <form method="POST">
+            {% csrf_token %}
+            <div>Add lesson hours</div>
+
+            {{ form.start_hour }}
+
+            <input type="submit" value="Add">
+        </form>
+    </main>
+    
+{% endblock %}

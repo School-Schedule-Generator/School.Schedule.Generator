@@ -28,24 +28,23 @@
             <li><a href="{% url 'generatorApp:docs' lang 'teacher' %}">teacher</a></li>
             <li><a href="{% url 'generatorApp:docs' lang 'tkinter_schedule_vis' %}">tkinter<em>schedule</em>vis</a></li>
         </ol>
+    
+        <form action="" method="GET" id="languageForm">
+          <select name="language" id="languageSelect">
+            <option value="eng" {% if lang == 'eng' %}selected{% endif %}>English</option>
+            <option value="pl" {% if lang == 'pl' %}selected{% endif %}>Polish</option>
+          </select>
+        </form>
     </aside>
 
     <main>
         {{ file_content|safe }}
     </main>
     
-    <form action="" method="GET" id="languageForm">
-      <select name="language" id="languageSelect">
-        <option value="eng" {% if lang == 'eng' %}selected{% endif %}>English</option>
-        <option value="pl" {% if lang == 'pl' %}selected{% endif %}>Polish</option>
-      </select>
-    </form>
-    
     <script>
       document.getElementById("languageSelect").addEventListener("change", function() {
         document.getElementById("languageForm").submit();
       });
-
     </script>
 
 {% endblock %}
