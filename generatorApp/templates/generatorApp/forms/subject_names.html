@@ -3,7 +3,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
-    <title>lesson hours</title>
+    <title>subject names</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         .main{
@@ -35,9 +35,7 @@
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add lesson hours</div>
-
-            {{ form.start_hour }}
+            <div>Add subject names</div>
 
             <input type="submit" value="Add">
         </form>

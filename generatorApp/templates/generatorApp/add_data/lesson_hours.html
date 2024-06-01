@@ -1,0 +1,75 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
+    <title>schedules</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .main{
+            margin-left: 40%;
+            margin-top: 15%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <aside>
+        <h3>List of your schedules</h3>
+        <ol>
+            {% if schedule_list %}
+                {% for schedule in schedule_list %}
+                    <li>
+                        {% if request.GET.sort_by%}
+                            <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}?sort_by={{request.GET.sort_by}}">{{ schedule.name }}, {{ schedule.created_date }}</a>
+                        {% else %}
+                            <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}">{{ schedule.name }}, {{ schedule.created_date }}</a>
+                        {% endif %}
+                        <ol>
+                            {% for label in labels %}
+                                <li><a href="{% url 'generatorApp:schedules' username=user.username%}">{{ label }}</a></li>
+                            {% endfor %}
+                        </ol>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p>It seems to you don't ave any schedules :<</p>
+            {% endif %}
+        </ol>
+
+        <h3>Sort by:</h3>
+        <form method="GET" id="sortForm">
+            <select name="sort_by" id="sort_by">
+                <option value="name">Name(A-Z)</option>
+                <option value="created_date">Created date</option>
+            </select>
+        </form>
+    </aside>
+
+    <main>
+        <form method="POST">
+            {% csrf_token %}
+            <div>Create new schedule</div>
+
+            {{ form }}
+
+            <input type="submit" value="Create">
+        </form>
+    </main>
+
+
+<script>
+    $(document).ready(()=>{
+        $('#sort_by').change(()=>{
+            $('#sortForm').submit()
+        })
+    })
+
+    const urlParams = new URLSearchParams(window.location.search)
+    const sortBy = urlParams.get('sort_by')
+    if(sortBy){
+        $('#sort_by').val(sortBy)
+    }
+</script>
+{% endblock %}

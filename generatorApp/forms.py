@@ -116,7 +116,7 @@ class ScheduleSettingsForm(forms.Form):
     days = forms.MultipleChoiceField(label='days', choices=choices)
 
 
-class SubjectForm(ModelForm):
+class SubjectsForm(ModelForm):
     class Meta:
         model = Subject
         fields = ['classes_id', 'subject_name_id', 'lesson_hour_id', 'teachers_id', 'classroom_id',

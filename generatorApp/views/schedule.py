@@ -128,6 +128,7 @@ class LessonHoursView(LoginRequiredMixin, FormView):
     template_name = 'generatorApp/forms/lesson_hours.html'
     # success_url = reverse_lazy('generatorApp:schedules_base')
 
+    #zastanawiam sie czy da sie tego nie powtarzac w kazdym widoku
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         sort_by = self.request.GET.get('sort_by')
@@ -145,6 +146,158 @@ class LessonHoursView(LoginRequiredMixin, FormView):
             'subjects'
         ]
         return context
+
+
+class ClassroomTypesView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = ClassroomTypesForm
+    template_name = 'generatorApp/forms/classroom_types.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
+class ClassroomsView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = ClassroomsForm
+    template_name = 'generatorApp/forms/classrooms.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
+class TeachersView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = TeachersForm
+    template_name = 'generatorApp/forms/teachers.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
+class ClassesView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = ClassesForm
+    template_name = 'generatorApp/forms/classes.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
+class SubjectNamesView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = SubjectNamesForm
+    template_name = 'generatorApp/forms/subject_names.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
+class SubjectsView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('generatorApp:login')
+    form_class = SubjectsForm
+    template_name = 'generatorApp/forms/subjects.html'
+    # success_url = reverse_lazy('generatorApp:schedules_base')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
+        else:
+            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
+        context['labels'] = [
+            'lesson_hours',
+            'classroom_types',
+            'classrooms',
+            'teachers',
+            'classes',
+            'subject_names',
+            'subjects'
+        ]
+        return context
+
+
 
 
 def upload_file(file_name, file, schedule_id):

@@ -24,7 +24,14 @@ urlpatterns = [
     path('schedules/<str:username>/', views.SchedulesListView.as_view(), name='schedules'),
     path('schedules/<str:username>/<str:schedule_name>/', views.ScheduleView.as_view(), name='schedule'),
 
+    # forms to add data
     path('schedules/<str:username>/<str:schedule_name>/lesson_hours', views.LessonHoursView.as_view(), name='lesson_hours'),
+    path('schedules/<str:username>/<str:schedule_name>/classroom_types', views.ClassroomTypesView.as_view(), name='classroom_types'),
+    path('schedules/<str:username>/<str:schedule_name>/classrooms', views.ClassroomsView.as_view(), name='classroom'),
+    path('schedules/<str:username>/<str:schedule_name>/teachers', views.TeachersView.as_view(), name='teachers'),
+    path('schedules/<str:username>/<str:schedule_name>/classes', views.ClassesView.as_view(), name='classes'),
+    path('schedules/<str:username>/<str:schedule_name>/subject_names', views.SubjectNamesView.as_view(), name='subject_names'),
+    path('schedules/<str:username>/<str:schedule_name>/subjects', views.SubjectsView.as_view(), name='subjects'),
 
     path('settings/<int:schedule_id>', views.schedule_settings, name='settings'),
     path('create_schedule', views.create_schedule, name='create-schedule'),
