@@ -32,15 +32,39 @@
             <button type="submit">Upload</button>
         </form>
 
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>name</th>
+                    <th>type</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.name }}</td>
+                        <td>{{ value.type_id }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add classroom</div>
+            <div>Add classroom types</div>
+
+            {{ form.name }}
+            <select class="t" id="type-id" name="type-id">
+                {% for object in queryset %}
+                    <option value="{{ object }}">{{ object.description }}</option>
+                {% endfor %}
+            </select>
 
             <input type="submit" value="Add">
         </form>
     </main>
     <br>
-    <div>Lista elementow w bazie danych :<<</div>
     
 {% endblock %}

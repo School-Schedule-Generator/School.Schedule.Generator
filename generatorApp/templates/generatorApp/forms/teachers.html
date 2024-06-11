@@ -32,15 +32,78 @@
             <button type="submit">Upload</button>
         </form>
 
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>name</th>
+                    <th>type</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.name }}</td>
+                        <td>{{ value.surname }}</td>
+                        <td>{{ value.main_classroom_id }}</td>
+                        <td>{{ value.possible_subjects }}</td>
+                        <td>{{ value.start_hour_index }}</td>
+                        <td>{{ value.end_hour_index }}</td>
+                        <td>{{ value.days }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add teachers</div>
+            <div>Add classroom types</div>
+
+            {{ form.name }}
+            {{ form.surname }}
+
+            <select class="t" id="main-classroom-id" name="main-classroom-id">
+                {% for object in classrooms_queryset %}
+                    <option value="{{ object }}">{{ object }}</option>
+                {% endfor %}
+            </select>
+
+            <select class="t" id="possible-subjects" name="possible-subjects" multiple>
+                {% for object in subjects_queryset %}
+                    <option value="{{ object }}">{{ object }}</option>
+                {% endfor %}
+            </select>
+            {% with 'monday tuesday wednesday thursday friday' as days %}
+                {% for day in days.split %}
+                    <hr>
+                    <span>{{ day }}</span>
+                    <select class="t" id="start-hour-{{ day }}" name="start-hour-{{ day }}">
+                        {% for object in lesson_hours_queryset %}
+                            <option value="{{ object }}">{{ object }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select class="t" id="end-hour-{{ day }}" name="end-hour-{{ day }}">
+                        {% for object in lesson_hours_queryset %}
+                            <option value="{{ object }}">{{ object }}</option>
+                        {% endfor %}
+                    </select>
+                {% endfor %}
+            {% endwith %}
+
+            <hr>
+
+            <select class="t" id="days" name="days" multiple>
+                {% with 'monday tuesday wednesday thursday friday' as days %}
+                    {% for day in days.split %}
+                        <option value="{{ day }}">{{ day }}</option>
+                    {% endfor %}
+                {% endwith %}
+            </select>
 
             <input type="submit" value="Add">
         </form>
     </main>
-    <br>
-    <div>Lista elementow w bazie danych :<<</div>
     
 {% endblock %}

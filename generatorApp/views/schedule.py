@@ -14,6 +14,26 @@ from django.shortcuts import redirect
 from ..schoolSchedule.load_data import load_data, schedule_to_json
 from ..schoolSchedule.generate import generate_schedule
 from django.core.exceptions import ValidationError
+from .upload_file import upload_file
+
+
+def update_context(request, kwargs, context):
+    context['schedule_name'] = kwargs.get('schedule_name')
+    sort_by = request.GET.get('sort_by')
+    if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
+        context['schedule_list'] = ScheduleList.objects.filter(user_id=request.user).order_by(sort_by)
+    else:
+        context['schedule_list'] = ScheduleList.objects.filter(user_id=request.user)
+    context['labels'] = [
+        'lesson_hours',
+        'classroom_types',
+        'classrooms',
+        'teachers',
+        'classes',
+        'subject_names',
+        'subjects'
+    ]
+    return context
 
 
 class SchedulesListView(LoginRequiredMixin, FormView):
@@ -43,20 +63,7 @@ class SchedulesListView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
         return context
 
 
@@ -81,7 +88,6 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
                                 teacher_names.append(f'{teacher.name} {teacher.surname}' if teacher else '--- ---')
                             subject['teachers_id'] = teacher_names[-1]
 
-                            print(subject['classroom_id'])
                             classroom = schedule.classrooms_set.filter(_id=subject['classroom_id']).first()
                             subject['classroom_id'] = classroom.name if classroom else '---'
 
@@ -97,24 +103,10 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
             return schedule_content
 
         context = super().get_context_data(**kwargs)
+        context = update_context(self.request, self.kwargs, context)
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
         context['schedule'] = schedule
-
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
 
         schedule_str = schedule_str(schedule)
         context['schedule_content'] = schedule_str if schedule_str else "Please import data!"
@@ -122,55 +114,66 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class LessonHoursView(LoginRequiredMixin, FormView):
+class LessonHoursView(LoginRequiredMixin, TemplateView, FormView):
     login_url = reverse_lazy('generatorApp:login')
     form_class = LessonHoursForm
     template_name = 'generatorApp/forms/lesson_hours.html'
-    # success_url = reverse_lazy('generatorApp:schedules_base')
 
-    #zastanawiam sie czy da sie tego nie powtarzac w kazdym widoku
     def get_context_data(self, **kwargs):
+        print(kwargs)
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['objects_list'] = LessonHours.objects.filter(schedule_id=schedule).all()
         return context
+
+    def form_valid(self, form, **kwargs):
+        # TODO-validation: check if start hour is bigger then last one (prevent indexing bug when generating)
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        start_hour = form.cleaned_data.get('start_hour')
+
+        last_obj = context['objects_list'].last()
+
+        LessonHours.objects.create(
+            _id=int(last_obj._id)+1 if last_obj else 0,
+            schedule_id=schedule,
+            start_hour=start_hour,
+            duration=45
+        )
+        return redirect(self.request.build_absolute_uri())
 
 
 class ClassroomTypesView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('generatorApp:login')
     form_class = ClassroomTypesForm
     template_name = 'generatorApp/forms/classroom_types.html'
-    # success_url = reverse_lazy('generatorApp:schedules_base')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['objects_list'] = ClassroomTypes.objects.filter(schedule_id=schedule).all()
         return context
+
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        description = form.cleaned_data.get('description')
+
+        last_obj = context['objects_list'].last()
+
+        ClassroomTypes.objects.create(
+            _id=int(last_obj._id)+1 if last_obj else 0,
+            schedule_id=schedule,
+            description=description,
+        )
+        return redirect(self.request.build_absolute_uri())
 
 
 class ClassroomsView(LoginRequiredMixin, FormView):
@@ -181,21 +184,35 @@ class ClassroomsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['objects_list'] = Classrooms.objects.filter(schedule_id=schedule).all()
+        context['queryset'] = ClassroomTypes.objects.filter(schedule_id=schedule)
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        name = form.cleaned_data.get('name')
+        type_id_desc = self.request.POST.get('type-id')
+
+        #TODO: walidacja - wartosci w description nie moga sie powtarzac, musza byc unikalne
+        type_id = ClassroomTypes.objects.filter(schedule_id=schedule, description=type_id_desc).first()
+        print('a'*50)
+        print(type_id)
+
+        last_obj = context['objects_list'].last()
+
+        Classrooms.objects.create(
+            _id=int(last_obj._id) + 1 if last_obj else 0,
+            schedule_id=schedule,
+            type_id=type_id,
+            name=name
+        )
+        return redirect(self.request.build_absolute_uri())
 
 
 class TeachersView(LoginRequiredMixin, FormView):
@@ -206,21 +223,41 @@ class TeachersView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        context['objects_list'] = Teachers.objects.filter(schedule_id=schedule).all()
+
+        # listy elemntow do selektow
+        context['classrooms_queryset'] = Classrooms.objects.filter(schedule_id=schedule)
+        context['subjects_queryset'] = SubjectNames.objects.filter(schedule_id=schedule)
+        context['lesson_hours_queryset'] = LessonHours.objects.filter(schedule_id=schedule)
         return context
+
+    def form_valid(self, form):
+        #TODO: dokonczyc pobieranie elementow z formularzy
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        name = form.cleaned_data.get('name')
+        surname = form.cleaned_data.get('name')
+        type_id_desc = self.request.POST.get('type-id')
+
+        # TODO: walidacja - wartosci w description nie moga sie powtarzac, musza byc unikalne
+        type_id = ClassroomTypes.objects.filter(schedule_id=schedule, description=type_id_desc).first()
+        print('a' * 50)
+        print(type_id)
+
+        last_obj = context['objects_list'].last()
+
+        Teachers.objects.create(
+            _id=int(last_obj._id) + 1 if last_obj else 0,
+            schedule_id=schedule,
+            name=name,
+            surname=surname
+        )
+        return redirect(self.request.build_absolute_uri())
 
 
 class ClassesView(LoginRequiredMixin, FormView):
@@ -231,20 +268,7 @@ class ClassesView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
         return context
 
 
@@ -256,20 +280,7 @@ class SubjectNamesView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
         return context
 
 
@@ -281,190 +292,12 @@ class SubjectsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user).order_by(sort_by)
-        else:
-            context['schedule_list'] = ScheduleList.objects.filter(user_id=self.request.user)
-        context['labels'] = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
+        context = update_context(self.request, self.kwargs, context)
         return context
 
 
-
-
-def upload_file(file_name, file, schedule_id):
-    schedule = ScheduleList.objects.get(id=schedule_id)
-    try:
-        if file_name == 'classes':
-            for index, row in file.iterrows():
-                _id, grade, class_signature, supervising_teacher, starting_lesson_hour_id = row.values
-
-                if not Classes.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
-                        starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
-                                                                        schedule_id=schedule),
-                        grade=grade,
-                        class_signature=class_signature
-                ).exists():
-                    data = Classes.objects.create(
-                        _id=_id,
-                        schedule_id=schedule,
-                        supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
-                        starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
-                                                                        schedule_id=schedule),
-                        grade=grade,
-                        class_signature=class_signature
-                    )
-                    data.save()
-
-        elif file_name == 'classroom_types':
-            for index, row in file.iterrows():
-                _id, description = row.values
-                if not ClassroomTypes.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        description=description
-                ).exists():
-                    data = ClassroomTypes.objects.create(_id=_id, schedule_id=schedule, description=description)
-                    data.save()
-        elif file_name == 'classrooms':
-            for index, row in file.iterrows():
-                _id, name, type_id = row.values
-                if not Classrooms.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        name=name,
-                        type_id=ClassroomTypes.objects.get(id=type_id, schedule_id=schedule)
-                ).exists():
-                    data = Classrooms.objects.create(_id=_id, schedule_id=schedule, name=name,
-                                                     type_id=ClassroomTypes.objects.get(id=type_id))
-                    data.save()
-        elif file_name == 'lesson_hours':
-            for index, row in file.iterrows():
-                _id, start_hour, duration = row.values
-                if not LessonHours.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        start_hour=start_hour,
-                        duration=duration
-                ).exists():
-                    data = LessonHours.objects.create(
-                        _id=_id,
-                        schedule_id=schedule,
-                        start_hour=start_hour,
-                        duration=duration
-                    )
-                    data.save()
-        elif file_name == 'subject_names':
-            for index, row in file.iterrows():
-                _id, name = row.values
-                if not SubjectNames.objects.filter(_id=_id, schedule_id=schedule, name=name).exists():
-                    data = SubjectNames.objects.create(_id=_id, schedule_id=schedule, name=name)
-                    data.save()
-        elif file_name == 'teachers':
-            for index, row in file.iterrows():
-                _id, name, surname, possible_subjects, start_hour_index, end_hour_index, days, main_classroom_id = row.values
-                if not Teachers.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
-                                                                 schedule_id=schedule) if main_classroom_id != 'Null' else None,
-                        end_hour_index=end_hour_index,
-                        days=days
-                ).exists():
-                    data = Teachers.objects.create(
-                        _id=_id,
-                        schedule_id=schedule,
-                        main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
-                                                                 schedule_id=schedule) if main_classroom_id != 'Null' else None,
-                        name=name,
-                        surname=surname,
-                        possible_subjects=possible_subjects,
-                        start_hour_index=start_hour_index,
-                        end_hour_index=end_hour_index,
-                        days=days
-                    )
-                    data.save()
-        elif file_name == 'subjects':
-            for index, row in file.iterrows():
-                (
-                    _id,
-                    subject_name_id,
-                    classes_id,
-                    subject_count_in_week,
-                    number_of_groups,
-                    lesson_hour_id,
-                    teachers_id,
-                    classroom_id,
-                    max_stack,
-                    classroom_types
-                ) = row.values
-
-                if not Subject.objects.filter(
-                        _id=_id,
-                        schedule_id=schedule,
-                        classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
-                        subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
-                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
-                            lesson_hour_id) != 'nan' else None,
-                        teachers_id=teachers_id,
-                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
-                            classroom_id) != 'nan' else None,
-                        subject_count_in_week=subject_count_in_week,
-                        number_of_groups=number_of_groups,
-                        max_stack=max_stack,
-                        classroom_types=classroom_types
-                ).exists():
-                    data = Subject.objects.create(
-                        _id=_id,
-                        schedule_id=schedule,
-                        classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
-                        subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
-                        lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
-                            lesson_hour_id) != 'nan' else None,
-                        teachers_id=teachers_id,
-                        classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
-                            classroom_id) != 'nan' else None,
-                        subject_count_in_week=subject_count_in_week,
-                        number_of_groups=number_of_groups,
-                        max_stack=max_stack,
-                        classroom_types=classroom_types
-                    )
-                    if data.check_teachers(teachers_id, schedule):
-                        data.save()
-        else:
-            return False
-    except ValueError:
-        return False
-    return True
-
-
 def get_upload_file(request, file_name=None, schedule_id=None):
-    if request.method == 'POST' and request.FILES['file']:
-        file_names = [
-            'lesson_hours',
-            'classroom_types',
-            'classrooms',
-            'teachers',
-            'classes',
-            'subject_names',
-            'subjects'
-        ]
-        try:
-            next_file = file_names[file_names.index(file_name) + 1]
-        except IndexError:
-            next_file = False
-
+    if request.FILES['file']:
         file = request.FILES['file']
         fs = FileSystemStorage()
         fs.save(file.name, file)
@@ -474,8 +307,7 @@ def get_upload_file(request, file_name=None, schedule_id=None):
 
         if file_extension not in allowed_extension:
             fs.delete(file.name)
-            messages.error(request, 'Wrong file type')
-            return render(request, 'generatorApp/forms/upload.html', context={})
+            return False
 
         file_path = os.path.join(settings.MEDIA_ROOT, file.name)
         if file_extension == 'ods':
@@ -484,20 +316,7 @@ def get_upload_file(request, file_name=None, schedule_id=None):
             df = pd.read_excel(file_path)
 
         fs.delete(file.name)
-        if not upload_file(file_name, df, schedule_id):
-            messages.error(request,
-                           f'Wrong file name or format. Pass in {file_name} again. For help see documentation.')
-            return HttpResponseRedirect(
-                reverse('generatorApp:get-upload-file', kwargs={'file_name': file_name, 'schedule_id': schedule_id})
-            )
-        if next_file:
-            return HttpResponseRedirect(
-                reverse('generatorApp:get-upload-file', kwargs={'file_name': next_file, 'schedule_id': schedule_id})
-            )
-        else:
-            return HttpResponseRedirect(reverse('generatorApp:settings', kwargs={'schedule_id': schedule_id}))
-
-    return render(request, 'generatorApp/forms/upload.html', context={'file_name': file_name})
+        return upload_file(file_name, df, schedule_id)
 
 
 def create_schedule(request):

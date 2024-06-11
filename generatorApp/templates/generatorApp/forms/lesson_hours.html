@@ -32,6 +32,22 @@
             <button type="submit">Upload</button>
         </form>
 
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>start_hour</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.start_hour }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
 
         <form method="POST">
             {% csrf_token %}
@@ -42,7 +58,5 @@
             <input type="submit" value="Add">
         </form>
     </main>
-    <br>
-    <div>Lista elementow w bazie danych :<<</div>
     
 {% endblock %}

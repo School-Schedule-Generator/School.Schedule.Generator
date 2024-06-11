@@ -61,8 +61,12 @@ class ScheduleListForm(ModelForm):
 
 
 class LessonHoursForm(ModelForm):
-    start_hour = forms.TimeField(label='', widget=forms.TimeInput(attrs={'class': 't', 'id': 'name', 'name': 'start-hour',
-                                                                         'placeholder': 'start hour'}))
+    start_hour = forms.TimeField(label='', widget=forms.TimeInput(attrs={
+        'class': 't',
+        'id': 'start-hour',
+        'name': 'start-hour',
+        'placeholder': 'start hour'
+    }))
 
     class Meta:
         model = LessonHours
@@ -70,22 +74,49 @@ class LessonHoursForm(ModelForm):
 
 
 class ClassroomTypesForm(ModelForm):
+    description = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'classroom-type',
+        'name': 'classroom-type',
+        'placeholder': 'classroom type'
+    }))
+
     class Meta:
         model = ClassroomTypes
         fields = ['description']
 
 
 class ClassroomsForm(ModelForm):
+    name = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'name',
+        'name': 'name',
+        'placeholder': 'classroom name'
+    }))
+
     class Meta:
         model = Classrooms
-        fields = ['name', 'type_id']
+        fields = ['name']
 
 
 class TeachersForm(ModelForm):
+    name = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'name',
+        'name': 'name',
+        'placeholder': 'name'
+    }))
+
+    surname = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'surname',
+        'name': 'surname',
+        'placeholder': 'surname'
+    }))
+
     class Meta:
         model = Teachers
-        fields = ['name', 'surname', 'main_classroom_id', 'possible_subjects',
-                  'start_hour_index', 'end_hour_index', 'days']
+        fields = ['name', 'surname']
 
 
 class ClassesForm(ModelForm):
