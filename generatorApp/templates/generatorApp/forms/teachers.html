@@ -36,8 +36,13 @@
             <table>
                 <tr>
                     <th>ID</th>
-                    <th>name</th>
-                    <th>type</th>
+                    <td>name</td>
+                    <th>surname</th>
+                    <th>main classroom</th>
+                    <th>possible subjects</th>
+                    <th>start hour</th>
+                    <th>end hour</th>
+                    <th>days</th>
                 </tr>
                 {% for value in objects_list %}
                     <tr>
@@ -58,18 +63,19 @@
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add classroom types</div>
+            <div>Add teachers</div>
 
             {{ form.name }}
             {{ form.surname }}
 
             <select class="t" id="main-classroom-id" name="main-classroom-id">
+                <option value="None">None</option>
                 {% for object in classrooms_queryset %}
-                    <option value="{{ object }}">{{ object }}</option>
+                    <option value="{{ object.in_id }}">{{ object }}</option>
                 {% endfor %}
             </select>
 
-            <select class="t" id="possible-subjects" name="possible-subjects" multiple>
+            <select class="t" id="possible-subjects" name="possible-subjects" multiple="multiple">
                 {% for object in subjects_queryset %}
                     <option value="{{ object }}">{{ object }}</option>
                 {% endfor %}
@@ -85,6 +91,7 @@
                     </select>
 
                     <select class="t" id="end-hour-{{ day }}" name="end-hour-{{ day }}">
+                        <option value="None">None</option>
                         {% for object in lesson_hours_queryset %}
                             <option value="{{ object }}">{{ object }}</option>
                         {% endfor %}
@@ -94,10 +101,10 @@
 
             <hr>
 
-            <select class="t" id="days" name="days" multiple>
+            <select class="t" id="days" name="days" multiple="multiple">
                 {% with 'monday tuesday wednesday thursday friday' as days %}
                     {% for day in days.split %}
-                        <option value="{{ day }}">{{ day }}</option>
+                        <option value="{{ day }}" selected>{{ day }}</option>
                     {% endfor %}
                 {% endwith %}
             </select>

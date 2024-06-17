@@ -32,15 +32,51 @@
             <button type="submit">Upload</button>
         </form>
 
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>supervising_teacher_id</th>
+                    <th>grade</th>
+                    <th>class_signature</th>
+                    <th>starting_lesson_hour_id</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.supervising_teacher_id }}</td>
+                        <td>{{ value.grade }}</td>
+                        <td>{{ value.class_signature }}</td>
+                        <td>{{ value.starting_lesson_hour_id }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add classes</div>
+            <div>Add class</div>
+
+            {{ form.grade }}
+            {{ form.class_signature }}
+
+            <select class="t" id="supervising-teacher" name="supervising-teacher">
+                {% for object in teachers_queryset %}
+                    <option value="{{ object.in_id }}">{{ object }}</option>
+                {% endfor %}
+            </select>
+
+            <select class="t" id="starting-lesson-hour" name="starting-lesson-hour">
+                {% for object in lesson_hours_queryset %}
+                    <option value="{{ object.in_id }}">{{ object.start_hour }}</option>
+                {% endfor %}
+            </select>
 
             <input type="submit" value="Add">
         </form>
     </main>
     <br>
-    <div>Lista elementow w bazie danych :<<</div>
     
 {% endblock %}

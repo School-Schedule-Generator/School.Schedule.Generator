@@ -53,12 +53,12 @@
 
         <form method="POST">
             {% csrf_token %}
-            <div>Add classroom types</div>
+            <div>Add classrooms</div>
 
             {{ form.name }}
             <select class="t" id="type-id" name="type-id">
                 {% for object in queryset %}
-                    <option value="{{ object }}">{{ object.description }}</option>
+                    <option value="{{ object.in_id }}">{{ object.description }}</option>
                 {% endfor %}
             </select>
 

@@ -120,12 +120,31 @@ class TeachersForm(ModelForm):
 
 
 class ClassesForm(ModelForm):
+    grade = forms.IntegerField(label='', widget=forms.NumberInput(attrs={
+        'class': 't',
+        'id': 'grade',
+        'name': 'grade',
+        'placeholder': 'grade'
+    }))
+    class_signature = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'class-signature',
+        'name': 'class-signature',
+        'placeholder': 'class signature'
+    }))
+
     class Meta:
         model = Classes
-        fields = ['grade', 'class_signature', 'supervising_teacher_id', 'starting_lesson_hour_id']
+        fields = ['grade', 'class_signature']
 
 
 class SubjectNamesForm(ModelForm):
+    name = forms.CharField(label='', widget=forms.TextInput(attrs={
+        'class': 't',
+        'id': 'name',
+        'name': 'name',
+        'placeholder': 'subject name'
+    }))
     class Meta:
         model = SubjectNames
         fields = ['name']
@@ -148,7 +167,27 @@ class ScheduleSettingsForm(forms.Form):
 
 
 class SubjectsForm(ModelForm):
+    subject_count_in_week = forms.IntegerField(label='', widget=forms.NumberInput(attrs={
+        'class': 't',
+        'id': 'subject-count-in_week',
+        'name': 'subject-count-in-week',
+        'placeholder': 'subject-count-in-week'
+    }))
+
+    number_of_groups = forms.IntegerField(label='', widget=forms.NumberInput(attrs={
+        'class': 't',
+        'id': 'number-of-groups',
+        'name': 'number-of-groups',
+        'placeholder': 'number-of-groups'
+    }))
+
+    max_stack = forms.IntegerField(label='', widget=forms.NumberInput(attrs={
+        'class': 't',
+        'id': 'max-stack',
+        'name': 'max-stack',
+        'placeholder': 'max-stack'
+    }))
+
     class Meta:
         model = Subject
-        fields = ['classes_id', 'subject_name_id', 'lesson_hour_id', 'teachers_id', 'classroom_id',
-                  'subject_count_in_week', 'number_of_groups', 'max_stack', 'classroom_types']
+        fields = ['subject_count_in_week', 'number_of_groups', 'max_stack']
