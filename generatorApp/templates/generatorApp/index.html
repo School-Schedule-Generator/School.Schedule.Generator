@@ -20,7 +20,20 @@
     <ul>
         <li>
         {% if user.is_authenticated %}
-            <a href="{% url 'generatorApp:logout' %}">Logout</a>
+
+            <a>
+                <input type="button" class="confirm-button" onclick="(
+                    () => {
+                        document.getElementById('confirm-div').style.visibility = 'visible';
+                        document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
+                            let confirm_form = document.getElementById('confirm-form') || null;
+                            if(confirm_form) {
+                               confirm_form.action = '{% url 'generatorApp:logout' %}'
+                            }
+                    })();
+                " value="Logout">
+            </a>
+
         {% else %}
             <a href="{% url 'generatorApp:login' %}">Log in</a>
         {% endif %}</li>
@@ -31,6 +44,23 @@
 </div>
 
 <div class="content">
+    <form id="confirm-form" method="POST">
+        {% csrf_token %}
+        <div id="confirm-div" class="center">
+            <span id="confirm-message"></span>
+            <div id="confirm-buttons">
+                <span>
+                    <input type="button" id="cancel-button" onclick="(
+                        () => {
+                            document.getElementById('confirm-div').style.visibility = 'hidden';
+                        })();
+                    " value="Cancel">
+                    <input type="submit" id="confirm-button" value="Confirm">
+                </span>
+            </div>
+        </div>
+    </form>
+
     {% block content %}
     {% endblock %}
 </div>

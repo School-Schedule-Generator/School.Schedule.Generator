@@ -18,47 +18,100 @@
     {% include 'generatorApp/schedule_list.html' %}
 
     <main>
-        {% if messages %}
-            {% for message in messages %}
-                <h3 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h3>
-            {% endfor %}
-        {% endif %}
-
-        <h2><b>{{ file_name }}</b></h2>
-
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
             {% csrf_token %}
             <input type="file" name="file">
             <button type="submit">Upload</button>
         </form>
 
+        <h2><b>{{ file_name }}</b></h2>
+
         <div class="data-container">
             <table>
                 <tr>
+                    <th></th>
                     <th>ID</th>
                     <td>name</td>
                     <th>surname</th>
                     <th>main classroom</th>
                     <th>possible subjects</th>
-                    <th>start hour</th>
-                    <th>end hour</th>
-                    <th>days</th>
+                    <th>
+                        start hour
+                        <br>
+                        <div style="display: inline-block">
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
+                    <th>
+                        end hour
+                        <br>
+                        <div style="display: inline-block">
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
+                    <th>
+                        days
+                        <br>
+                        <div style="display: inline-block">
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
                 </tr>
                 {% for value in objects_list %}
                     <tr>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" form="confirm-form"></td>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ value.name }}</td>
                         <td>{{ value.surname }}</td>
                         <td>{{ value.main_classroom_id }}</td>
                         <td>{{ value.possible_subjects }}</td>
-                        <td>{{ value.start_hour_index }}</td>
-                        <td>{{ value.end_hour_index }}</td>
-                        <td>{{ value.days }}</td>
+                        <td>
+                            <div id="start-hours" style="display: inline-block">
+                                {% for hour in value.start_hour_index %}
+                                    <span class="start-hour inline-day-item">{{ hour }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <div id="end-hours" style="display: inline-block">
+                                {% for hour in value.end_hour_index %}
+                                    <span class="end-hour inline-day-item">{{ hour }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <div id="days" style="display: inline-block">
+                                {% for day in value.days %}
+                                    <span class="day inline-day-item">{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
-
             </table>
         </div>
+        <input type="button" class="confirm-button" onclick="(
+            () => {
+                document.getElementById('confirm-div').style.visibility = 'visible';
+                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
+                    let confirm_form = document.getElementById('confirm-form') || null;
+                    if(confirm_form) {
+                       confirm_form.action = '{{ request.get_full_path }}/delete'
+                    }
+            })();
+        " value="Delete">
 
 
         <form method="POST">

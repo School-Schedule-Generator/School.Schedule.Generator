@@ -4,12 +4,24 @@
         {% if schedule_list %}
             {% for schedule in schedule_list %}
                 <li>
-                    {% if request.GET.sort_by%}
-                        <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}?sort_by={{request.GET.sort_by}}">{{ schedule.name }}, {{ schedule.created_date }}</a>
-                    {% else %}
-                        <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}">{{ schedule.name }}, {{ schedule.created_date }}</a>
-                    {% endif %}
-                    <ol>
+
+                    <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}">
+                        {{ schedule.name }}, {{ schedule.created_date }}
+                    </a>
+
+                    <input type="button" class="confirm-button" onclick="(
+                        () => {
+                            document.getElementById('confirm-div').style.visibility = 'visible';
+                            document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
+                                let confirm_form = document.getElementById('confirm-form') || null;
+                                if(confirm_form) {
+                                   confirm_form.action = '{% url 'generatorApp:delete_schedule' username=user.username schedule_name=schedule.name%}' + 
+                                        '{% if request.GET.sort_by%}?sort_by={{request.GET.sort_by}}{% endif %}'
+                                }
+                        })();
+                    " value="Delete">
+                    {# TODO set style in .css #}
+                    <ol class="schedule-data-list" style="padding-left: 2ch">
                         {% for label in labels %}
                             <li><a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name%}{{label}}">{{ label }}</a></li>
                         {% endfor %}

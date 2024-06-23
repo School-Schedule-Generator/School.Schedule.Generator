@@ -33,8 +33,17 @@ urlpatterns = [
     path('schedules/<str:username>/<str:schedule_name>/subject_names', views.SubjectNamesView.as_view(), name='subject_names'),
     path('schedules/<str:username>/<str:schedule_name>/subjects', views.SubjectsView.as_view(), name='subjects'),
 
+    # delete
+    path('schedules/<str:username>/<str:schedule_name>/<str:model>/delete', views.DeleteDataView.as_view(), name='delete_data'),
+    path('schedules/<str:username>/<str:schedule_name>/delete', views.DeleteScheduleView.as_view(), name='delete_schedule'),
+
+    # upload data
+    path('schedules/<str:username>/<str:schedule_name>/<str:model>/upload', views.UploadDataView.as_view(), name='upload_data'),
+
     path('settings/<int:schedule_id>', views.schedule_settings, name='settings'),
-    path('create_schedule', views.create_schedule, name='create-schedule'),
+
+
+    # path('create_schedule', views.create_schedule, name='create-schedule'),
 ]
 
 if settings.DEBUG:

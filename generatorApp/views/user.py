@@ -37,6 +37,6 @@ class RegisterUserView(CreateView):
 class LogoutUserView(LoginRequiredMixin, View):
     login_url = reverse_lazy('generatorApp:login')
 
-    def get(self, request):
+    def post(self, request):
         logout(request)
         return HttpResponseRedirect(reverse('generatorApp:home'))

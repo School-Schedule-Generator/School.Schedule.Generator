@@ -18,28 +18,38 @@
     {% include 'generatorApp/schedule_list.html' %}
 
     <main>
-        {% if messages %}
-            {% for message in messages %}
-                <h3 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h3>
-            {% endfor %}
-        {% endif %}
-
-        <h2><b>{{ file_name }}</b></h2>
-
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
             {% csrf_token %}
             <input type="file" name="file">
             <button type="submit">Upload</button>
         </form>
+    
+        <h2><b>{{ file_name }}</b></h2>
+    
+        <div id="confirm-div" class="center">
+            <p style="height: 10%">Are you sure you want to delete selected?</p>
+            <div id="confirm-buttons">
+                <span>
+                    <input type="button" id="cancel-button" onclick="(
+                        () => {
+                            document.getElementById('confirm-div').style.visibility = 'hidden';
+                        })();
+                    " value="Cancel">
+                    <input type="submit" id="confirm-button" value="Confirm">
+                </span>
+            </div>
+        </div>
 
         <div class="data-container">
             <table>
                 <tr>
+                    <th></th>
                     <th>ID</th>
                     <th>name</th>
                 </tr>
                 {% for value in objects_list %}
                     <tr>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" form="confirm-form"></td>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ value.description }}</td>
                     </tr>
@@ -47,6 +57,17 @@
 
             </table>
         </div>
+
+        <input type="button" class="confirm-button" onclick="(
+            () => {
+                document.getElementById('confirm-div').style.visibility = 'visible';
+                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
+                    let confirm_form = document.getElementById('confirm-form') || null;
+                    if(confirm_form) {
+                       confirm_form.action = '{{ request.get_full_path }}/delete'
+                    }
+            })();
+        " value="Delete">
 
 
         <form method="POST">
@@ -58,6 +79,5 @@
             <input type="submit" value="Add">
         </form>
     </main>
-    <br>
     
 {% endblock %}

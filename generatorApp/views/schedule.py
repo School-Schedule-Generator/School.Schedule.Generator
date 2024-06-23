@@ -7,7 +7,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from ..forms import *
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView, TemplateView, ListView, CreateView
+from django.views.generic import FormView, TemplateView, View
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -16,10 +16,12 @@ from ..schoolSchedule.load_data import load_data, schedule_to_json
 from ..schoolSchedule.generate import generate_schedule
 from django.core.exceptions import ValidationError
 from .upload_file import upload_file
+from datetime import datetime, timedelta
 
 
 def update_context(request, kwargs, context):
     context['schedule_name'] = kwargs.get('schedule_name')
+    context['model_name'] = kwargs.get('model')
     sort_by = request.GET.get('sort_by')
     if sort_by in [field.name for field in ScheduleList._meta.get_fields()]:
         context['schedule_list'] = ScheduleList.objects.filter(user_id=request.user).order_by(sort_by)
@@ -228,6 +230,42 @@ class TeachersView(LoginRequiredMixin, FormView):
         context['classrooms_queryset'] = Classrooms.objects.filter(schedule_id=schedule)
         context['subjects_queryset'] = SubjectNames.objects.filter(schedule_id=schedule)
         context['lesson_hours_queryset'] = LessonHours.objects.filter(schedule_id=schedule)
+
+        days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+        for row in context['objects_list']:
+            row_days_list = json.loads(row.days)
+            row.days = ["Yes" if row_days_list[i] else "No" for i, day in enumerate(days)]
+
+        def add_duration(time_str, duration_minutes):
+            time_format = "%H:%M:%S"
+            time_obj = datetime.strptime(time_str, time_format)
+
+            duration_obj = timedelta(minutes=duration_minutes)
+            new_time_obj = time_obj + duration_obj
+            new_time_str = new_time_obj.strftime("%H:%M")
+
+            return new_time_str
+
+        for row in context['objects_list']:
+            row_start_hours_list = json.loads(row.start_hour_index)
+            row.start_hour_index = [
+                add_duration(
+                    LessonHours.objects.filter(schedule_id=schedule, in_id=x).first().start_hour,
+                    LessonHours.objects.filter(schedule_id=schedule, in_id=x).first().duration
+                )
+                for x in row_start_hours_list
+            ]
+
+        for row in context['objects_list']:
+            row_end_hours_list = json.loads(row.end_hour_index)
+            row.end_hour_index = [
+                add_duration(
+                    LessonHours.objects.filter(schedule_id=schedule, in_id=x).first().start_hour,
+                    LessonHours.objects.filter(schedule_id=schedule, in_id=x).first().duration
+                )
+                for x in row_start_hours_list
+            ]
+
         return context
 
     def form_valid(self, form):
@@ -311,10 +349,10 @@ class ClassesView(LoginRequiredMixin, FormView):
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
         grade = form.cleaned_data.get('grade')
-        class_signature = form.cleaned_data.get('class-signature')
+        class_signature = form.cleaned_data.get('class_signature')
         supervising_teacher = self.request.POST.get('supervising-teacher')
         supervising_teacher = Teachers.objects.filter(schedule_id=schedule, in_id=supervising_teacher).first()
-        starting_lesson_hour = self.request.POST.get('starting-lesson_hour')
+        starting_lesson_hour = self.request.POST.get('starting-lesson-hour')
         starting_lesson_hour = LessonHours.objects.filter(schedule_id=schedule, in_id=starting_lesson_hour).first()
 
         last_obj = context['objects_list'].last()
@@ -380,6 +418,13 @@ class SubjectsView(LoginRequiredMixin, FormView):
         context['subject_names_queryset'] = SubjectNames.objects.filter(schedule_id=schedule)
         context['teachers_queryset'] = Teachers.objects.filter(schedule_id=schedule)
         context['classroom_types_queryset'] = ClassroomTypes.objects.filter(schedule_id=schedule)
+
+        for row in context['objects_list']:
+            teachers_id = json.loads(row.teachers_id)
+            row.teachers_id = [str(Teachers.objects.filter(schedule_id=schedule, in_id=x).first()) for x in teachers_id]
+
+            classroom_types = json.loads(row.classroom_types)
+            row.classroom_types = [str(ClassroomTypes.objects.filter(schedule_id=schedule, in_id=x).first()) for x in classroom_types]
         return context
 
     def form_valid(self, form):
@@ -419,49 +464,271 @@ class SubjectsView(LoginRequiredMixin, FormView):
         return redirect(self.request.build_absolute_uri())
 
 
-# ==============================================
+class DeleteScheduleView(LoginRequiredMixin, View):
 
-def get_upload_file(request, file_name=None, schedule_id=None):
-    if request.FILES['file']:
-        file = request.FILES['file']
-        fs = FileSystemStorage()
-        fs.save(file.name, file)
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
+        return context
 
-        allowed_extension = ['xlsx', 'ods']
-        file_extension = file.name.split('.')[1]
+    def post(self, *args, **kwargs):
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        ScheduleList.objects.get(user_id=self.request.user, name=schedule_name).delete()
 
-        if file_extension not in allowed_extension:
+        return redirect('/schedules/')
+
+
+class DeleteDataView(LoginRequiredMixin, View):
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
+
+        # modele
+        context['classes'] = Classes
+        context['subject_names'] = SubjectNames
+        context['teachers'] = Teachers
+        context['classroom_types'] = ClassroomTypes
+        context['classrooms'] = Classrooms
+        context['subjects'] = Subject
+        context['lesson_hours'] = LessonHours
+        return context
+
+    def post(self, *args, **kwargs):
+        selected = self.request.POST.getlist('delete')
+        context = self.get_context_data()
+        model_name = context['model_name']
+        model = context[model_name]
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        if selected:
+            model.objects.filter(schedule_id=schedule, in_id__in=selected).delete()
+
+        return redirect(self.request.META.get('HTTP_REFERER'))
+
+
+class UploadDataView(LoginRequiredMixin, View):
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
+        return context
+
+    def post(self, *args, **kwargs):
+        context = self.get_context_data()
+        model_name = context['model_name']
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        if self.request.FILES['file']:
+            file = self.request.FILES['file']
+            fs = FileSystemStorage()
+            fs.save(file.name, file)
+
+            allowed_extension = ['xlsx', 'ods']
+            file_extension = file.name.split('.')[-1]
+
+            if file_extension not in allowed_extension:
+                fs.delete(file.name)
+                # TODO: wyswietlic informacje o zlym rozszerzeniu
+                return redirect(self.request.META.get('HTTP_REFERER'))
+
+            file_path = os.path.join(settings.MEDIA_ROOT, file.name)
+
+            if file_extension == 'ods':
+                df = pd.read_excel(file_path, engine="odf")
+            else:
+                df = pd.read_excel(file_path)
+
             fs.delete(file.name)
-            return False
 
-        file_path = os.path.join(settings.MEDIA_ROOT, file.name)
-        if file_extension == 'ods':
-            df = pd.read_excel(file_path, engine="odf")
-        else:
-            df = pd.read_excel(file_path)
+            match model_name:
+                case 'classes':
+                    for index, row in df.iterrows():
+                        in_id, grade, class_signature, supervising_teacher, starting_lesson_hour_id = row.values
 
-        fs.delete(file.name)
-        return upload_file(file_name, df, schedule_id)
+                        if not Classes.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
+                                starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
+                                                                                schedule_id=schedule),
+                                grade=grade,
+                                class_signature=class_signature
+                        ).exists():
+                            Classes.objects.create(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                supervising_teacher_id=Teachers.objects.get(_id=supervising_teacher, schedule_id=schedule),
+                                starting_lesson_hour_id=LessonHours.objects.get(_id=starting_lesson_hour_id,
+                                                                                schedule_id=schedule),
+                                grade=grade,
+                                class_signature=class_signature
+                            )
+                case 'classroom_types':
+                    for index, row in df.iterrows():
+                        in_id, description = row.values
+                        if not ClassroomTypes.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                description=description
+                        ).exists():
+                            ClassroomTypes.objects.create(in_id=in_id, schedule_id=schedule, description=description)
+                case 'classrooms':
+                    for index, row in df.iterrows():
+                        in_id, name, type_id = row.values
+                        if not Classrooms.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                name=name,
+                                type_id=ClassroomTypes.objects.get(id=type_id, schedule_id=schedule)
+                        ).exists():
+                            Classrooms.objects.create(
+                                in_id=in_id, schedule_id=schedule,
+                                name=name,
+                                type_id=ClassroomTypes.objects.get(id=type_id)
+                            )
+                case 'lesson_hours':
+                    for index, row in df.iterrows():
+                        in_id, start_hour, duration = row.values
+                        if not LessonHours.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                start_hour=start_hour,
+                                duration=duration
+                        ).exists():
+                            LessonHours.objects.create(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                start_hour=start_hour,
+                                duration=duration
+                            )
+                case 'subject_names':
+                    for index, row in df.iterrows():
+                        in_id, name = row.values
+                        if not SubjectNames.objects.filter(in_id=in_id, schedule_id=schedule, name=name).exists():
+                            SubjectNames.objects.create(in_id=in_id, schedule_id=schedule, name=name)
+                case 'teachers':
+                    for index, row in df.iterrows():
+                        in_id, name, surname, possible_subjects, start_hour_index, end_hour_index, days, main_classroom_id = row.values
+                        if not Teachers.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
+                                                                         schedule_id=schedule) if main_classroom_id != 'Null' else None,
+                                end_hour_index=end_hour_index,
+                                days=days
+                        ).exists():
+                            Teachers.objects.create(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                main_classroom_id=Classrooms.objects.get(_id=main_classroom_id,
+                                                                         schedule_id=schedule) if main_classroom_id != 'Null' else None,
+                                name=name,
+                                surname=surname,
+                                possible_subjects=possible_subjects,
+                                start_hour_index=start_hour_index,
+                                end_hour_index=end_hour_index,
+                                days=days
+                            )
+                case 'subjects':
+                    for index, row in df.iterrows():
+                        (
+                            in_id,
+                            subject_name_id,
+                            classes_id,
+                            subject_count_in_week,
+                            number_of_groups,
+                            lesson_hour_id,
+                            teachers_id,
+                            classroom_id,
+                            max_stack,
+                            classroom_types
+                        ) = row.values
+
+                        if not Subject.objects.filter(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
+                                subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
+                                lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
+                                    lesson_hour_id) != 'nan' else None,
+                                teachers_id=teachers_id,
+                                classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
+                                    classroom_id) != 'nan' else None,
+                                subject_count_in_week=subject_count_in_week,
+                                number_of_groups=number_of_groups,
+                                max_stack=max_stack,
+                                classroom_types=classroom_types
+                        ).exists():
+                            data = Subject(
+                                in_id=in_id,
+                                schedule_id=schedule,
+                                classes_id=Classes.objects.get(_id=classes_id, schedule_id=schedule),
+                                subject_name_id=SubjectNames.objects.get(_id=subject_name_id, schedule_id=schedule),
+                                lesson_hour_id=LessonHours.objects.get(_id=lesson_hour_id, schedule_id=schedule) if str(
+                                    lesson_hour_id) != 'nan' else None,
+                                teachers_id=teachers_id,
+                                classroom_id=Classrooms.objects.get(_id=classroom_id, schedule_id=schedule) if str(
+                                    classroom_id) != 'nan' else None,
+                                subject_count_in_week=subject_count_in_week,
+                                number_of_groups=number_of_groups,
+                                max_stack=max_stack,
+                                classroom_types=classroom_types
+                            )
+
+                            if data.check_teachers(teachers_id, schedule):
+                                data.save()
+                # TODO: zwrocic ze podana nazwa nie pasuje do zadnego modelu/tabeli
+                case _:
+                    pass
+
+        return redirect(self.request.META.get('HTTP_REFERER'))
 
 
-def create_schedule(request):
-    if request.method == 'POST':
-        schedule = ScheduleList.objects.create(
-            user_id=request.user,
-            name=request.POST.get('name'),
-        )
-        schedule.save()
-        ScheduleSettings.objects.create(schedule_id=schedule)
-        return redirect(f'/upload/{schedule.id}')
+# -----------------
 
-    return render(request, 'generatorApp/create_schedule.html')
+# def get_upload_file(request, file_name=None, schedule_id=None):
+#     if request.FILES['file']:
+#         file = request.FILES['file']
+#         fs = FileSystemStorage()
+#         fs.save(file.name, file)
+#
+#         allowed_extension = ['xlsx', 'ods']
+#         file_extension = file.name.split('.')[1]
+#
+#         if file_extension not in allowed_extension:
+#             fs.delete(file.name)
+#             return False
+#
+#         file_path = os.path.join(settings.MEDIA_ROOT, file.name)
+#         if file_extension == 'ods':
+#             df = pd.read_excel(file_path, engine="odf")
+#         else:
+#             df = pd.read_excel(file_path)
+#
+#         fs.delete(file.name)
+#         return upload_file(file_name, df, schedule_id)
 
 
-def upload(request, schedule_id=None):
-    if schedule_id is None:
-        return render(request, 'generatorApp/create_schedule.html')
-
-    return redirect(f'/upload/lesson_hours/{schedule_id}')
+# def create_schedule(request):
+#     if request.method == 'POST':
+#         schedule = ScheduleList.objects.create(
+#             user_id=request.user,
+#             name=request.POST.get('name'),
+#         )
+#         schedule.save()
+#         ScheduleSettings.objects.create(schedule_id=schedule)
+#         return redirect(f'/upload/{schedule.id}')
+#
+#     return render(request, 'generatorApp/create_schedule.html')
+#
+#
+# def upload(request, schedule_id=None):
+#     if schedule_id is None:
+#         return render(request, 'generatorApp/create_schedule.html')
+#
+#     return redirect(f'/upload/lesson_hours/{schedule_id}')
 
 
 def schedule_settings(request, schedule_id=None):

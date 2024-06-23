@@ -74,7 +74,7 @@ body {
     display: inline-block;
 }
 
-a {
+a, .confirm-button {
     color: #00ffff;
     text-decoration: none;
     position: relative;
@@ -82,8 +82,12 @@ a {
     transition: all .1s ease-in-out;
 }
 
-a:hover {
+a:hover, #cancel-button:hover, .confirm-button:hover {
     color: #ccffff;
+}
+
+#confirm-button:hover {
+    color: #ffcccc;
 }
 
 a::before {
@@ -104,4 +108,51 @@ a:hover::before {
 
 #now {
     display: none;
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}
+
+#confirm-div {
+    border-radius: 3%;
+    height: 140px;
+    padding: 15px;
+    width: fit-content;
+    min-width: 360px !important;
+    text-align: center;
+    z-index: 1000;
+    background-color: rgba(55, 55, 55, 0.97);
+    visibility: hidden;
+    font-size: 150%;
+    letter-spacing: -2px;
+    display: flex;
+    flex-direction: column;
+}
+
+#confirm-message {
+    flex: 1;
+    padding-top: 1vh;
+}
+
+#confirm-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.center span {
+    margin-top: auto;
+}
+
+input[type="submit"], input[type="button"] {
+    background: none;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
 }
