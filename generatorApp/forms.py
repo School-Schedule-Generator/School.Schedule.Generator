@@ -10,7 +10,7 @@ from .models import *
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 't', 'id': 'login', 'name': 'login',
-                                                                         'placeholder': 'username or mail'}))
+                                                                         'placeholder': 'login / email'}))
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password', 'name': 'password',
                                                                     'placeholder': 'password'}))
 
@@ -32,15 +32,15 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
-    username = forms.CharField(label='', widget=forms.TextInput({'class': 't', 'id': 'username', 'name': 'username',
-                                                                 'placeholder': 'username'}))
+    username = forms.CharField(label='', widget=forms.TextInput({'class': 't', 'id': 'login', 'name': 'login',
+                                                                 'placeholder': 'login'}))
     email = forms.EmailField(label='', widget=forms.EmailInput(attrs={'class': 't', 'id': 'email', 'name': 'email',
                                                                       'placeholder': 'email'}))
     password1 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password',
                                                                             'name': 'password',
                                                                             'placeholder': 'password'}))
-    password2 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'repeat-password',
-                                                                            'name': 'repeat-password',
+    password2 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'rpassword',
+                                                                            'name': 'rpassword',
                                                                             'placeholder': 'repeat password'}))
 
     class Meta:

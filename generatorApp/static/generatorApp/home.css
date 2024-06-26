@@ -1,69 +1,73 @@
-h1 {
-    font-size: 500%;
-    text-shadow: 0 0 10px #ffddff, 0 0 30px #ffbbff;
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
-h2 {
-    font-size: 150%;
-    color: #ffbbff;
-    line-height: 150%;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    margin: 1rem;
-    text-align: center;
-    user-select: none;
-}
-
-.second-screen {
-    position: absolute;
-    backdrop-filter: grayscale(100%);
-    top: 100vh;
-    padding: 3rem;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.blocks {
-    font-size: 120%;
-    color: #a1a1a1;
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
-    grid-template-rows: 50% 50%;
-}
-
-.blocks div {
-    width: 15vw;
-    height: 15vh;
-    background-color: #00000088;
-    padding: 1rem;
-    margin: .5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.blocks div:first-child {
-    background-color: #00000000;
-    color: #ddd;
-    font-size: 150%;
-}
-
-
-.content {
-    width: 100vw;
-    min-height: 100vh;
+.home {
+    width: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 0 10rem 0 10rem;
 }
 
-.content p {
-    /* padding: 0 15rem 0 15rem; */
-    margin-bottom: 10vh;
+h1 {
+    font-size: 400%;
+}
+
+.blocks {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.blocks div {
+    width: 20%;
+    min-height: 20vh;
+    background-color: #ffffff07;
+    padding: 2rem;
+    margin: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.blocks div:first-child {
+    background-color: transparent;
+}
+
+.news, .faq {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    margin: 2rem 0 2rem 0;
+}
+
+.news *, .faq * {
+    margin: 1rem;
+    width: 50%;
+}
+
+.faq *:nth-child(2n)::before {
+    content: "Q: ";
+    color: aqua;
+    font-weight: 700;
+}
+
+.faq *:nth-child(2n + 1)::before {
+    content: "A: ";
+    color: #00ff00;
+    font-weight: 700;
+}
+
+.faq *:first-child::before {
+    content: "";
 }

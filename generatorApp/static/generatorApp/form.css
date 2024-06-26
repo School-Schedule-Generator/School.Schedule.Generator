@@ -1,9 +1,15 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 form {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background-color: #1a1a1aaa;
+    background-color: #30203040;
     width: 30vw;
     border-radius: 10px;
     padding: 3rem;
@@ -19,7 +25,7 @@ form input {
     margin: 1rem;
 }
 
-form input.t:focus  {
+form input.t:focus {
     border: none;
     outline: none;
     width: 70%;
@@ -48,23 +54,42 @@ form input[type="submit"] {
     width: 30%;
 }
 
-form input[type = "submit"]:hover {
+form input[type="submit"]:hover {
     cursor: pointer;
     background-color: #9090c088;
 }
 
+.remember {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
 
-.content {
-    width: 100vw;
-    min-height: 100vh;
+.remember input {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid #302030;
+}
+
+form input.wrong {
+    position: relative;
+    box-shadow: 0 2px 0 -1px #FF9696;
+    background-color: #ffaaaa33;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    padding: 0 10rem 0 10rem;
 }
 
-.content p {
-    /* padding: 0 15rem 0 15rem; */
-    margin-bottom: 10vh;
+form input.wrong::before {
+    content: "tutaj wpisz blad";
+    position: absolute;
+    /* ustawiane jako set atribute w tym inpucie w ktorym jest blad
+        set atribute style="--err"
+        wtedy ta linijka to
+        content: --err;
+    */
+    color: #FF9696;
+    top: 110%;
+    /* z-index: 100; */
 }

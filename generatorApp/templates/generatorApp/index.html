@@ -1,50 +1,59 @@
-<!--jesli ta linijka bedzie powodowala blad przeniesz ja pod doctype, nie wiem czemu w pycharm podokresla-->
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
+    <link rel="stylesheet" href="{% static 'generatorApp/form.css' %}">
+    <link rel="stylesheet" href="{% static 'generatorApp/home.css' %}">
+    <title>home</title>
     {% block head %}
         <title>SSG</title>
     {% endblock %}
 </head>
 <body>
-<div class="nav nav-top">
-    <a href="{% url 'generatorApp:home' %}" id="logo">SSG</a>
-    <ul>
-        <li>
-        {% if user.is_authenticated %}
+    <div class="nav nav-top">
+        <a href="{% url 'generatorApp:home' %}" id="logo">SSG</a>
+        <ul>
+            <li>
+                {% if user.is_authenticated %}
+                    <a>
+                        <input type="button" class="confirm-button" onclick="(
+                            () => {
+                                document.getElementById('confirm-div').style.visibility = 'visible';
+                                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to logout?';
+                                    let confirm_form = document.getElementById('confirm-form') || null;
+                                    if(confirm_form) {
+                                       confirm_form.action = '{% url 'generatorApp:logout' %}'
+                                    }
+                            })();
+                        " value="Logout">
+                    </a>
 
-            <a>
-                <input type="button" class="confirm-button" onclick="(
-                    () => {
-                        document.getElementById('confirm-div').style.visibility = 'visible';
-                        document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
-                            let confirm_form = document.getElementById('confirm-form') || null;
-                            if(confirm_form) {
-                               confirm_form.action = '{% url 'generatorApp:logout' %}'
-                            }
-                    })();
-                " value="Logout">
-            </a>
+                {% else %}
+                    <a href="{% url 'generatorApp:login' %}">Log in</a>
+                {% endif %}
+            </li>
 
-        {% else %}
-            <a href="{% url 'generatorApp:login' %}">Log in</a>
-        {% endif %}</li>
-        <li><a href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Docs</a></li>
-        <li><a {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
-        {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a></li>
-    </ul>
-</div>
+            <li>
+                <a href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Documentation</a>
+            </li>
+
+            <li>
+                <a {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
+                {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a>
+            </li>
+        </ul>
+    </div>
+
 
 <div class="content">
-    <form id="confirm-form" method="POST">
+    <form id="confirm-form" method="POST" style="visibility: hidden">
         {% csrf_token %}
         <div id="confirm-div" class="center">
             <span id="confirm-message"></span>
@@ -64,6 +73,13 @@
     {% block content %}
     {% endblock %}
 </div>
+
+{#  TODO: ogaranc te linki XD #}
+<footer>
+    <div>&copyczarneGejePl 2024</div>
+    <a href="">daj nam donuta</a>
+    <a href="">githab</a>
+</footer>
 
 <script src="{% static 'generatorApp/script.js' %}"></script>
 
