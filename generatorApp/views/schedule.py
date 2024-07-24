@@ -15,7 +15,6 @@ from django.shortcuts import redirect
 from ..schoolSchedule.load_data import load_data, schedule_to_json
 from ..schoolSchedule.generate import generate_schedule
 from django.core.exceptions import ValidationError
-from .upload_file import upload_file
 from datetime import datetime, timedelta
 
 
@@ -132,7 +131,6 @@ class LessonHoursView(LoginRequiredMixin, TemplateView, FormView):
         return context
 
     def form_valid(self, form, **kwargs):
-        # TODO-validation: check if start hour is bigger then last one (prevent indexing bug when generating)
         context = self.get_context_data()
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
@@ -269,7 +267,6 @@ class TeachersView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        # TODO: przy przekierowaniu pobierać sortby (?sort-by: )
         context = self.get_context_data()
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
@@ -341,9 +338,6 @@ class ClassesView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        # TODO: przy przekierowaniu pobierać sortby (?sort-by: )
-        # TODO: walidacja zeby sygnatury klas sie nie powtarzaly na tym samym roku
-        # TODO: zeby nauczyciel nie mogl miec kilku klas
         context = self.get_context_data()
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
@@ -382,8 +376,6 @@ class SubjectNamesView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        # TODO: przy przekierowaniu pobierać sortby (?sort-by: )
-        # TODO: walidacja zeby nazwy sie nie powtarzaly (chyba potrzebne)
         # TODO: pozmieniac nazwy kolumn (posuuwac _id gdzie nie trza itp)
         context = self.get_context_data()
         schedule_name = context['schedule_name']
@@ -428,7 +420,6 @@ class SubjectsView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        # TODO: przy przekierowaniu pobierać sortby (?sort-by: )
         # TODO: walidacja zeby nie blo wiecej nauczycieli do przedmiotu niz jest grup
         context = self.get_context_data()
         schedule_name = context['schedule_name']
@@ -686,82 +677,42 @@ class UploadDataView(LoginRequiredMixin, View):
         return redirect(self.request.META.get('HTTP_REFERER'))
 
 
-# -----------------
+class ScheduleSettingsView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('generatorApp:login')
+    template_name = 'generatorApp/forms/settings.html'
 
-# def get_upload_file(request, file_name=None, schedule_id=None):
-#     if request.FILES['file']:
-#         file = request.FILES['file']
-#         fs = FileSystemStorage()
-#         fs.save(file.name, file)
-#
-#         allowed_extension = ['xlsx', 'ods']
-#         file_extension = file.name.split('.')[1]
-#
-#         if file_extension not in allowed_extension:
-#             fs.delete(file.name)
-#             return False
-#
-#         file_path = os.path.join(settings.MEDIA_ROOT, file.name)
-#         if file_extension == 'ods':
-#             df = pd.read_excel(file_path, engine="odf")
-#         else:
-#             df = pd.read_excel(file_path)
-#
-#         fs.delete(file.name)
-#         return upload_file(file_name, df, schedule_id)
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
 
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+        settings = ScheduleSettings.objects.get(schedule_id=schedule)
+        settings_dict = json.loads(settings.content)
+        context['min_lessons'] = settings_dict['min_lessons_per_day']
+        context['max_lessons'] = settings_dict['max_lessons_per_day']
+        context['days'] = settings_dict['days']
 
-# def create_schedule(request):
-#     if request.method == 'POST':
-#         schedule = ScheduleList.objects.create(
-#             user_id=request.user,
-#             name=request.POST.get('name'),
-#         )
-#         schedule.save()
-#         ScheduleSettings.objects.create(schedule_id=schedule)
-#         return redirect(f'/upload/{schedule.id}')
-#
-#     return render(request, 'generatorApp/create_schedule.html')
-#
-#
-# def upload(request, schedule_id=None):
-#     if schedule_id is None:
-#         return render(request, 'generatorApp/create_schedule.html')
-#
-#     return redirect(f'/upload/lesson_hours/{schedule_id}')
+        return context
 
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
 
-def schedule_settings(request, schedule_id=None):
-    settings = ScheduleSettings.objects.get(schedule_id=schedule_id)
+    def post(self, *args, **kwargs):
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
-    if request.method == 'POST':
-        min_lessons_per_day = request.POST.get("min_lessons_per_day")
-        max_lessons_per_day = request.POST.get("max_lessons_per_day")
+        min_lessons = self.request.POST.get('min-lessons')
+        max_lessons = self.request.POST.get('max-lessons')
+        days = self.request.POST.getlist('days')
+
+        settings = ScheduleSettings.objects.get(schedule_id=schedule)
         settings.content = json.dumps({
-            "min_lessons_per_day": int(min_lessons_per_day) if min_lessons_per_day is not None else 5,
-            "max_lessons_per_day": int(max_lessons_per_day) if max_lessons_per_day is not None else 9,
-            "days": request.POST.getlist("days")
+            "min_lessons_per_day": int(min_lessons),
+            "max_lessons_per_day": int(max_lessons),
+            "days": days,
         })
         settings.save()
-
-        # prepare and generate data
-        now = datetime.now()
-        data = load_data(
-            dtype='sql',
-            schedule_id=schedule_id
-        )
-        if data:
-            schedule_pd = generate_schedule(
-                data=data,
-                schedule_settings=json.loads(settings.content),
-                log_file_name=now.strftime("%Y-%m-%d %H-%M-%S.%f")
-            )
-
-            schedule = ScheduleList.objects.get(id=schedule_id)
-            schedule.content = schedule_to_json(schedule_pd, file_path=None)
-            schedule.save()
-
-    context = json.loads(settings.content)
-    context.update({"schedule_id": schedule_id})
-
-    return render(request, 'generatorApp/settings.html', context=context)
+        return redirect(self.request.build_absolute_uri())

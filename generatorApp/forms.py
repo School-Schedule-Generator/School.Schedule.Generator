@@ -150,22 +150,6 @@ class SubjectNamesForm(ModelForm):
         fields = ['name']
 
 
-class ScheduleSettingsForm(forms.Form):
-    choices = (
-        ('monday', 'monday'),
-        ('tuesday', 'tuesday'),
-        ('wednesday', 'wednesday'),
-        ('thursday', 'thursday'),
-        ('friday', 'friday'),
-        ('saturday', 'saturday'),
-        ('sunday', 'sunday'),
-    )
-
-    min_lessons_per_day = forms.IntegerField(label='min_lessons_per_day')
-    max_lessons_per_day = forms.IntegerField(label='max_lessons_per_day')
-    days = forms.MultipleChoiceField(label='days', choices=choices)
-
-
 class SubjectsForm(ModelForm):
     subject_count_in_week = forms.IntegerField(label='', widget=forms.NumberInput(attrs={
         'class': 't',

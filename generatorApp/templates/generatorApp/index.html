@@ -22,18 +22,19 @@
         <ul>
             <li>
                 {% if user.is_authenticated %}
-                    <a>
-                        <input type="button" class="confirm-button" onclick="(
-                            () => {
-                                document.getElementById('confirm-div').style.visibility = 'visible';
-                                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to logout?';
-                                    let confirm_form = document.getElementById('confirm-form') || null;
-                                    if(confirm_form) {
-                                       confirm_form.action = '{% url 'generatorApp:logout' %}'
-                                    }
-                            })();
-                        " value="Logout">
-                    </a>
+                    
+                    <button type="button" class="confirm-button" onclick="(
+                        () => {
+                            document.getElementById('confirm-div').style.visibility = 'visible';
+                            document.getElementById('confirm-message').innerHTML = 'Are you sure you want to logout?';
+                                let confirm_form = document.getElementById('confirm-form') || null;
+                                if(confirm_form) {
+                                   confirm_form.action = '{% url 'generatorApp:logout' %}'
+                                }
+                        })();
+                    ">
+                        <a>Logout</a>
+                    </button>
 
                 {% else %}
                     <a href="{% url 'generatorApp:login' %}">Log in</a>
@@ -52,36 +53,33 @@
     </div>
 
 
-<div class="content">
-    <form id="confirm-form" method="POST" style="visibility: hidden">
-        {% csrf_token %}
-        <div id="confirm-div" class="center">
-            <span id="confirm-message"></span>
-            <div id="confirm-buttons">
-                <span>
+    <div class="content">
+        <form id="confirm-form" method="POST" style="visibility: hidden">
+            {% csrf_token %}
+            <div id="confirm-div" class="center">
+                <span id="confirm-message"></span>
+                <div id="confirm-buttons">
+                    <input type="submit" id="confirm-button" value="Confirm">
                     <input type="button" id="cancel-button" onclick="(
                         () => {
                             document.getElementById('confirm-div').style.visibility = 'hidden';
                         })();
                     " value="Cancel">
-                    <input type="submit" id="confirm-button" value="Confirm">
-                </span>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    
+        {% block content %}
+        {% endblock %}
+    </div>
 
-    {% block content %}
-    {% endblock %}
-</div>
+    <footer>
+        <div>&<3 2024</div>
+        <a href="">d a n u t a</a>
+        <a href="">githab</a>
+    </footer>
 
-{#  TODO: ogaranc te linki XD #}
-<footer>
-    <div>&copyczarneGejePl 2024</div>
-    <a href="">daj nam donuta</a>
-    <a href="">githab</a>
-</footer>
-
-<script src="{% static 'generatorApp/script.js' %}"></script>
+    <script src="{% static 'generatorApp/script.js' %}"></script>
 
 </body>
 </html>

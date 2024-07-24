@@ -5,12 +5,7 @@
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
     <title>teachers</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .main{
-            margin-left: 40%;
-            margin-top: 15%;
-        }
-    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -114,9 +109,9 @@
         " value="Delete">
 
 
-        <form method="POST">
+        <form method="POST" class="add-data-form">
             {% csrf_token %}
-            <div>Add teachers</div>
+            <div class="add-data-form-title full-row-adf-item">Add teachers</div>
 
             {{ form.name }}
             {{ form.surname }}
@@ -133,26 +128,30 @@
                     <option value="{{ object }}">{{ object }}</option>
                 {% endfor %}
             </select>
+
+            <hr class="full-row-adf-item">
+
             {% with 'monday tuesday wednesday thursday friday' as days %}
                 {% for day in days.split %}
-                    <hr>
-                    <span>{{ day }}</span>
-                    <select class="t" id="start-hour-{{ day }}" name="start-hour-{{ day }}">
-                        {% for object in lesson_hours_queryset %}
-                            <option value="{{ object }}">{{ object }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="full-row-adf-item">
+                        <span>{{ day }}</span>
+                        <select class="t" id="start-hour-{{ day }}" name="start-hour-{{ day }}">
+                            {% for object in lesson_hours_queryset %}
+                                <option value="{{ object }}">{{ object }}</option>
+                            {% endfor %}
+                        </select>
 
-                    <select class="t" id="end-hour-{{ day }}" name="end-hour-{{ day }}">
-                        <option value="None">None</option>
-                        {% for object in lesson_hours_queryset %}
-                            <option value="{{ object }}">{{ object }}</option>
-                        {% endfor %}
-                    </select>
+                        <select class="t" id="end-hour-{{ day }}" name="end-hour-{{ day }}">
+                            <option value="None">None</option>
+                            {% for object in lesson_hours_queryset %}
+                                <option value="{{ object }}">{{ object }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 {% endfor %}
             {% endwith %}
 
-            <hr>
+            <hr class="full-row-adf-item">
 
             <select class="t" id="days" name="days" multiple="multiple">
                 {% with 'monday tuesday wednesday thursday friday' as days %}

@@ -1,19 +1,18 @@
-### Create expansions
+### Utwórz rozszerzenia
 
-To write expansions first get to know the project by reading files documentation 
-and then follow this tutorial.
+Aby napisać rozszerzenia, najpierw zapoznaj się z projektem, czytając dokumentację plików, a następnie postępuj zgodnie z tym samouczkiem.
 
-First download the project branch from GitHub as zip or clone it with this command:  
+Najpierw pobierz gałąź projektu z GitHub jako zip lub sklonuj ją za pomocą tego polecenia:
 `git clone -b generator git@github.com:School-Schedule-Generator/School.Schedule.Generator.git`  
 
-Then using pip (or other package installer) get the requirements from requirements.txt  
+Następnie, używając pip (lub innego instalatora pakietów), pobierz wymagania z pliku requirements.txt
 `pip install -r requirements.txt`  
 
-#### We are ready to go!
+#### Jesteśmy gotowi do działania!
 
-Your expansion will be placed in schedule/format/
+Twoje rozszerzenie będzie umieszczone w katalogu schedule/format/
 
-First open a template (template.py); this is code inside of it:
+Najpierw otwórz szablon (template.py); oto kod wewnątrz niego:
 ```python
 def <FUNCTION NAME>(self, <PARAMETERS>, log_file_name):
 	
@@ -26,14 +25,14 @@ def <FUNCTION NAME>(self, <PARAMETERS>, log_file_name):
     return self # don't delete
 ```
 
-Set your function name then copy your template to that directory and rename it to the same name as function.  
-As parameters set all the dataframes and objects provided by format_schedule function (in schedule/format/format_schedule.py).  
-e.g.:
+Ustaw nazwę funkcji, a następnie skopiuj szablon do tego katalogu i zmień jego nazwę na taką samą jak nazwa funkcji.  
+Jako parametry ustaw wszystkie dataframes i obiekty dostarczone przez funkcję format_schedule (w schedule/format/format_schedule.py).  
+np.:
 ```python
 def update_min_day_len(self, conditions, days, teachers, log_file_name):
 ```
 
-Go to schedule/__init__.py and import your function in class like that:  
+Przejdź do pliku schedule/__init__.py i zaimportuj swoją funkcję do klasy w ten sposób:  
 ```python
 class Schedule:
     (...)
@@ -42,8 +41,8 @@ class Schedule:
     from .format.<FUNCTION NAME> import <FUNCTION NAME>
 ```
 
-After that go to schedule/format/format_schedule.py and add your function implementation (with all the parameters)
-to the return statement after other format functions seperated by "." like that:
+Następnie przejdź do pliku schedule/format/format_schedule.py i dodaj implementację swojej funkcji (ze wszystkimi parametrami) do instrukcji return po innych funkcjach format oddzielonych 
+"." w ten sposób:  
 ```python
 return self.update_min_day_len(
         conditions,
@@ -60,12 +59,12 @@ return self.update_min_day_len(
     )
 ```
 
-#### And that's pretty much it
-If you have any problems, remember that you can use every function provided by us in schedule.  
-e.g.:
+#### I to w zasadzie wszystko
+Jeśli masz jakiekolwiek problemy, pamiętaj, że możesz użyć każdej funkcji dostarczonej przez nas w schedule.  
+np.:
 ```python
     self.get_num_of_lessons(schedule_at_day, log_file_name)
 ```
 
-Thank you for choosing our program :)  
-If you create any cool expansion feel free to contact us and make the expansion official.
+Dziękujemy za wybór naszego programu :)  
+Jeśli stworzysz jakieś fajne rozszerzenie, skontaktuj się z nami, to dodamy je do programu.

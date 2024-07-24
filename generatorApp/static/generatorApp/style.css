@@ -17,6 +17,9 @@ body {
     color: white;
     overflow-X: hidden;
     background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 ::-webkit-scrollbar {
@@ -80,6 +83,16 @@ body {
     display: inline-block;
 }
 
+.confirm-button {
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
 a {
     color: #dddd00;
     text-decoration: none;
@@ -118,6 +131,12 @@ p {
     font-weight: 300;
 }
 
+.content {
+    flex: 1;
+    width: 100%;
+    margin-top: 5rem;
+}
+
 footer {
     font-weight: 200;
     letter-spacing: 1px;
@@ -128,6 +147,7 @@ footer {
     align-items: center;
     justify-content: space-around;
     color: #ffffff55;
+    width: 100%;
 }
 
 footer div, footer a {
@@ -136,4 +156,10 @@ footer div, footer a {
 
 footer a {
     color: #00ffff88;
+}
+
+.sticky-wrapper {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 6rem;
 }

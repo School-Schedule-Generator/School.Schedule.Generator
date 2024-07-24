@@ -5,39 +5,6 @@
     <link rel="stylesheet" href="{% static 'generatorApp/schedule.css' %}">
     <title>schedules</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .main{
-            margin-left: 40%;
-            margin-top: 15%;
-        }
-        .schedules{
-            display: flex;
-            flex-direction: column;
-        }
-        .schedule{
-            width: 80vw;
-            background-color: gold;
-            margin: 4px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-        }
-        .days{
-            margin: 3px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .day{
-            margin: 10px;
-            background-color: lightcoral;
-            padding: 10px;
-        }
-        .subject{
-            background-color: green;
-            padding: 5px;
-            margin-bottom: 3px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -64,19 +31,6 @@
                                 <div class="subjects">
                                     {% for subject_list in subjects %}
                                         {% for subject in subject_list %}
-                                        {# labels for one schedule #}
-                                        {# subject_id #}
-                                        {# subject_name_id #}
-                                        {# class_id #}
-                                        {# number_of_groups #}
-                                        {# lesson_hour_id #}
-                                        {# teachers_id #}
-                                        {# classroom_id #}
-                                        {# is_empty #}
-                                        {# max_stack #}
-                                        {# movable #}
-                                        {# group #}
-                                        {# classroom_types #}
                                             <div class="subject">
                                                 <div>Godzina {{ subject.lesson_hour_id }}</div>
                                                 <div>Przedmiot: {{ subject.subject_name_id }}</div>

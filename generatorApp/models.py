@@ -113,7 +113,6 @@ class ScheduleSettings(models.Model):
         return self.content
 
 
-# TODO: FIXXX
 class Subject(models.Model):
     in_id = models.TextField(default=None, null=True)
     schedule_id = models.ForeignKey(ScheduleList, on_delete=models.CASCADE)

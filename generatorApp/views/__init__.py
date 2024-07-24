@@ -16,12 +16,7 @@ class views:
         DeleteScheduleView,
         DeleteDataView,
         UploadDataView,
-
-        # # upload_file,
-        # get_upload_file,
-        # create_schedule,
-        # # upload,
-        schedule_settings
+        ScheduleSettingsView,
     )
     from .user import (
         RegisterUserView,

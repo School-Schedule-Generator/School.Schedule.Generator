@@ -8,8 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
 from django.shortcuts import redirect
 
-
-# TODO: dodac remember mi i ustawic dlugosc sesji
 class LoginUserView(LoginView):
     form_class = LoginForm
     template_name = 'generatorApp/login.html'

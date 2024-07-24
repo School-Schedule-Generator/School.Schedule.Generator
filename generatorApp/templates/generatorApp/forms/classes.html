@@ -5,12 +5,6 @@
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
     <title>classes</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .main{
-            margin-left: 40%;
-            margin-top: 15%;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -61,9 +55,9 @@
         " value="Delete">
 
 
-        <form method="POST">
+        <form method="POST" class="add-data-form">
             {% csrf_token %}
-            <div>Add class</div>
+            <div class="add-data-form-title full-row-adf-item">Add class</div>
 
             {{ form.grade }}
             {{ form.class_signature }}

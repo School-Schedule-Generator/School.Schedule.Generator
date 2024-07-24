@@ -1,7 +1,6 @@
-aside, main {
-    float: left;
-    position: relative;
-    top: 8rem;
+.content {
+    display: flex;
+    flex-direction: row;
 }
 
 aside {
@@ -9,6 +8,41 @@ aside {
     padding-left: 3ch;
 }
 
-main {
-    width: 80%;
+ol {
+    list-style-type: disc;
+}
+
+.days {
+    display: flex;
+    flex-direction: row;
+}
+
+.schedule, .day, .subject {
+    background-color: #ffbbff11;
+}
+
+.schedule {
+    border-radius: 10px;
+}
+
+.day {
+    border-radius: 4px;
+}
+
+.subject, .day {
+    padding: 1rem;
+}
+
+.subject:first-child {
+    margin-top: 1rem;
+    /* background-color: black; */
+}
+
+h3 {
+    text-transform: uppercase;
+}
+
+.subject {
+    min-height: 8em;
+    border-radius: 2px;
 }

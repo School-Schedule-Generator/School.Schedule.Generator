@@ -1,0 +1,36 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
+    <title>classes</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <h2><b>{{ file_name }}</b></h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input class="t" id="min-lessons" name="min-lessons" type="number" min="1" max="100" value={{ min_lessons }}>
+            <input class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
+
+            <select class="t" id="days" name="days" multiple="multiple">
+                {% with "monday tuesday wednesday thursday friday" as days_options %}
+                    {% for day in days_options.split %}
+                        <option value="{{ day }}" {% if day in days %}selected {% endif %}>{{ day }}</option>
+                    {% endfor %}
+                {% endwith %}
+            </select>
+
+            <input type="submit" value="Update">
+        </form>
+
+    </main>
+    
+{% endblock %}

@@ -5,7 +5,6 @@ from django.urls import path, reverse
 from .views import *
 
 app_name = "generatorApp"
-# TODO: check in url (e.g. /schedule/user/... == self.request.user.username) if user is the same as logged in
 urlpatterns = [
     path('', views.home, name='home'),
     path('home/', views.home, name='home'),
@@ -40,7 +39,8 @@ urlpatterns = [
     # upload data
     path('schedules/<str:username>/<str:schedule_name>/<str:model>/upload', views.UploadDataView.as_view(), name='upload_data'),
 
-    path('settings/<int:schedule_id>', views.schedule_settings, name='settings'),
+    # settings
+    path('schedules/<str:username>/<str:schedule_name>/settings', views.ScheduleSettingsView.as_view(), name='settings'),
 
 
     # path('create_schedule', views.create_schedule, name='create-schedule'),

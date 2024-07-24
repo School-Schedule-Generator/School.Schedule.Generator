@@ -1,14 +1,9 @@
-aside, main {
-    float: left;
-    position: relative;
-    top: 8rem;
+.content {
+    display: flex;
+    flex-direction: row;
 }
 
 aside {
     width: 20%;
     padding-left: 3ch;
-}
-
-main {
-    width: 80%;
 }

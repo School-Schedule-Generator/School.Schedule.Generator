@@ -5,12 +5,7 @@
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
     <title>lesson hours</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .main{
-            margin-left: 40%;
-            margin-top: 15%;
-        }
-    </style>
+
 {% endblock %}
 
 {% block content %}
@@ -25,20 +20,6 @@
         </form>
 
         <h2><b>{{ file_name }}</b></h2>
-    
-        <div id="confirm-div" class="center">
-            <p style="height: 10%">Are you sure you want to delete selected?</p>
-            <div id="confirm-buttons">
-                <span>
-                    <input type="button" id="cancel-button" onclick="(
-                        () => {
-                            document.getElementById('confirm-div').style.visibility = 'hidden';
-                        })();
-                    " value="Cancel">
-                    <input type="submit" id="confirm-button" value="Confirm">
-                </span>
-            </div>
-        </div>
 
         <div class="data-container">
             <table>
@@ -69,9 +50,9 @@
         " value="Delete">
 
 
-        <form method="POST">
+        <form method="POST" class="add-data-form">
             {% csrf_token %}
-            <div>Add lesson hours</div>
+            <div class="add-data-form-title full-row-adf-item">Add lesson hours</div>
 
             {{ form.start_hour }}
 
