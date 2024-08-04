@@ -11,8 +11,14 @@ WEB
 * Naprawić model subjects : class_id nie działa
 
 * W formularzu settings.html min value nie może być większe od max
+-> zrobione tl=ylko trzeba ostylowac errora
 
-* Dodać warning wyświetlający się po każdej zmianie w ustawieniach żeby ser wygenerował ponownie plan lekcji przyciskiem przy planie lekcji
+* Dodać warning wyświetlający się po każdej zmianie w ustawieniach żeby user wygenerował ponownie plan lekcji przyciskiem przy planie lekcji
+
+* przy logowaniu sprawdzac czy dany user(lub email) istnieje w bazie oraz jesli haslo jest zle to wyswetlic informacje
+>> chyba zrobione ale nie wim czy dziala
+
+* przy rejestracji wswietlac errory
 
 * 404, i błędy servera
 

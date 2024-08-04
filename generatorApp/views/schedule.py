@@ -695,9 +695,9 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
 
         return context
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         context = self.get_context_data()
-        return render(request, self.template_name, context)
+        return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
         context = self.get_context_data()
@@ -707,6 +707,11 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
         min_lessons = self.request.POST.get('min-lessons')
         max_lessons = self.request.POST.get('max-lessons')
         days = self.request.POST.getlist('days')
+
+        if min_lessons >= max_lessons:
+            context = self.get_context_data()
+            context['error_msg'] = 'Min lessons per day must be lower than max lessons per day!!!'
+            return render(self.request, self.template_name, context)
 
         settings = ScheduleSettings.objects.get(schedule_id=schedule)
         settings.content = json.dumps({

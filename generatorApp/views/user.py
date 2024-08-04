@@ -1,4 +1,4 @@
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, render
 from ..forms import *
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -8,11 +8,34 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
 from django.shortcuts import redirect
 
+
 class LoginUserView(LoginView):
     form_class = LoginForm
     template_name = 'generatorApp/login.html'
     success_url = reverse_lazy('generatorApp:home')
     next_page = reverse_lazy('generatorApp:home')
+
+    # przeniesiona logika z pliku forms, lekko zmienione wsywietlanie errorow n a stronie
+    def form_valid(self, form):
+        context = self.get_context_data()
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        ogg = User.objects.filter(
+            Q(email=username) | Q(username=username)
+        ).first()
+
+        if not ogg:
+            context['error_msg'] = "Login/e-mail doesn't exist"
+            return render(self.request, self.template_name, context)
+
+        user = authenticate(self.request, username=ogg.username, password=password)
+
+        if user is None:
+            context['error_msg'] = "Invalid password"
+            return render(self.request, self.template_name, context)
+
+        login(self.request, user)
+        return redirect(self.success_url)
 
 
 class RegisterUserView(CreateView):

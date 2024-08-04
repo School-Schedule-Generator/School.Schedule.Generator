@@ -14,21 +14,22 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'class': 't', 'id': 'password', 'name': 'password',
                                                                     'placeholder': 'password'}))
 
-    def clean(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-        ogg = User.objects.filter(
-            Q(email=username) | Q(username=username)
-        ).first()
+# przeniesione do widoku LoginView w user.py
+    # def clean(self):
+    #     username = self.cleaned_data.get('username')
+    #     password = self.cleaned_data.get('password')
+    #     ogg = User.objects.filter(
+    #         Q(email=username) | Q(username=username)
+    #     ).first()
 
-        if ogg and password:
-            self.user_cache = authenticate(username=ogg.username, password=password)
-
-            if self.user_cache is None:
-                raise forms.ValidationError('Invalid login or password.')
-            else:
-                self.confirm_login_allowed(self.user_cache)
-        return self.cleaned_data
+        # if ogg and password:
+        #     self.user_cache = authenticate(username=ogg.username, password=password)
+        #
+        #     if self.user_cache is None:
+        #         raise forms.ValidationError('Invalid login or password.')
+        #     else:
+        #         self.confirm_login_allowed(self.user_cache)
+        # return self.cleaned_data
 
 
 class RegisterForm(UserCreationForm):
