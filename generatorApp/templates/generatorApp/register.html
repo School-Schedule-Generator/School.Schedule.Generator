@@ -8,13 +8,21 @@
 
 {% block content %}
 
-<form method="POST" >
+{% if error_msg %}
+    <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>
+{% endif %}
+
+<form method="POST">
     {% csrf_token %}
     <div>Register</div>
+    
+    <input type="text" class="t" id="login" name="login" placeholder="login" required>
 
-    {% for input in form %}
-        {{ input }}
-    {% endfor %}
+    <input type="email" class="t" id="email" name="email" placeholder="email" required>
+
+    <input type="password" class="t" id="password" name="password" placeholder="password" required>
+
+    <input type="password" class="t" id="rpassword" name="rpassword" placeholder="repeat password" required>
 
     <p style="opacity: .5; margin: 1rem;">Do you already have account? <a href="{% url 'generatorApp:login' %}">Log in</a></p>
 

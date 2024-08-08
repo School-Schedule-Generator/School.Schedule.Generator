@@ -2,25 +2,13 @@ TODO-LIST:
 ---------------------------------------------------------------------------------------------------------------------
 WEB
 ***
-* Ustwic validaotry do hasla i logina dla usera
-
-* Do formularza logowania dodac opcje remember me i ustawic dlugosc sesji
-
 * Eksportowanie do excela w ustawieniach (info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path})
 
 * Naprawić model subjects : class_id nie działa
 
-* W formularzu settings.html min value nie może być większe od max
--> zrobione tl=ylko trzeba ostylowac errora
-
 * Dodać warning wyświetlający się po każdej zmianie w ustawieniach żeby user wygenerował ponownie plan lekcji przyciskiem przy planie lekcji
 
-* przy logowaniu sprawdzac czy dany user(lub email) istnieje w bazie oraz jesli haslo jest zle to wyswetlic informacje
->> chyba zrobione ale nie wim czy dziala
-
-* przy rejestracji wswietlac errory
-
-* 404, i błędy servera
+* 404, i błędy serwera
 
 GRZESIEK:
 .....................
@@ -41,6 +29,8 @@ Oscylowanie dokumentacji:
 * oscylować listy punktowane i numerowane tak aby było ładne zagnieżdżanie punktów
 * dodać jakieś ładne paddingi i marginy żeby tekst był czytelniejszy
 * kolorki (opcjonalnie)
+
+
 
 .....................
 ***

@@ -16,10 +16,16 @@
     {% csrf_token %}
     <div>Log in</div>
 
-    {{ form.username }}
-    {{ form.password }}
+    <input type="text" class="t" id="login" name="login" placeholder="login / email">
+
+    <input type="password" class="t" id="password" name="password" placeholder="password">
 
     <p style="opacity: .5; margin: 1rem;">Don't you have account yet? <a href="{% url 'generatorApp:register' %}">Register</a></p>
+
+    <span style="width: 60%; padding-left: 2ch">
+        <input style="margin: 0; width: 20px" type="checkbox" class="t" id="remember-me" name="remember-me">
+        <label for="remember-me" style="font-weight: lighter;">Remember me</label>
+    </span>
 
     <input type="submit" value="Log in">
 </form>
