@@ -27,9 +27,7 @@
                     <th>ID</th>
                     <th>classes</th>
                     <th>subject name</th>
-                    <th>lesson hour</th>
                     <th>teachers</th>
-                    <th>classroom</th>
                     <th>subject count in week</th>
                     <th>number of groups</th>
                     <th>maximum les stack</th>
@@ -41,13 +39,11 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ value.classes_id }}</td>
                         <td>{{ value.subject_name_id }}</td>
-                        <td>{{ value.lesson_hour_id }}</td>
                         <td>
                             {% for teacher in value.teachers_id %}
                                 <span> {{ teacher }} </span>
                             {% endfor %}
                         </td>
-                        <td>{{ value.classroom_id }}</td>
                         <td>{{ value.subject_count_in_week }}</td>
                         <td>{{ value.number_of_groups }}</td>
                         <td>{{ value.max_stack }}</td>

@@ -7,7 +7,8 @@ from .classroom import *
 from .subject import *
 from .teacher import *
 from .tkinter_schedule_vis import *
-from .settings import *
+import os
+import shutil
 
 
 def permutations(iterable, r=None):
@@ -32,9 +33,10 @@ def generate_schedule(data, schedule_settings, log_file_name):
     days = schedule_settings["days"]
 
     # Creating directory for log files
-    if not os.path.exists(f'logs/{log_file_name}'):
-        os.makedirs(f'logs/{log_file_name}')
-    with open(f'logs/{log_file_name}/{log_file_name}.txt', 'w') as f:
+    log_folder_path = f'logs/{log_file_name}'
+    if not os.path.exists(log_folder_path):
+        os.makedirs(log_folder_path)
+    with open(f'{log_folder_path}/{log_file_name}.txt', 'w') as f:
         pass
 
     # Creating global schedule conditions
@@ -46,13 +48,13 @@ def generate_schedule(data, schedule_settings, log_file_name):
 
         # splitting data to separate dataframes
         [
-            lesson_hours_df,
-            subject_names_df,
+            _,
+            _,
             subjects_df,
             teachers_df,
             classes_df,
             classrooms_df,
-            classroom_types_df
+            _
         ] = copy.deepcopy(data)
 
         # gathering basic information from dataframes
@@ -100,4 +102,10 @@ def generate_schedule(data, schedule_settings, log_file_name):
     ):
         debug_log(log_file_name, 'DEBUG: no tkinter generated')
 
-    return schedule.data
+    if os.path.exists(log_folder_path):
+        shutil.rmtree(log_folder_path)
+
+    if schedule.valid:
+        return schedule.data
+    else:
+        return None

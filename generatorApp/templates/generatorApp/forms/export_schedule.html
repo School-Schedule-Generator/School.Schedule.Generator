@@ -1,0 +1,31 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
+    <title>export schedule</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <h2><b>{{ file_name }}</b></h2>
+
+        {% if error_msg %}
+            <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input class="t" id="title" name="title" type="text" placeholder="title" required>
+
+            <input type="submit" value="Export">
+        </form>
+
+    </main>
+    
+{% endblock %}

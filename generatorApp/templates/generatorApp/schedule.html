@@ -11,12 +11,45 @@
 
    {% include 'generatorApp/schedule_list.html' %}
 
-    <main>
-        <h3>{{ schedule.name }}</h3>
+    <main class="main">
+
+        <div>
+            <h3 id="title">{{ schedule.name }}</h3>
+            <div>
+                <input type="button" class="confirm-button" onclick="(
+                    () => {
+                        document.getElementById('confirm-div').style.visibility = 'visible';
+                        document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
+                            let confirm_form = document.getElementById('confirm-form') || null;
+                            if(confirm_form) {
+                               confirm_form.action = '{% url 'generatorApp:delete_schedule' username=user.username schedule_name=schedule.name %}' +
+                                    '{% if request.GET.sort_by%}?sort_by={{request.GET.sort_by}}{% endif %}'
+                            }
+                    })();
+                " value="Delete">
+
+                <a href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
+
+                <a href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
+
+                <a href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}">Generate</a>
+            </div>
+            <p>{{ schedule.description }}</p>
+        </div>
+
+        <div id="buttons">
+            {% for class in classes %}
+                <div class="class-switch" onclick="switch_class({{ class.in_id }})">
+                    {{ class.grade }}{{ class.class_signature }}
+                </div>
+            {% endfor %}
+        </div>
+
         <br>
-        <div class="schedules">
+
+        <div class="schedules" id="schedules">
             {% for class_id, days in schedule_content.items %}
-                <div class="schedule">
+                <div id="{{ class_id }}" class="schedule" style="display: none">
                     <h3 style="float: left; padding-right: 1ch">
                         {% for class_name in schedule.classes_set.all%}
                             {% if class_name == class_id %}
@@ -48,6 +81,24 @@
             {% endfor %}
         </div>
         <div style="clear: both"></div>
+
     </main>
+
+    <script>
+        let first_element = document.getElementById('schedules').children[0];
+        first_element.style.display = 'block';
+
+        function switch_class(class_id){
+            for (let i=0; i<document.getElementById('schedules').children.length; i++) {
+                let current_child = document.getElementById('schedules').children[i]
+                if (current_child.id == class_id) {
+                    current_child.style.display = 'block';
+                } else {
+                    current_child.style.display = 'none';
+                }
+            }
+        }
+
+    </script>
 
 {% endblock %}

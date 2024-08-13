@@ -1,6 +1,12 @@
 <aside>
     <div class="sticky-wrapper">
-        <h3>List of your schedules</h3>
+        <h3>
+            <span>List of your schedules</span>
+            <a href="{% url 'generatorApp:schedules_base' %}">
+                <span style="font-size: 150%">+</span>
+            </a>
+        </h3>
+
         <ol>
             {% if schedule_list %}
                 {% for schedule in schedule_list %}
@@ -8,22 +14,6 @@
                         <a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name %}">
                             {{ schedule.name }}, {{ schedule.created_date }}
                         </a>
-
-                        <br>
-
-                        <input type="button" class="confirm-button" onclick="(
-                            () => {
-                                document.getElementById('confirm-div').style.visibility = 'visible';
-                                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
-                                    let confirm_form = document.getElementById('confirm-form') || null;
-                                    if(confirm_form) {
-                                       confirm_form.action = '{% url 'generatorApp:delete_schedule' username=user.username schedule_name=schedule.name %}' +
-                                            '{% if request.GET.sort_by%}?sort_by={{request.GET.sort_by}}{% endif %}'
-                                    }
-                            })();
-                        " value="Delete">
-
-                        <a href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
 
                         <ol class="schedule-data-list" style="padding-left: 2ch">
                             {% for label in labels %}

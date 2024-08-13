@@ -2,35 +2,8 @@ TODO-LIST:
 ---------------------------------------------------------------------------------------------------------------------
 WEB
 ***
-* Eksportowanie do excela w ustawieniach (info = {'Title': 'Test Schedule', 'Time': time_str, 'Path': file_path})
-
 * Naprawić model subjects : class_id nie działa
 
 * Dodać warning wyświetlający się po każdej zmianie w ustawieniach żeby user wygenerował ponownie plan lekcji przyciskiem przy planie lekcji
 
 * 404, i błędy serwera
-
-GRZESIEK:
-.....................
-
-Oscylowanie formularzy:
-* dla każdego pliku do dodawania danych:
-	- formularze upladowania plików
-	- formularze usuwania danych (chodzi o przycisk delete pod danymi)
-	- formularze dodawania danych (każdy formularz tutaj się różni więc będziesz musiał każdy osobno)
-* formularz tworzenia nowego planu lekcji
-* na liście planów lekcji (schedules_list.html):
-	- formularz do usuwania i menagowania planem lekcji
-	- formularz do sortowania
-* formularz akceptowania (index.html) (on jest jeden dla całej strony tylko komunikat się zmienia)
-* na asidzie w dokumentacji (docs.html) formularz do zmiany języka
-
-Oscylowanie dokumentacji:
-* oscylować listy punktowane i numerowane tak aby było ładne zagnieżdżanie punktów
-* dodać jakieś ładne paddingi i marginy żeby tekst był czytelniejszy
-* kolorki (opcjonalnie)
-
-
-
-.....................
-***

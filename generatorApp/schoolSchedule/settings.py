@@ -29,17 +29,17 @@ class Settings:
         }
 
         self.SQL_COLUMN_NAMES = {
-            'SSG_LESSON_HOURS': ['_id', 'start_hour', 'duration'],
-            'SSG_SUBJECT_NAMES': ['_id', 'name'],
-            'SSG_SUBJECTS': ['_id', 'subject_name_id_id', 'classes_id_id', 'subject_count_in_week',
+            'SSG_LESSON_HOURS': ['in_id', 'start_hour', 'duration'],
+            'SSG_SUBJECT_NAMES': ['in_id', 'name'],
+            'SSG_SUBJECTS': ['in_id', 'subject_name_id_id', 'classes_id_id', 'subject_count_in_week',
                              'number_of_groups', 'lesson_hour_id_id', 'teachers_id',
                              'classroom_id_id', 'max_stack', 'classroom_types'],
-            'SSG_TEACHERS': ['_id', 'name', 'surname', 'possible_subjects', 'start_hour_index',
+            'SSG_TEACHERS': ['in_id', 'name', 'surname', 'possible_subjects', 'start_hour_index',
                              'end_hour_index', 'days', 'main_classroom_id_id'],
-            'SSG_CLASSES': ['_id', 'grade', 'class_signature',
+            'SSG_CLASSES': ['in_id', 'grade', 'class_signature',
                             'supervising_teacher_id_id', 'starting_lesson_hour_id_id'],
-            'SSG_CLASSROOMS': ['_id', 'name', 'type_id_id'],
-            'SSG_CLASSROOM_TYPES': ['_id', 'description']
+            'SSG_CLASSROOMS': ['in_id', 'name', 'type_id_id'],
+            'SSG_CLASSROOM_TYPES': ['in_id', 'description']
         }
 
         self.SQLTABLES = {

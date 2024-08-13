@@ -1,21 +1,23 @@
-import json
-import os
 import datetime as dt
-from datetime import datetime
-import pandas as pd
-from django.shortcuts import render, HttpResponseRedirect
-from ..forms import *
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView, TemplateView, View
-from django.contrib import messages
-from django.core.files.storage import FileSystemStorage
-from django.conf import settings
-from django.shortcuts import redirect
-from ..schoolSchedule.load_data import load_data, schedule_to_json
-from ..schoolSchedule.generate import generate_schedule
-from django.core.exceptions import ValidationError
+import os
 from datetime import datetime, timedelta
+import pandas as pd
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.urls import reverse
+from django.views.generic import FormView, TemplateView, View
+from django.http import FileResponse, HttpResponse
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font
+from ..forms import *
+from ..schoolSchedule.generate import generate_schedule
+from ..schoolSchedule.load_data import load_data, schedule_to_json
+import urllib.parse
 
 
 def update_context(request, kwargs, context):
@@ -76,6 +78,7 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
         def schedule_str(schedule):
             if not schedule.content:
                 return False
+
             schedule_content = json.loads(schedule.content)
             for class_id, days in schedule_content.items():
                 for day, subjects in days.items():
@@ -112,8 +115,39 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
 
         schedule_str = schedule_str(schedule)
         context['schedule_content'] = schedule_str if schedule_str else "Please import data!"
+        context['classes'] = Classes.objects.filter(schedule_id=schedule)
 
         return context
+
+
+class GenerateScheduleView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('generatorApp:login')
+    success_url_name = 'generatorApp:schedule'
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
+
+        username = context.get('username', request.user.username)
+        schedule_name = context.get('schedule_name', 'schedule') # TODO: wywalić error zamiast dawać default name jeśli nie znajdzie w context
+
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        data = load_data(dtype='sql', schedule=schedule)
+
+        schedule_settings = ScheduleSettings.objects.get(schedule_id=schedule)
+        schedule_content = generate_schedule(data, json.loads(schedule_settings.content), log_file_name=schedule.id)
+
+        if schedule_content:
+            schedule.content = schedule_to_json(schedule_content)
+            schedule.save()
+
+            success_url = reverse(self.success_url_name, kwargs={'username': username, 'schedule_name': schedule_name})
+            return redirect(success_url)
+        else:
+            # TODO: Zmienić na błąd
+            success_url = reverse(self.success_url_name, kwargs={'username': username, 'schedule_name': schedule_name})
+            return redirect(success_url)
 
 
 class LessonHoursView(LoginRequiredMixin, TemplateView, FormView):
@@ -122,7 +156,6 @@ class LessonHoursView(LoginRequiredMixin, TemplateView, FormView):
     template_name = 'generatorApp/forms/lesson_hours.html'
 
     def get_context_data(self, **kwargs):
-        print(kwargs)
         context = super().get_context_data(**kwargs)
         context = update_context(self.request, self.kwargs, context)
         schedule_name = context['schedule_name']
@@ -721,3 +754,143 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
         })
         settings.save()
         return redirect(self.request.build_absolute_uri())
+
+
+class ExportScheduleView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('generatorApp:login')
+    template_name = 'generatorApp/forms/export_schedule.html'
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = update_context(self.request, self.kwargs, context)
+        return context
+
+
+    def schedule_to_excel(self, schedule, export_settings):
+        schedule_dict = json.loads(schedule.content)
+        file_path = os.path.join(settings.MEDIA_ROOT, str(schedule.id)+'.xlsx')
+
+        columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+        try:
+            wb = load_workbook(file_path)
+        except FileNotFoundError:
+            wb = Workbook()
+
+        if 'Sheet' in wb.sheetnames:
+            ws = wb['Sheet']
+            ws.title = export_settings['Title']
+
+            ws.merge_cells('A1:E1')  # Merge cells for the title
+            title_cell = ws['A1']
+            try:
+                title_cell.value = export_settings['Title']
+            except KeyError:
+                title_cell.value = "School Schedule"
+            title_cell.font = Font(size=20, bold=True)
+
+            for i, key in enumerate(export_settings):
+                if key != 'Title':
+                    ws[f'A{i + 2}'] = key
+                    ws.merge_cells(f'B{i + 2}:E{i + 2}')
+                    value_cell = ws[f'B{i + 2}']
+                    value_cell.value = export_settings[key]
+
+        lesson_hours_df = LessonHours.objects.filter(schedule_id=schedule).values()
+        classes_df = Classes.objects.filter(schedule_id=schedule).values()
+        teachers_df = Teachers.objects.filter(schedule_id=schedule).values()
+        subject_names_df = SubjectNames.objects.filter(schedule_id=schedule).values()
+        classrooms_df = Classrooms.objects.filter(schedule_id=schedule).values()
+
+        for class_name in schedule_dict.keys():
+            ws = wb.create_sheet(title=f'Class_{class_name}')
+
+            ws['A1'] = 'day/lesson'
+
+            for lesson in range(len(lesson_hours_df)):
+                ws[f'A{lesson + 2}'] = f"{lesson + 1}."
+
+            class_info = classes_df.get(in_id=str(class_name))
+
+            ws[f'A{len(lesson_hours_df) + 3}'] = f"Class:"
+            try:
+                ws[f'B{len(lesson_hours_df) + 3}'] = f"{class_info['grade']}{class_info['class_signature']}"
+            except IndexError:
+                ws[f'B{len(lesson_hours_df) + 3}'] = "---"
+
+            supervising_teacher = teachers_df.get(in_id=str(class_info['supervising_teacher_id_id']))
+
+            ws[f'D{len(lesson_hours_df) + 3}'] = f"Supervising teacher:"
+            try:
+                ws[f'E{len(lesson_hours_df) + 3}'] = f"{supervising_teacher['name']} {supervising_teacher['surname']}"
+            except IndexError:
+                ws[f'E{len(lesson_hours_df) + 3}'] = "---"
+
+            for i, day in enumerate(schedule_dict[class_name].keys()):
+                ws[f'{columns[i + 1]}{1}'] = day
+
+                for j, hour in enumerate(schedule_dict[class_name][day]):
+                    message = ''
+                    for subject in schedule_dict[class_name][day][j]:
+                        try:
+                            print(subject.keys())
+                            subject_name = subject_names_df.get(in_id=subject['subject_name_id'])
+                        except SubjectNames.DoesNotExist:
+                            subject_name = {'name': '---'}
+
+                        try:
+                            teacher_name = teachers_df.get(in_id=subject['teachers_id'][0])
+                            teacher_name = f"{teacher_name['name']} {teacher_name['surname']}"
+                        except Teachers.DoesNotExist:
+                            teacher_name = '---'
+
+                        try:
+                            classroom_name = classrooms_df.get(in_id=subject['classroom_id'])['classroom_name']
+                        except Classrooms.DoesNotExist:
+                            classroom_name = '---'
+
+                        if subject['number_of_groups'] > 1:
+                            message += f"gr.{subject['group']} | {subject_name['name']} | {teacher_name} | class: {classroom_name}\n"
+                        else:
+                            message += f"{subject_name['name']} | {teacher_name} | class: {classroom_name}"
+
+                    ws[f'{columns[i + 1]}{j + 2}'] = message
+
+        wb.save(file_path)
+        return file_path
+
+    def get(self, *args, **kwargs):
+        contex = self.get_context_data()
+        return render(self.request, self.template_name, contex)
+
+    def post(self, *args, **kwargs):
+        context = self.get_context_data()
+        schedule_name = context['schedule_name']
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        file_title = self.request.POST.get('title', 'default_title')
+
+        # Sanitize the file title to avoid issues with special characters
+        sanitized_title = ''.join(char if char.isalnum() or char in (' ', '_', '-') else '_' for char in file_title)
+
+        # Use a default name if file_title is empty
+        if not sanitized_title:
+            sanitized_title = "schedule"
+
+        file_path = self.schedule_to_excel(
+            schedule=schedule,
+            export_settings={"Title": file_title}
+        )
+
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(
+                file.read(),
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            # Use urllib.parse.quote to safely encode the filename for Content-Disposition
+            encoded_file_title = urllib.parse.quote(sanitized_title)
+            response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{encoded_file_title}.xlsx'
+
+        os.remove(file_path)
+
+        return response

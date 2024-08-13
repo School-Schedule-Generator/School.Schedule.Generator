@@ -46,3 +46,20 @@ h3 {
     min-height: 8em;
     border-radius: 2px;
 }
+
+.class-switch {
+    background-color: #ffbbff11;
+    width: 40px;
+    height: 40px;
+    margin: 1ch 2ch 1ch 0;
+    border-radius: 10%;
+}
+
+#buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+#title {
+    font-size: 250%;
+}

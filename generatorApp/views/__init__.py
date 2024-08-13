@@ -17,6 +17,8 @@ class views:
         DeleteDataView,
         UploadDataView,
         ScheduleSettingsView,
+        ExportScheduleView,
+        GenerateScheduleView,
     )
     from .user import (
         RegisterUserView,
