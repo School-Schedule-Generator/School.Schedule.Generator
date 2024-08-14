@@ -169,7 +169,7 @@ def safe_move(self, teachers_id, day_from, day_to, subject_position, subject_new
 
     if not self.are_teachers_taken(
         teachers_id=teachers_id,
-        day_to=day_to,
+        day=day_to,
         lesson_index=lesson_index,
     ) and self.check_teacher_conditions(
         teachers_id=teachers_id,
@@ -213,11 +213,11 @@ def get_same_time_teacher(self, day_to, lesson_index):
     return same_time_teachers
 
 
-def get_same_time_classrooms(self, day_to, lesson_index):
+def get_same_time_classrooms(self, day, lesson_index):
     same_time_classrooms = []
     for class_schedule_id in self.data:
         try:
-            subjects_list = self.data[class_schedule_id][day_to][lesson_index]
+            subjects_list = self.data[class_schedule_id][day][lesson_index]
             for subject in subjects_list:
                 if subject.classroom_id is not None:
                     same_time_classrooms.append(subject.classroom_id)

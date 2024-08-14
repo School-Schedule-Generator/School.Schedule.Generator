@@ -12,7 +12,7 @@ ol {
     list-style-type: disc;
 }
 
-.days {
+.days, .groups {
     display: flex;
     flex-direction: row;
 }
@@ -27,15 +27,7 @@ ol {
 
 .day {
     border-radius: 4px;
-}
-
-.subject, .day {
     padding: 1rem;
-}
-
-.subject:first-child {
-    margin-top: 1rem;
-    /* background-color: black; */
 }
 
 h3 {
@@ -43,8 +35,12 @@ h3 {
 }
 
 .subject {
-    min-height: 8em;
+    height: 14em;
     border-radius: 2px;
+    flex-grow: 1;
+    line-height: 1.4em;
+    margin-top: 1rem;
+    padding: 1rem;
 }
 
 .class-switch {

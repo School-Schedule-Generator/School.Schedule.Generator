@@ -63,15 +63,17 @@
                                 <h3> {{ day }}</h3>
                                 <div class="subjects">
                                     {% for subject_list in subjects %}
-                                        {% for subject in subject_list %}
-                                            <div class="subject">
-                                                <div>Godzina {{ subject.lesson_hour_id }}</div>
-                                                <div>Przedmiot: {{ subject.subject_name_id }}</div>
-                                                <div>Nauczyciel: {{ subject.teachers_id }}</div>
-                                                <div>Klasa: {{ subject.classroom_id }}</div>
-                                                <div>Grupa: {{ subject.group }}</div>
-                                            </div>
-                                        {% endfor %}
+                                        <div class="groups">
+                                            {% for subject in subject_list %}
+                                                <div class="subject">
+                                                    <div>Godzina {{ subject.lesson_hour_id }}</div>
+                                                    <div>Przedmiot: {{ subject.subject_name_id }}</div>
+                                                    <div>Nauczyciel: {{ subject.teachers_id }}</div>
+                                                    <div>Klasa: {{ subject.classroom_id }}</div>
+                                                    <div>Grupa: {{ subject.group }}</div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>

@@ -20,6 +20,8 @@ class LoginUserView(View):
     next_page = reverse_lazy('generatorApp:home')
 
     def get(self, request):
+        context = {}
+        context['error_msg'] = self.request.session.pop('error_msg', '')
         return render(self.request, self.template_name)
 
     def post(self, request):
@@ -32,16 +34,20 @@ class LoginUserView(View):
         ).first()
 
         if not ogg:
-            context['error_msg'] = "Login/e-mail doesn't exist"
+            self.request.session['error_msg'] = "Login/e-mail doesn't exist"
+            context['error_msg'] = self.request.session['error_msg']
             return render(self.request, self.template_name, context)
 
         user = authenticate(self.request, username=ogg.username, password=password)
 
         if user is None:
-            context['error_msg'] = "Invalid password"
+            self.request.session['error_msg'] = "Invalid password"
+            context['error_msg'] = self.request.session['error_msg']
             return render(self.request, self.template_name, context)
 
         login(self.request, user)
+
+        self.request.session['error_msg'] = None
 
         if remember_me:
             self.request.session.set_expiry(None)
@@ -67,32 +73,32 @@ class RegisterUserView(View):
         email = self.request.POST.get('email')
 
         if username in User.objects.values_list('username', flat=True):
-            context['error_msg'] = "This username is already taken."
+            self.request.session['error_msg'] = "This username is already taken."
             return render(self.request, self.template_name, context)
 
         if email in User.objects.values_list('email', flat=True):
-            context['error_msg'] = "This email is already taken."
+            self.request.session['error_msg'] = "This email is already taken."
             return render(self.request, self.template_name, context)
 
         if password1 != password2:
-            context['error_msg'] = "Please pass in the same password!"
+            self.request.session['error_msg'] = "Please pass in the same password!"
             return render(self.request, self.template_name, context)
 
         # Individual regex checks for tailored feedback
         if len(password1) < 8:
-            context['error_msg'] = "Password must be at least 8 characters long."
+            self.request.session['error_msg'] = "Password must be at least 8 characters long."
             return render(self.request, self.template_name, context)
 
         if not re.search(r'[A-Z]', password1):
-            context['error_msg'] = "Password must contain at least one uppercase letter."
+            self.request.session['error_msg'] = "Password must contain at least one uppercase letter."
             return render(self.request, self.template_name, context)
 
         if not re.search(r'[a-z]', password1):
-            context['error_msg'] = "Password must contain at least one lowercase letter."
+            self.request.session['error_msg'] = "Password must contain at least one lowercase letter."
             return render(self.request, self.template_name, context)
 
         if not re.search(r'[@$!%*?&]', password1):
-            context['error_msg'] = "Password must contain at least one special character (@, $, !, %, *, ?, &)."
+            self.request.session['error_msg'] = "Password must contain at least one special character (@, $, !, %, *, ?, &)."
             return render(self.request, self.template_name, context)
 
         user = User.objects.create_user(username, email, password1)

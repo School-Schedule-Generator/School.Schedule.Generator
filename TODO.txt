@@ -2,8 +2,4 @@ TODO-LIST:
 ---------------------------------------------------------------------------------------------------------------------
 WEB
 ***
-* Naprawić model subjects : class_id nie działa
-
-* Dodać warning wyświetlający się po każdej zmianie w ustawieniach żeby user wygenerował ponownie plan lekcji przyciskiem przy planie lekcji
-
 * 404, i błędy serwera

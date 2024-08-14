@@ -8,10 +8,6 @@
 
 {% block content %}
 
-{% if error_msg %}
-    <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>
-{% endif %}
-
 <form method="POST">
     {% csrf_token %}
     <div>Log in</div>

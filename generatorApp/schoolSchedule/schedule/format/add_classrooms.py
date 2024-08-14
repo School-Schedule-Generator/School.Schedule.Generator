@@ -1,5 +1,4 @@
-from ...debug_log import *
-from ...tkinter_schedule_vis import tkinter_schedule_vis
+import numpy as np
 
 
 def add_classrooms(self, classrooms, teachers, days):
@@ -21,6 +20,8 @@ def add_classrooms(self, classrooms, teachers, days):
                     if subject.classroom_id is not None or subject.is_empty:
                         continue
 
+                    print("*" * 10)
+
                     stacked_subjects, _ = self.get_stacked_lessons(
                         class_id=class_id,
                         day=day,
@@ -33,8 +34,12 @@ def add_classrooms(self, classrooms, teachers, days):
                         for stacked_subject in stacked_subjects:
                             teacher_id = stacked_subject.teachers_id[0]
                             teacher = teachers[teacher_id]
+                            try:
+                                main_classroom = str(int(teacher.main_classroom))
+                            except ValueError:
+                                main_classroom = None
 
-                            if (teacher.main_classroom is not None and teacher.main_classroom != classroom) \
+                            if (main_classroom is not None and main_classroom != classroom) \
                                or classroom in self.get_same_time_classrooms(
                                 day,
                                 stacked_subject.lesson_hour_id
@@ -42,7 +47,7 @@ def add_classrooms(self, classrooms, teachers, days):
                                 valid = False
                                 break
 
-                            elif classrooms[classroom].type_id not in stacked_subject.classroom_types \
+                            elif classrooms[classroom].type_id not in stacked_subject.classroom_types   \
                                 or classroom in self.get_same_time_classrooms(
                                 day,
                                 stacked_subject.lesson_hour_id

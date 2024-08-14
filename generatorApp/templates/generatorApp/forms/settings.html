@@ -8,22 +8,25 @@
 {% endblock %}
 
 {% block content %}
-
+    
     {% include 'generatorApp/schedule_list.html' %}
 
     <main>
         <h2><b>{{ file_name }}</b></h2>
-
+    
         {% if error_msg %}
             <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>
         {% endif %}
 
         <form method="post">
             {% csrf_token %}
-
+            
+            <label for="min-lessons">minimum number of lessons (per day)</label>
             <input class="t" id="min-lessons" name="min-lessons" type="number" min="1" max="100" value={{ min_lessons }}>
+            <label for="max-lessons">maximum number of lessons (per day)</label>
             <input class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
-
+        
+            <label for="days">Days with lessons</label>
             <select class="t" id="days" name="days" multiple="multiple">
                 {% with "monday tuesday wednesday thursday friday" as days_options %}
                     {% for day in days_options.split %}

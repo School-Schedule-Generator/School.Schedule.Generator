@@ -22,7 +22,7 @@
         <ul>
             <li>
                 {% if user.is_authenticated %}
-                    
+
                     <button type="button" class="confirm-button" onclick="(
                         () => {
                             document.getElementById('confirm-div').style.visibility = 'visible';
@@ -50,6 +50,15 @@
                 {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a>
             </li>
         </ul>
+    </div>
+    
+    <div id="msg-container">
+        {% if warning_msg or request.session.warning_msg %}
+            <p class="msg" style="background-color: #e8d873; color: #a48509;">{{ request.session.warning_msg }}</p>
+        {% endif %}
+        {% if error_msg or request.session.error_msg %}
+            <p class="msg" style="background-color: #e87373; color: #a90f0f;">{{ request.session.error_msg }}</p>
+        {% endif %}
     </div>
 
 

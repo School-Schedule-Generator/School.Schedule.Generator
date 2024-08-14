@@ -129,7 +129,7 @@ class GenerateScheduleView(LoginRequiredMixin, View):
         context = update_context(self.request, self.kwargs, context)
 
         username = context.get('username', request.user.username)
-        schedule_name = context.get('schedule_name', 'schedule') # TODO: wywalić error zamiast dawać default name jeśli nie znajdzie w context
+        schedule_name = context.get('schedule_name', 'schedule')    # TODO: wywalić error zamiast dawać default name jeśli nie znajdzie w context
 
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
@@ -141,6 +141,10 @@ class GenerateScheduleView(LoginRequiredMixin, View):
         if schedule_content:
             schedule.content = schedule_to_json(schedule_content)
             schedule.save()
+
+            # Clear the error message after generating the schedule
+            if 'warning_msg' in self.request.session:
+                del self.request.session['warning_msg']
 
             success_url = reverse(self.success_url_name, kwargs={'username': username, 'schedule_name': schedule_name})
             return redirect(success_url)
@@ -741,7 +745,7 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
         max_lessons = self.request.POST.get('max-lessons')
         days = self.request.POST.getlist('days')
 
-        if min_lessons >= max_lessons:
+        if int(min_lessons) >= int(max_lessons):
             context = self.get_context_data()
             context['error_msg'] = 'Min lessons per day must be lower than max lessons per day!!!'
             return render(self.request, self.template_name, context)
@@ -753,6 +757,10 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
             "days": days,
         })
         settings.save()
+
+        # Set the error message in the session
+        self.request.session['warning_msg'] = 'Settings updated! Please regenerate your schedule.'
+
         return redirect(self.request.build_absolute_uri())
 
 
