@@ -105,6 +105,9 @@ class RegisterUserView(View):
         user.save()
         auth_user = authenticate(username=username, password=password1)
         login(self.request, auth_user)
+
+        self.request.session['error_msg'] = None
+
         return redirect(self.success_url)
 
 
