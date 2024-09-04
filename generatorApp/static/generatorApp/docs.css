@@ -1,9 +1,64 @@
 .content {
     display: flex;
     flex-direction: row;
+    min-height: 64vh;
 }
 
 aside {
-    width: 20%;
-    padding-left: 3ch;
+    padding: 3ch 5ch;
+}
+
+main {
+    padding: 3ch 5ch;
+}
+
+p {
+    margin-left: 2ch;
+}
+
+
+
+main > ol {
+    margin-left: 4vh;
+}
+
+h1 {
+    margin: 1ch 0;
+}
+
+h2 {
+    margin: 1ch 0.7ch;
+}
+
+hr {
+    margin: 2ch 0;
+}
+
+ul {
+    list-style-type: disc; /* Top-level list items will have disc bullets */
+    margin: 0;
+    padding-left: calc(1ch + 20px);
+    font-size: 110%;
+}
+
+ul ul {
+    list-style-type: circle; /* First-level nested list items will have circle bullets */
+    padding-left: 20px; /* Indentation for nested lists */
+    font-size: 105%;
+}
+
+ul ul ul {
+    list-style-type: square; /* Second-level nested list items will have square bullets */
+    padding-left: 20px; /* Further indentation for deeper nested lists */
+    font-size: 95%;
+}
+
+li {
+    margin-bottom: 5px; /* Space between list items */
+}
+
+/* Optional: additional styling for specific levels */
+ul ul ul li {
+    color: #555; /* Change text color for deeper nested items */
+    font-style: italic; /* Italicize deeper nested items */
 }

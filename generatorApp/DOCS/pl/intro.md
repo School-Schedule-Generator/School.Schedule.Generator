@@ -9,12 +9,6 @@ aby pomóc uczniom, nauczycielom i administratorom w tworzeniu zorganizowanych p
 Jeśli planujesz harmonogramy zajęć, ten generator usprawnia proces,
 oszczędzając czas i wysiłek.
 
-## Spis treści
-
-1. [Instrukcje użytkowania](#instrukcje-użytkowania)
-2. [Rozszerzanie Generatora](expantions_tutorial)
-3. [Opis plików Generatora](files)
-
 ## Instrukcje użytkowania
 
 Aby jak najlepiej wykorzystać Generator Planu Szkolnego, postępuj zgodnie z poniższymi krokami:

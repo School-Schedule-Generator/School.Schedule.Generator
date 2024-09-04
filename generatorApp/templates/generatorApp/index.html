@@ -9,8 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
     <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
-    <link rel="stylesheet" href="{% static 'generatorApp/form.css' %}">
-    <link rel="stylesheet" href="{% static 'generatorApp/home.css' %}">
     <title>home</title>
     {% block head %}
         <title>SSG</title>
@@ -22,20 +20,7 @@
         <ul>
             <li>
                 {% if user.is_authenticated %}
-
-                    <button type="button" class="confirm-button" onclick="(
-                        () => {
-                            document.getElementById('confirm-div').style.visibility = 'visible';
-                            document.getElementById('confirm-message').innerHTML = 'Are you sure you want to logout?';
-                                let confirm_form = document.getElementById('confirm-form') || null;
-                                if(confirm_form) {
-                                   confirm_form.action = '{% url 'generatorApp:logout' %}'
-                                }
-                        })();
-                    ">
-                        <a>Logout</a>
-                    </button>
-
+                    <a id="logout">Logout</a>
                 {% else %}
                     <a href="{% url 'generatorApp:login' %}">Log in</a>
                 {% endif %}
@@ -61,34 +46,31 @@
         {% endif %}
     </div>
 
-
-    <div class="content">
-        <form id="confirm-form" method="POST" style="visibility: hidden">
+    <div id="popup">
+        <form id="logout-form" method="POST">
             {% csrf_token %}
-            <div id="confirm-div" class="center">
-                <span id="confirm-message"></span>
-                <div id="confirm-buttons">
-                    <input type="submit" id="confirm-button" value="Confirm">
-                    <input type="button" id="cancel-button" onclick="(
-                        () => {
-                            document.getElementById('confirm-div').style.visibility = 'hidden';
-                        })();
-                    " value="Cancel">
-                </div>
+            <h2>logout?</h2>
+            <div>
+                <a href="{% url 'generatorApp:logout' %}">yes</a>
+                <a href="">no</a>
             </div>
         </form>
-    
+    </div>
+
+
+    <div class="content">
         {% block content %}
         {% endblock %}
     </div>
 
     <footer>
-        <div>&<3 2024</div>
-        <a href="">d a n u t a</a>
-        <a href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">githab</a>
+        <div>&copy 2024</div>
+        <a href="">donate us 🙏</a>
+        <a href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">github</a>
     </footer>
 
     <script src="{% static 'generatorApp/script.js' %}"></script>
+    <script src="{% static 'generatorApp/popup.js' %}"></script>
 
 </body>
 </html>

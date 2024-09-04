@@ -11,12 +11,6 @@ and administrators in creating organized schedules tailored to their educational
 If you're planning class timetables,
 this generator streamlines the process, saving time and effort.
 
-## Contents
-
-1. [Usage Instructions](#usage-instructions)
-2. [Extending the Generator](expantions_tutorial)
-3. [Description of Generator Files](files)
-
 ## Usage Instructions
 
 To make the most of the School Schedule Generator, follow these steps:
