@@ -499,7 +499,7 @@ class DeleteScheduleView(LoginRequiredMixin, View):
         context = update_context(self.request, self.kwargs, context)
         return context
 
-    def post(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         context = self.get_context_data()
         schedule_name = context['schedule_name']
         ScheduleList.objects.get(user_id=self.request.user, name=schedule_name).delete()
@@ -522,7 +522,7 @@ class DeleteDataView(LoginRequiredMixin, View):
         context['lesson_hours'] = LessonHours
         return context
 
-    def post(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         selected = self.request.POST.getlist('delete')
         context = self.get_context_data()
         model_name = context['model_name']

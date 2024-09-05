@@ -18,13 +18,27 @@
     <div class="nav nav-top">
         <a href="{% url 'generatorApp:home' %}" id="logo">SSG</a>
         <ul>
-            <li>
-                {% if user.is_authenticated %}
-                    <a id="logout">Logout</a>
-                {% else %}
-                    <a href="{% url 'generatorApp:login' %}">Log in</a>
-                {% endif %}
-            </li>
+            {% if user.is_authenticated %}
+                <li>
+                    <a id="logout">
+                        <div>Logout</div>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'generatorApp:register' %}">
+                        <div>Sign up</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'generatorApp:login' %}">
+                         <div class="btn">Sign in</div>
+                    </a>
+                </li>
+
+            {% endif %}
+
+            <div class="spacer"></div>
 
             <li>
                 <a href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Documentation</a>
@@ -47,11 +61,11 @@
     </div>
 
     <div id="popup">
-        <form id="logout-form" method="POST">
+        <form id="popup-form" method="POST">
             {% csrf_token %}
-            <h2>logout?</h2>
+            <h2 id="popup-msg"></h2>
             <div>
-                <a href="{% url 'generatorApp:logout' %}">yes</a>
+                <a id="popup-confirm" href="">yes</a>
                 <a href="">no</a>
             </div>
         </form>
@@ -62,7 +76,7 @@
         {% block content %}
         {% endblock %}
     </div>
-
+ 
     <footer>
         <div>&copy 2024</div>
         <a href="">donate us 🙏</a>
@@ -70,7 +84,23 @@
     </footer>
 
     <script src="{% static 'generatorApp/script.js' %}"></script>
-    <script src="{% static 'generatorApp/popup.js' %}"></script>
+
+    <script>
+        const logout = document.getElementById("logout");
+        const popup = document.getElementById("popup");
+        const popup_msg = document.getElementById('popup-msg')
+        const popup_confirm = document.getElementById('popup-confirm')
+        
+        logout.addEventListener('click', () => {
+            popup.style.display = "flex"
+            popup_msg.innerHTML = "logout?";
+            popup_confirm.href = "{% url 'generatorApp:logout' %}"
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
 
 </body>
 </html>

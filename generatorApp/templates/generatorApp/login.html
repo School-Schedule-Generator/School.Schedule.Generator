@@ -2,27 +2,25 @@
 {% load static %}
 
 {% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/login.css' %}">
     <title>log in</title>
 {% endblock %}
 
 {% block content %}
+    
 
 <form method="POST">
-    {% csrf_token %}
-    <div>Log in</div>
-
-    <input type="text" class="t" id="login" name="login" placeholder="login / email">
-
-    <input type="password" class="t" id="password" name="password" placeholder="password">
-
-    <p style="opacity: .5; margin: 1rem;">Don't you have account yet? <a href="{% url 'generatorApp:register' %}">Register</a></p>
-
-    <span style="width: 60%; padding-left: 2ch">
-        <input style="margin: 0; width: 20px" type="checkbox" class="t" id="remember-me" name="remember-me">
-        <label for="remember-me" style="font-weight: lighter;">Remember me</label>
-    </span>
-
-    <input type="submit" value="Log in">
+    <div class="login-container">
+            {% csrf_token %}
+            <h2 style="font-weight: 450;">Log in</h2>
+            <div class="login">
+                <input type="text" class="t" id="login" name="login" placeholder="login / email">
+                <input type="password" class="t" id="password" name="password" placeholder="password">
+                <p>Don't you have an account yet? <a href="{% url 'generatorApp:register' %}">Sign up</a></p>
+                <input type="submit" value="Log in">
+            </div>
+            
+    </div>
 </form>
 
 {% endblock %}

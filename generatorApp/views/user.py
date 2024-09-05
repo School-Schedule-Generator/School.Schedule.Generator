@@ -117,3 +117,7 @@ class LogoutUserView(LoginRequiredMixin, View):
     def post(self, request):
         logout(request)
         return HttpResponseRedirect(reverse('generatorApp:home'))
+
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse('generatorApp:home'))

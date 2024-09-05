@@ -58,16 +58,7 @@
             </table>
         </div>
     
-        <input type="button" class="confirm-button" onclick="(
-            () => {
-                document.getElementById('confirm-div').style.visibility = 'visible';
-                document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
-                    let confirm_form = document.getElementById('confirm-form') || null;
-                    if(confirm_form) {
-                       confirm_form.action = '{{ request.get_full_path }}/delete'
-                    }
-            })();
-        " value="Delete">
+        <input type="button" class="confirm-button" id="delete_btn" value="Delete">
 
 
         <form method="POST" class="add-data-form">
@@ -106,5 +97,19 @@
         </form>
 
     </main>
+    
+    <script>
+        let delete_btn = document.getElementById("delete_btn");
+        
+        delete_btn.addEventListener('click', () => {
+            popup.style.display = "flex"
+            popup_msg.innerHTML = "delete?";
+            popup_confirm.href = "{{ request.get_full_path }}/delete"
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
 
 {% endblock %}

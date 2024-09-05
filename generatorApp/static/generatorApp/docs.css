@@ -1,7 +1,6 @@
 .content {
     display: flex;
     flex-direction: row;
-    min-height: 64vh;
 }
 
 aside {
@@ -12,11 +11,9 @@ main {
     padding: 3ch 5ch;
 }
 
-p {
+main > p {
     margin-left: 2ch;
 }
-
-
 
 main > ol {
     margin-left: 4vh;

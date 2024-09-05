@@ -1,0 +1,125 @@
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 300px;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.login input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.login input[type="submit"]:hover {
+    background-color: #45a049;
+}
+/*                  */
+
+/* Input field styling */
+.t {
+    width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 2px solid #A3B18A; /* Set a 2px border for default state */
+    background-color: #f1f1f1;
+    color: #344E41;
+    box-sizing: border-box; /* Ensure padding and border don't affect width */
+}
+
+.t:focus {
+    outline: none;
+    border-color: #588157; /* Keep the border width the same, just change color */
+    background-color: #ffffff;
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: #A3B18A;
+    opacity: 0.7;
+}
+
+/* Submit button styling */
+input[type="submit"] {
+    width: 320px;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: #588157;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #3A5A40;
+}
+
+/* Checkbox and label styling */
+span {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #588157;
+}
+
+label {
+    color: #344E41;
+    font-weight: lighter;
+}
+
+/* Register link styling */
+p {
+    color: #3A5A40;
+    font-size: 14px;
+    opacity: .8;
+    margin: 1rem;
+}
+
+p a {
+    color: #588157;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
