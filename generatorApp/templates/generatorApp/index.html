@@ -20,19 +20,19 @@
         <ul>
             {% if user.is_authenticated %}
                 <li>
-                    <a id="logout">
+                    <a id="logout" class="menu-item">
                         <div>Logout</div>
                     </a>
                 </li>
             {% else %}
                 <li>
                     <a href="{% url 'generatorApp:register' %}">
-                        <div>Sign up</div>
+                        <div class="btn">Sign up</div>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'generatorApp:login' %}">
-                         <div class="btn">Sign in</div>
+                    <a class="menu-item" href="{% url 'generatorApp:login' %}">
+                         Sign in
                     </a>
                 </li>
 
@@ -41,11 +41,11 @@
             <div class="spacer"></div>
 
             <li>
-                <a href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Documentation</a>
+                <a class="menu-item" href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Documentation</a>
             </li>
 
             <li>
-                <a {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
+                <a class="menu-item" {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
                 {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a>
             </li>
         </ul>
@@ -79,8 +79,8 @@
  
     <footer>
         <div>&copy 2024</div>
-        <a href="">donate us 🙏</a>
-        <a href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">github</a>
+        <a class="menu-item" href="">donate us 🙏</a>
+        <a class="menu-item" href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">github</a>
     </footer>
 
     <script src="{% static 'generatorApp/script.js' %}"></script>

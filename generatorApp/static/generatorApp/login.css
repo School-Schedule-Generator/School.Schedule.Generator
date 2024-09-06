@@ -14,53 +14,52 @@ body, html {
 }
 
 .login-container {
-    width: 300px;
-    padding: 20px;
-    background-color: #f7f7f7;
+    /*width: 15vw;*/
+    padding: 4rem 1.5rem 4rem 1.5rem;
+    /*background-color: #f7f7f7;*/
+    background-color: #DAD7CD;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
 form {
+    width: 23%;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
-
-.login input[type="text"],
-.login input[type="password"],
-.login input[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+    color: #3A5A40;
 }
 
-.login input[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="submit"] {
+    width: 70%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 1rem;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #3A5A40;
+    color: #DAD7CD;
     cursor: pointer;
 }
 
-.login input[type="submit"]:hover {
-    background-color: #45a049;
-}
-/*                  */
-
-/* Input field styling */
-.t {
-    width: 300px;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 2px solid #A3B18A; /* Set a 2px border for default state */
-    background-color: #f1f1f1;
-    color: #344E41;
-    box-sizing: border-box; /* Ensure padding and border don't affect width */
+input[type="submit"]:hover {
+    background-color: #588157;
 }
 
-.t:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus{
     outline: none;
     border-color: #588157; /* Keep the border width the same, just change color */
     background-color: #ffffff;
@@ -72,33 +71,11 @@ form {
     opacity: 0.7;
 }
 
-/* Submit button styling */
-input[type="submit"] {
-    width: 320px;
-    padding: 10px;
-    margin-top: 15px;
-    border-radius: 5px;
-    border: none;
-    background-color: #588157;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-input[type="submit"]:hover {
-    background-color: #3A5A40;
-}
-
 /* Checkbox and label styling */
 span {
     display: flex;
     align-items: center;
     margin-top: 10px;
-}
-
-input[type="checkbox"] {
-    margin-right: 10px;
-    accent-color: #588157;
 }
 
 label {
@@ -109,7 +86,7 @@ label {
 /* Register link styling */
 p {
     color: #3A5A40;
-    font-size: 14px;
+    font-size: .9rem;
     opacity: .8;
     margin: 1rem;
 }
