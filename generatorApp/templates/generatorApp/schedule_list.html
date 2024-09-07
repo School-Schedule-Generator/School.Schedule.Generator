@@ -1,3 +1,8 @@
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules_list.css' %}">
+{% endblock %}
+
 <aside>
     <div class="sticky-wrapper">
         <h3>
@@ -15,11 +20,11 @@
                             {{ schedule.name }}, {{ schedule.created_date }}
                         </a>
 
-                        <ol class="schedule-data-list" style="padding-left: 2ch">
+                        <ul class="schedule-data-list" style="padding-left: 2ch">
                             {% for label in labels %}
                                 <li><a href="{% url 'generatorApp:schedule' username=user.username schedule_name=schedule.name%}{{label}}">{{ label }}</a></li>
                             {% endfor %}
-                        </ol>
+                        </ul>
                     </li>
                 {% endfor %}
             {% else %}
@@ -27,8 +32,9 @@
             {% endif %}
         </ol>
 
-        <h3>Sort by:</h3>
+        
         <form method="GET" id="sort-form">
+            <h4>Sort by:</h4>
             <select name="sort_by" id="sort_by">
                 <option value="name">Name(A-Z)</option>
                 <option value="created_date">Created date</option>

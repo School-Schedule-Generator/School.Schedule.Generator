@@ -18,7 +18,7 @@ body, html {
     padding: 4rem 1.5rem 4rem 1.5rem;
     /*background-color: #f7f7f7;*/
     background-color: #DAD7CD;
-    border-radius: 10px;
+    border-radius: .8rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
@@ -42,7 +42,7 @@ input[type="submit"] {
     width: 70%;
     padding: 0.8rem;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: .3rem;
     margin-top: 1rem;
     box-sizing: border-box;
 }
