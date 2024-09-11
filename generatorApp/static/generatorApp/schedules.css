@@ -4,7 +4,70 @@
 }
 
 main {
-    margin: 2ch;
+    margin: 1.5rem;
+    width: 60vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+main .container {
+    /* width: 15vw; */
+    padding: 4rem 1.5rem 4rem 1.5rem;
+    /*background-color: #f7f7f7;*/
+    background-color: #DAD7CD;
+    border-radius: .8rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    /* width: 23%; */
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+main input[type="text"], 
+main input[type="submit"],
+textarea {
+    color: #3A5A40;
+    width: 75%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: .3rem;
+    margin-top: 1rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+    height: 7rem;
+}
+
+main input[type="submit"] {
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    cursor: pointer;
+}
+
+main input[type="submit"]:hover {
+    background-color: #588157;
+}
+
+input[type="text"]:focus,
+textarea:focus{
+    outline: none;
+    border-color: #588157; /* Keep the border width the same, just change color */
+    background-color: #ffffff;
+}
+
+::placeholder {
+    color: #A3B18A;
+    opacity: 0.7;
+}
+
+label {
+    color: #344E41;
+    font-weight: lighter;
+}
 
