@@ -11,6 +11,7 @@ aside {
     background-color: #DAD7CD;
     /*background-color: #A3B18A;*/
     padding: 2rem;
+    padding-top: 1rem;
     border-radius: .8rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -36,20 +37,19 @@ ol{
     margin-bottom: .5rem;
 }
 
-ol li{
-
+ol li a{
+    color: #3A5A40;
 }
 
-ul{
-
+ul li a{
+    color: #588157;
 }
 
-ul li{
-
+ul li a:hover{
+    color: #A3B18A;
 }
 
 aside form{
-    margin-top: 1rem;
     display: flex;
     flex-direction: row;
     justify-content: center;
