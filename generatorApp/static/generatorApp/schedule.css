@@ -3,12 +3,7 @@
     flex-direction: row;
 }
 
-aside {
-    width: 20%;
-    padding-left: 3ch;
-}
-
-ol {
+.content ol {
     list-style-type: disc;
 }
 

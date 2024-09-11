@@ -129,7 +129,8 @@ class GenerateScheduleView(LoginRequiredMixin, View):
         context = update_context(self.request, self.kwargs, context)
 
         username = context.get('username', request.user.username)
-        schedule_name = context.get('schedule_name', 'schedule')    # TODO: wywalić error zamiast dawać default name jeśli nie znajdzie w context
+        # TODO: wywalić error zamiast dawać default name jeśli nie znajdzie w context
+        schedule_name = context.get('schedule_name', 'schedule')
 
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
@@ -523,14 +524,17 @@ class DeleteDataView(LoginRequiredMixin, View):
         return context
 
     def get(self, *args, **kwargs):
-        selected = self.request.POST.getlist('delete')
+        selected = self.request.GET.getlist('delete')
         context = self.get_context_data()
         model_name = context['model_name']
         model = context[model_name]
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
+        print(selected)
+
         if selected:
+            print(model.objects.filter(schedule_id=schedule, in_id__in=selected))
             model.objects.filter(schedule_id=schedule, in_id__in=selected).delete()
 
         return redirect(self.request.META.get('HTTP_REFERER'))

@@ -30,7 +30,7 @@
                 </tr>
                 {% for value in objects_list %}
                     <tr>
-                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" form="confirm-form"></td>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" class="delete-checkbox"></td>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ value.start_hour }}</td>
                     </tr>
@@ -55,9 +55,19 @@
         let delete_btn = document.getElementById("delete_btn");
         
         delete_btn.addEventListener('click', () => {
-            popup.style.display = "flex"
-            popup_msg.innerHTML = "delete?";
-            popup_confirm.href = "{{ request.get_full_path }}/delete"
+            let selected = [];
+            document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length > 0) {
+                // Join the selected items into a single string for the `q` parameter
+                let queryString = selected.map(item => `delete=${item}`).join('&');
+                // Update the popup with the new URL structure
+                popup.style.display = "flex";
+                popup_msg.innerHTML = "delete?";
+                popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
+            }
         })
         
         popup.addEventListener('click', () => {

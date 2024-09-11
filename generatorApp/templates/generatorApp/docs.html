@@ -3,13 +3,14 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/docs.css' %}">
+    <link rel="stylesheet" href="{% static 'generatorApp/aside.css' %}">
     <title>Documentation</title>
 {% endblock %}
 
 {% block content %}
-    <aside>
-        <div class="sticky-wrapper">
-            <ol class="documentation-list">
+    <aside class="sticky-wrapper">
+        <div class="aside-content   ">
+            <ol class="scrollable">
                 <li><a href="{% url 'generatorApp:docs' lang 'intro' %}">intro</a></li>
                 <li><a href="{% url 'generatorApp:docs' lang 'classroom' %}">classroom</a></li>
                 <li><a href="{% url 'generatorApp:docs' lang 'debug_log' %}">debug_log</a></li>
@@ -31,10 +32,11 @@
             </ol>
 
             <form action="" method="GET" id="language-form">
-              <select name="language" id="languageSelect">
+                <h4>Language:</h4>
+                <select name="language" id="languageSelect">
                 <option value="eng" {% if lang == 'eng' %}selected{% endif %}>{% if lang == 'eng' %}English{% elif lang == 'pl' %}Angielski{% endif %}</option>
                 <option value="pl" {% if lang == 'pl' %}selected{% endif %}>{% if lang == 'eng' %}Polish{% elif lang == 'pl' %}Polski{% endif %}</option>
-              </select>
+                </select>
             </form>
         </div>
     </aside>

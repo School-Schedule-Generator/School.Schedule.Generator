@@ -16,17 +16,7 @@
         <div>
             <h3 id="title">{{ schedule.name }}</h3>
             <div>
-                <input type="button" class="confirm-button" onclick="(
-                    () => {
-                        document.getElementById('confirm-div').style.visibility = 'visible';
-                        document.getElementById('confirm-message').innerHTML = 'Are you sure you want to delete selected items';
-                            let confirm_form = document.getElementById('confirm-form') || null;
-                            if(confirm_form) {
-                               confirm_form.action = '{% url 'generatorApp:delete_schedule' username=user.username schedule_name=schedule.name %}' +
-                                    '{% if request.GET.sort_by%}?sort_by={{request.GET.sort_by}}{% endif %}'
-                            }
-                    })();
-                " value="Delete">
+                <a class="confirm-button" id="delete_btn">Delete</a>  
 
                 <a href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
 
@@ -87,20 +77,59 @@
     </main>
 
     <script>
-        let first_element = document.getElementById('schedules').children[0];
-        first_element.style.display = 'block';
+        // Function to switch the visible class schedule
+        function switch_class(class_id) {
+            // Hide all class schedules
+            document.querySelectorAll('.schedule').forEach(schedule => {
+                schedule.style.display = 'none';
+            });
 
-        function switch_class(class_id){
-            for (let i=0; i<document.getElementById('schedules').children.length; i++) {
-                let current_child = document.getElementById('schedules').children[i]
-                if (current_child.id == class_id) {
-                    current_child.style.display = 'block';
-                } else {
-                    current_child.style.display = 'none';
-                }
-            }
+            // Show the selected class schedule
+            document.getElementById(class_id).style.display = 'block';
         }
 
+        // Set the first class to be visible on page load
+        window.onload = function() {
+            // Find the first class schedule div and make it visible
+            const firstClass = document.querySelector('.schedule');
+            if (firstClass) {
+                firstClass.style.display = 'block';
+            }
+
+            // Optionally, highlight the first button
+            const firstButton = document.querySelector('.class-switch');
+            if (firstButton) {
+                firstButton.classList.add('active');  // Add active class for visual feedback (e.g., highlight)
+            }
+        };
+
+        // Add click event listeners to switch buttons
+        document.querySelectorAll('.class-switch').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove 'active' class from all buttons
+                document.querySelectorAll('.class-switch').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add 'active' class to the clicked button
+                button.classList.add('active');
+
+                // Call the function to switch class schedules
+                switch_class(button.getAttribute('onclick').match(/\d+/)[0]);  // Get class ID from onclick attribute
+            });
+        });
+
+        let delete_btn = document.getElementById("delete_btn");
+
+        delete_btn.addEventListener('click', () => {
+            popup.style.display = "flex"
+            popup_msg.innerHTML = "delete?";
+            popup_confirm.href = "{{ request.get_full_path }}" + "delete"
+        })
+
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
     </script>
 
 {% endblock %}
