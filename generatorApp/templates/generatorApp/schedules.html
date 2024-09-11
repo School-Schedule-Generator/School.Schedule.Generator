@@ -13,12 +13,15 @@
 
     <main>
         <form method="POST" id="new-schedule-form">
-            {% csrf_token %}
-            <div>Create new schedule</div>
+            <div class="container">
+                {% csrf_token %}
+                <h2 style="font-weight: 450;">Create new schedule</h2>
 
-            {{ form }}
+                {{ form.name }}
+                {{ form.description }}
 
-            <input type="submit" value="Create">
+                <input type="submit" value="Create">
+            </div>
         </form>
     </main>
     
