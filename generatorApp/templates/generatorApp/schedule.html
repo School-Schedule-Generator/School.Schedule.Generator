@@ -40,7 +40,7 @@
         <div class="schedules" id="schedules">
             {% for class_id, days in schedule_content.items %}
                 <div id="{{ class_id }}" class="schedule" style="display: none">
-                    <h3 style="float: left; padding-right: 1ch">
+                    <h3 style="float: left; padding-right: 1ch;">
                         {% for class_name in schedule.classes_set.all%}
                             {% if class_name == class_id %}
                                 <div>{{ class_name }}</div>
@@ -56,11 +56,11 @@
                                         <div class="groups">
                                             {% for subject in subject_list %}
                                                 <div class="subject">
-                                                    <div>Godzina {{ subject.lesson_hour_id }}</div>
-                                                    <div>Przedmiot: {{ subject.subject_name_id }}</div>
-                                                    <div>Nauczyciel: {{ subject.teachers_id }}</div>
-                                                    <div>Klasa: {{ subject.classroom_id }}</div>
-                                                    <div>Grupa: {{ subject.group }}</div>
+                                                    <div>Godzina <span class="data">{{ subject.lesson_hour_id }}</span></div>
+                                                    <div>Przedmiot: <span class="data">{{ subject.subject_name_id }}</span></div>
+                                                    <div>Nauczyciel: <span class="data">{{ subject.teachers_id }}</span></div>
+                                                    <div>Klasa: <span class="data">{{ subject.classroom_id }}</span></div>
+                                                    <div>Grupa: <span class="data">{{ subject.group }}</span></div>
                                                 </div>
                                             {% endfor %}
                                         </div>
