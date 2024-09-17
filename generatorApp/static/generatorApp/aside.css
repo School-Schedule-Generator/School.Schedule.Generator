@@ -7,6 +7,7 @@ aside {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #DAD7CD;
     margin: 3ch 1.5rem 0;
+    transition: transform 0.4s ease;
 }
 
 .aside-content {
@@ -84,4 +85,35 @@ aside form select:focus{
     outline: none;
     border-color: #588157; /* Keep the border width the same, just change color */
     background-color: #ffffff;
+}
+
+/* Hide the aside by moving it to the left */
+.aside-hidden {
+    transform: translateX(-107%); /* Move the aside mostly offscreen, but not fully */
+}
+
+/* Toggle button styling */
+.toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: -1.35rem; /* Stick out from the side */
+    transform: translateY(-50%);
+    background-color: #3A5A40;
+    color: white;
+    border: none;
+    border-radius: 0 0.5rem 0.5rem 0;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.4s ease, right 0.4s ease;
+    height: 10vh;
+    width: 3ch !important;
+}
+
+.toggle-btn:hover {
+    background-color: #588157;
+}
+
+#arrow {
+    font-size: 1rem;
+    transition: transform 0.4s ease;
 }

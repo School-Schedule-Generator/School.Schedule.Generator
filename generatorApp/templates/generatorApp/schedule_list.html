@@ -42,6 +42,10 @@
         </form>
     </div>
 
+    <button id="toggleAside" class="toggle-btn">
+        <span id="arrow">←</span>
+    </button>
+
     <script>
         $(document).ready(()=>{
             $('#sort_by').change(()=>{
@@ -54,5 +58,21 @@
         if(sortBy){
             $('#sort_by').val(sortBy)
         }
+
+        document.getElementById('toggleAside').addEventListener('click', function() {
+            const aside = document.querySelector('aside');
+            const main = document.querySelector('main')
+            const arrow = document.getElementById('arrow');
+
+            if (aside.classList.contains('aside-hidden')) {
+                aside.classList.remove('aside-hidden');
+                main.classList.remove('main-fill');
+                arrow.textContent = '←'; // Point the arrow left
+            } else {
+                aside.classList.add('aside-hidden');
+                main.classList.add('main-fill');
+                arrow.textContent = '→'; // Point the arrow right
+            }
+        });
     </script>
 </aside>

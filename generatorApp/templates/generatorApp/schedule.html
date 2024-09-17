@@ -13,18 +13,15 @@
 
     <main class="main">
 
-        <div>
+        <div class="schedule-info">
             <h3 id="title">{{ schedule.name }}</h3>
-            <div>
-                <a class="confirm-button" id="delete_btn">Delete</a>  
-
-                <a href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
-
-                <a href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
-
-                <a href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}">Generate</a>
+            <div class="button-container">
+                <a class="confirm-button schedule-info-btn" id="delete_btn">Delete</a>  
+                <a class="schedule-info-btn" href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
+                <a class="schedule-info-btn" href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
+                <a class="schedule-info-btn" href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}">Generate</a>
             </div>
-            <p>{{ schedule.description }}</p>
+            <a class="schedule-info-btn">{{ schedule.description }}</a>
         </div>
 
         <div id="buttons">
