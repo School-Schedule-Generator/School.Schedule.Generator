@@ -16,24 +16,24 @@
         <div class="schedule-info">
             <h3 id="title">{{ schedule.name }}</h3>
             <div class="button-container">
-                <a class="confirm-button schedule-info-btn" id="delete_btn">Delete</a>  
-                <a class="schedule-info-btn" href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
-                <a class="schedule-info-btn" href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
-                <a class="schedule-info-btn" href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}">Generate</a>
+                <a class="confirm-button schedule-btn-center" id="delete_btn">Delete</a>
+                <a class="schedule-btn-center" href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
+                <a class="schedule-btn-center" href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
+                <a class="schedule-btn-center" href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}" onclick="show_loader()">Generate</a>
             </div>
             <a class="schedule-info-btn">{{ schedule.description }}</a>
-        </div>
-
-        <div id="buttons">
-            {% for class in classes %}
-                <div class="class-switch" onclick="switch_class({{ class.in_id }})">
-                    {{ class.grade }}{{ class.class_signature }}
-                </div>
-            {% endfor %}
+            <div id="class-buttons" class="button-container">
+                {% for class in classes %}
+                    <div class="class-switch schedule-btn-center" onclick="switch_class({{ class.in_id }})">
+                        {{ class.grade }}{{ class.class_signature }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
 
         <br>
 
+        {% if schedule_content.items %}
         <div class="schedules" id="schedules">
             {% for class_id, days in schedule_content.items %}
                 <div id="{{ class_id }}" class="schedule" style="display: none">
@@ -53,11 +53,11 @@
                                         <div class="groups">
                                             {% for subject in subject_list %}
                                                 <div class="subject">
-                                                    <div>Godzina <span class="data">{{ subject.lesson_hour_id }}</span></div>
-                                                    <div>Przedmiot: <span class="data">{{ subject.subject_name_id }}</span></div>
-                                                    <div>Nauczyciel: <span class="data">{{ subject.teachers_id }}</span></div>
-                                                    <div>Klasa: <span class="data">{{ subject.classroom_id }}</span></div>
-                                                    <div>Grupa: <span class="data">{{ subject.group }}</span></div>
+                                                    <div>Time: <span class="data">{{ subject.lesson_hour_id }}</span></div>
+                                                    <div>Subject: <span class="data">{{ subject.subject_name_id }}</span></div>
+                                                    <div>Teacher: <span class="data">{{ subject.teachers_id }}</span></div>
+                                                    <div>Class: <span class="data">{{ subject.classroom_id }}</span></div>
+                                                    <div>Group: <span class="data">{{ subject.group }}</span></div>
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -70,6 +70,13 @@
             {% endfor %}
         </div>
         <div style="clear: both"></div>
+    {% else %}
+            <div id="center-msg">
+                <div></div>
+                <div id="no-schedule-msg">Generate Schedule</div>
+                <div></div>
+            </div>
+    {% endif %}
 
     </main>
 
@@ -112,7 +119,7 @@
                 button.classList.add('active');
 
                 // Call the function to switch class schedules
-                switch_class(button.getAttribute('onclick').match(/\d+/)[0]);  // Get class ID from onclick attribute
+                switch_class(button.getAttribute('onclick').match(/\d+/)[0]);
             });
         });
 
@@ -122,10 +129,6 @@
             popup.style.display = "flex"
             popup_msg.innerHTML = "delete?";
             popup_confirm.href = "{{ request.get_full_path }}" + "delete"
-        })
-
-        popup.addEventListener('click', () => {
-            popup.style.display = "none"
         })
     </script>
 

@@ -22,8 +22,6 @@ aside {
 }
 
 .sticky-wrapper{
-    /*max-width: inherit;*/
-    /*padding: inherit;*/
     position: sticky;
     top: 7rem;
     word-wrap: break-word
@@ -93,6 +91,10 @@ aside form select:focus{
 }
 
 /* Toggle button styling */
+#toggleAside {
+    display: none;
+}
+
 .toggle-btn {
     position: absolute;
     top: 50%;

@@ -51,16 +51,16 @@
         </ul>
     </div>
     
-    <div id="msg-container">
+    <div id="msg-container" class="sticky-wrapper">
         {% if warning_msg or request.session.warning_msg %}
-            <p class="msg" style="background-color: #e8d873; color: #a48509;">{{ request.session.warning_msg }}</p>
+            <p class="msg" style="background-color: #e8d873; color: #a48509;">{{ request.session.warning_msg|safe }}</p>
         {% endif %}
         {% if error_msg or request.session.error_msg %}
-            <p class="msg" style="background-color: #e87373; color: #a90f0f;">{{ request.session.error_msg }}</p>
+            <p class="msg" style="background-color: #e87373; color: #a90f0f;">{{ request.session.error_msg|safe }}</p>
         {% endif %}
     </div>
 
-    <div id="popup">
+    <div id="popup" class="overlay">
         <form id="popup-form" method="GET">
             {% csrf_token %}
             <h2 id="popup-msg"></h2>
@@ -70,6 +70,8 @@
             </div>
         </form>
     </div>
+
+    <div id="empty-overlay" class="overlay"></div>
 
 
     <div class="content">
@@ -82,6 +84,8 @@
         <a class="menu-item" href="">donate us 🙏</a>
         <a class="menu-item" href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">github</a>
     </footer>
+    
+    <div class="lds-ellipsis" id="loader"><div></div><div></div><div></div><div></div></div>
 
     <script src="{% static 'generatorApp/script.js' %}"></script>
 
@@ -90,7 +94,9 @@
         const popup = document.getElementById("popup");
         const popup_msg = document.getElementById('popup-msg')
         const popup_confirm = document.getElementById('popup-confirm')
-        
+        const empty_overlay = document.getElementById('empty-overlay')
+        empty_overlay.style.display = "none"
+            
         logout.addEventListener('click', () => {
             popup.style.display = "flex"
             popup_msg.innerHTML = "logout?";
@@ -100,6 +106,11 @@
         popup.addEventListener('click', () => {
             popup.style.display = "none"
         })
+        
+        function show_loader() {
+            document.getElementById("loader").style.display = "inline-block";
+            empty_overlay.style.display = "flex"
+        }
     </script>
 
 </body>

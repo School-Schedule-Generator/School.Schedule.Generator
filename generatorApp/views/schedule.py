@@ -146,13 +146,17 @@ class GenerateScheduleView(LoginRequiredMixin, View):
             # Clear the error message after generating the schedule
             if 'warning_msg' in self.request.session:
                 del self.request.session['warning_msg']
+            if 'error_msg' in self.request.session:
+                del self.request.session['error_msg']
 
             success_url = reverse(self.success_url_name, kwargs={'username': username, 'schedule_name': schedule_name})
             return redirect(success_url)
         else:
-            # TODO: Zmienić na błąd
-            success_url = reverse(self.success_url_name, kwargs={'username': username, 'schedule_name': schedule_name})
-            return redirect(success_url)
+            if 'warning_msg' in self.request.session:
+                del self.request.session['warning_msg']
+
+            self.request.session['error_msg'] = f'Failed to create <a href="{self.request.get_full_path().split("""/generate""")[0]}">schedule</a>, please check your settings and/or data.'
+            return redirect(self.request.get_full_path().split("""/generate""")[0])
 
 
 class LessonHoursView(LoginRequiredMixin, TemplateView, FormView):
@@ -763,7 +767,7 @@ class ScheduleSettingsView(LoginRequiredMixin, View):
         settings.save()
 
         # Set the error message in the session
-        self.request.session['warning_msg'] = 'Settings updated! Please regenerate your schedule.'
+        self.request.session['warning_msg'] = f'Settings updated! Please regenerate your <a href="{self.request.get_full_path().split("""/settings""")[0]}">schedule</a>.'
 
         return redirect(self.request.build_absolute_uri())
 

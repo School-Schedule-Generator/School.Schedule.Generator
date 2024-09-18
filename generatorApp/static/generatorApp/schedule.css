@@ -4,6 +4,7 @@
 }
 
 .main {
+    max-width: 78.5%;
     width: 78.5%;
     display: flex;
     flex-direction: column;
@@ -19,25 +20,27 @@
 }
 
 .button-container {
-    display: grid;              /* Use grid to align buttons horizontally */
-    grid-auto-flow: column;    /* Arrange items in a horizontal row */
-    gap: 10px;                 /* Space between buttons; adjust as needed */
+    display: grid;
+    grid-auto-flow: column;
+    gap: 10px;
 }
 
-.schedule-info-btn {
+.schedule-btn-center {
     display: inline-block;      /* Ensure the links are inline-block for horizontal arrangement */
 }
 
 .main-fill {
-    transform: translateX(-20%);
-    max-width: 100%;
-    width: 100%;
+    transform: translateX(-17.75%);
     transition: transform 0.4s ease;
 }
 
-.main-fill .schedule-info {
+.main-fill .button-container {
     width: 20%;
     margin-left: 40%;
+}
+
+.main-fill .schedule-info {
+    width: 100%;
 }
 
 .content {
@@ -105,19 +108,50 @@ h3 {
 }
 
 .class-switch {
-    background-color: #ffbbff11;
-    width: 40px;
-    height: 40px;
-    margin: 1ch 2ch 1ch 0;
+    background-color: #DAD7CD;
     border-radius: 10%;
     cursor: pointer;
-}
+    padding: 0.5rem 0.7rem;
 
-#buttons {
-    display: flex;
-    flex-direction: row;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+
 }
 
 #title {
     font-size: 250%;
+}
+
+/* for active class button */
+.active {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #A3B18A;
+
+    transition: background-color 0.2s ease-in, box-shadow 0.2s ease-in;
+}
+
+#toggleAside {
+    display: block !important;
+}
+
+#center-msg {
+    flex-grow: 1;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    background-color: #dedcdc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: .8rem;
+    margin-top: .8rem;
+}
+
+#no-schedule-msg {
+    flex-grow: 1;
+    width: 100%;
+    height: auto;
+    position: relative;
+    text-align: center;
+    font-size: 150%;
 }
