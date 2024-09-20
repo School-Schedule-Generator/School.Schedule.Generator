@@ -38,7 +38,8 @@ main .form-container{
     justify-content: center;
     align-items: center;
     padding: 1rem 1.5rem 3rem 1.5rem;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: clip;
 }
 
 main form {
@@ -168,6 +169,10 @@ main .table-menu-items span, main .menu-items span{
     width: 2.5rem;
 }
 
+main .day-yes-no span{
+    width: 2.2rem;
+}
+
 main .menu-items div{
     margin-top: -1.5rem;
 }
@@ -181,4 +186,15 @@ main .menu-items span:nth-child(2n){
     font-weight: bold;
 }
 
+main .full-row-adf-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
 
+main.full-row-adf-item * {
+    flex-grow: 1;
+    width: 96%
+}

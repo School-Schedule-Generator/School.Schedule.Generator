@@ -3,16 +3,9 @@
     flex-direction: row;
 }
 
-body, html {
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 main {
-    margin: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
     width: 60vw;
     display: flex;
     justify-content: center;
@@ -37,7 +30,9 @@ main .container {
 
 main input[type="text"], 
 main input[type="submit"],
-textarea {
+input[type="number"],
+textarea,
+main select {
     color: #3A5A40;
     width: 75%;
     padding: 0.8rem;
@@ -63,11 +58,27 @@ main input[type="submit"]:hover {
 }
 
 input[type="text"]:focus,
-textarea:focus{
+input[type="number"]:focus,
+textarea:focus,
+select:focus{
     outline: none;
     border-color: #588157; /* Keep the border width the same, just change color */
     background-color: #ffffff;
 }
+
+main select option{
+    padding: .3rem;
+}
+
+main select[multiple] {
+    overflow: hidden;
+    max-height: 6rem;
+}
+
+main select[multiple]:hover {
+    overflow: auto;
+}
+
 
 ::placeholder {
     color: #A3B18A;

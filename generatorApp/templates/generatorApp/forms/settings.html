@@ -15,7 +15,7 @@
         <form method="POST" id="new-schedule-form">
             <div class="container">
                 {% csrf_token %}
-                <h2 style="font-weight: 450;">Create new schedule</h2>
+                <h2 style="font-weight: 450;">Change settings</h2>
 
                 {{ form.name }}
                 {{ form.description }}
@@ -25,7 +25,7 @@
                 <label for="max-lessons">maximum number of lessons (per day)</label>
                 <input required class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
             
-                <label for="days">Days with lessons</label>
+                <label for="days">Days with lessons <br> <span style="font-size: 75%">(Click with ctrl to select multiple)</span></label>
                 <select class="t" id="days" name="days" multiple="multiple" required>
                     {% with "monday tuesday wednesday thursday friday" as days_options %}
                         {% for day in days_options.split %}
@@ -34,7 +34,7 @@
                     {% endwith %}
                 </select>
 
-                <input type="submit" value="Update">
+                <input type="submit" value="Save">
             </div>
         </form>
     </main>

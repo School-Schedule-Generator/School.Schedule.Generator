@@ -53,7 +53,12 @@
 
                 <form class="add-form" id="add-form" method="POST" class="add-data-form">
                     {% csrf_token %}
-                    <span>Add lesson hours</span>
+
+                    <span>
+                        Add lesson hours
+                        <br>
+                        <span style="font-size: 70%">Format: hh:mm</span>
+                    </span>
 
                     {{ form.start_hour }}
 

@@ -4,8 +4,8 @@
 }
 
 .main {
-    max-width: 78.5%;
-    width: 78.5%;
+    max-width: 77.5%;
+    width: 77.5%;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -23,6 +23,7 @@
     display: grid;
     grid-auto-flow: column;
     gap: 10px;
+    width: 60%;
 }
 
 .schedule-btn-center {
@@ -37,10 +38,12 @@
 .main-fill .button-container {
     width: 20%;
     margin-left: 40%;
+    transition: width 0.4s ease;
 }
 
 .main-fill .schedule-info {
     width: 100%;
+    transition: width 0.4s ease;
 }
 
 .content {

@@ -28,7 +28,7 @@
                     <th>teachers</th>
                     <th>subject count in week</th>
                     <th>number of groups</th>
-                    <th>maximum les stack</th>
+                    <th>maximum lesson stack</th>
                     <th>classroom types</th>
                 </tr>
                 {% for value in objects_list %}
@@ -83,17 +83,32 @@
                         <option value="{{ object.in_id }}">{{ object }}</option>
                     {% endfor %}
                 </select>
-    
+
+                <span>
+                    Subject techers:
+                    <br>
+                    <span style="font-size: 55%">(Click with ctrl to select multiple)</span>
+                </span>
                 <select class="t" id="teachers" name="teachers" multiple="multiple">
                     {% for object in teachers_queryset %}
                         <option value="{{ object.in_id }}" >{{ object }} </option>
                     {% endfor %}
                 </select>
-    
+
+                <span>Subject count in week:</span>
                 {{ form.subject_count_in_week }}
+
+                <span>Number of groups:</span>
                 {{ form.number_of_groups }}
+
+                <span>Maximum lesson stack:</span>
                 {{ form.max_stack }}
-    
+
+                <span>
+                    Classroom types:
+                    <br>
+                    <span style="font-size: 55%">(Click with ctrl to select multiple)</span>
+                </span>
                 <select class="t" id="classroom-type-id" name="classroom-type-id" multiple="multiple">
                     {% for object in classroom_types_queryset %}
                         <option value="{{ object.in_id }}">{{ object }}</option>
