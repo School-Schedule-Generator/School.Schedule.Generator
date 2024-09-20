@@ -6,9 +6,8 @@ import os
 import ast
 import json
 import sqlite3
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font
 from .settings import *
+from ..models import *
 
 
 def table_import_validation(dataframes, table):
@@ -35,13 +34,13 @@ def load_data(
         path=None,
         tables=settings.DF_NAMES,
         dtype='xlsx',
-        schedule_id=None
+        schedule=None
 ):
     """
     :param path: path to either SQL database or folder with tables of type CSV or Excel
     :param tables: list of files/tables
     :param dtype: type of data to read, can be .xlsx/.ods (Excel file), .csv (comma-separated values) or sql, defaults to xlsx
-    :param schedule_id: id of the schedule to pull from sql database
+    :param schedule: id of the schedule to pull from sql database
     :return: list of pandas dataframes or False if files don't match schedule data
     """
 
@@ -56,21 +55,33 @@ def load_data(
     dataframes = {}
 
     if dtype == 'sql':
-        try:
-            conn = sqlite3.connect(settings.DATABASE_NAME)
-        except sqlite3.Error:
-            print(f'Failed to connect to database...', file=sys.stderr)
-            return False
+        # try:
+        #     conn = sqlite3.connect(settings.DATABASE_NAME)
+        # except sqlite3.Error:
+        #     print(f'Failed to connect to database...', file=sys.stderr)
+        #     return False
+        #     columns = settings.SQLTABLES[table]['Columns']
+        #     sql_table = settings.SQLTABLES[table]['Name']
+        #
+        #     query_db = pd.read_sql_query(f'SELECT {", ".join(columns)} FROM {sql_table} WHERE schedule_id_id={schedule_id}', conn)\
 
         for table in tables:
-            columns = settings.SQLTABLES[table]['Columns']
-            sql_table = settings.SQLTABLES[table]['Name']
+            table_to_model = {
+                'SSG_LESSON_HOURS': LessonHours,
+                'SSG_SUBJECT_NAMES': SubjectNames,
+                'SSG_SUBJECTS': Subject,
+                'SSG_TEACHERS': Teachers,
+                'SSG_CLASSES': Classes,
+                'SSG_CLASSROOMS': Classrooms,
+                'SSG_CLASSROOM_TYPES': ClassroomTypes
+            }
 
-            query_db = pd.read_sql_query(f'SELECT {", ".join(columns)} FROM {sql_table} WHERE schedule_id_id={schedule_id}', conn)
+            if table in table_to_model:
+                model = table_to_model[table]
+                query_db = pd.DataFrame(list(model.objects.filter(schedule_id=schedule).values()))
 
             column_mapper = dict(zip(settings.SQL_COLUMN_NAMES[table], settings.COLUMN_NAMES[table]))
             query_db = query_db.rename(columns=column_mapper)
-
             dataframes[table] = pd.DataFrame(query_db, columns=settings.COLUMN_NAMES[table])
     else:
         files_in_directory = os.listdir(path)
@@ -161,7 +172,7 @@ def class_to_json(obj):
     return todict(obj)
 
 
-def schedule_to_json(schedule, file_path):
+def schedule_to_json(schedule, file_path=None):
     schedule_dict = class_to_json(schedule)
     if file_path:
         with open(f'{file_path}.json', 'a') as file:
@@ -169,103 +180,3 @@ def schedule_to_json(schedule, file_path):
             json.dump(schedule_dict, file)
 
     return json.dumps(schedule_dict)
-
-
-def schedule_to_excel(schedule_dict, data, info, file_path):
-    [
-        lesson_hours_df,
-        subject_names_df,
-        _,
-        teachers_df,
-        classes_df,
-        classrooms_df,
-        _
-    ] = copy.deepcopy(data)
-
-    columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-    try:
-        wb = load_workbook(f'{file_path}.xlsx')
-    except FileNotFoundError:
-        wb = Workbook()
-
-    if 'Sheet' in wb.sheetnames:
-        ws = wb['Sheet']
-        ws.title = info['Title']
-
-        ws.merge_cells('A1:E1')  # Merge cells for the title
-        title_cell = ws['A1']
-        try:
-            title_cell.value = info['Title']
-        except KeyError:
-            title_cell.value = "School Schedule"
-        title_cell.font = Font(size=20, bold=True)
-
-        for i, key in enumerate(info):
-            if key == 'Title':
-                pass
-            ws[f'A{i + 2}'] = key
-            ws.merge_cells(f'B{i + 2}:E{i + 2}')
-            value_cell = ws[f'B{i + 2}']
-            value_cell.value = info[key]
-
-    for class_name in schedule_dict.keys():
-        ws = wb.create_sheet(title=f'Class_{class_name}')
-
-        ws['A1'] = 'day/lesson'
-
-        for lesson in range(len(lesson_hours_df)):
-            ws[f'A{lesson + 2}'] = f"{lesson+1}."
-
-        class_info = classes_df.loc[classes_df['class_id'] == class_name]
-        ws[f'A{len(lesson_hours_df) + 3}'] = f"Class:"
-        try:
-            ws[f'B{len(lesson_hours_df) + 3}'] =  f"{class_info['grade'].values[0]}{class_info['class_signature'].values[0]}"
-        except IndexError:
-            ws[f'B{len(lesson_hours_df) + 3}'] = "---"
-
-        supervising_teacher = teachers_df.loc[teachers_df['teacher_id'] == class_info['supervising_teacher'].values[0], ['name', 'surname']].values[0]
-        ws[f'D{len(lesson_hours_df) + 3}'] = f"Supervising teacher:"
-        try:
-            ws[f'E{len(lesson_hours_df) + 3}'] = f"{supervising_teacher[0]} {supervising_teacher[1]}"
-        except IndexError:
-            ws[f'E{len(lesson_hours_df) + 3}'] = "---"
-
-
-        for i, day in enumerate(schedule_dict[class_name].keys()):
-            ws[f'{columns[i + 1]}{1}'] = day
-
-            for j, hour in enumerate(schedule_dict[class_name][day]):
-                message = ''
-                for subject in schedule_dict[class_name][day][j]:
-                    try:
-                        subject_name = subject_names_df.loc[
-                            subject_names_df['subject_name_id'] == subject['subject_id'], 'name'
-                        ].values[0]
-                    except IndexError:
-                        subject_name = '---'
-
-                    try:
-                        teacher_name = " ".join(
-                            teachers_df.loc[
-                                teachers_df['teacher_id'] == subject['teachers_id'][0], ['name', 'surname']
-                            ].values[0]
-                        )
-                    except IndexError:
-                        teacher_name = '---'
-
-                    try:
-                        classroom_name = classrooms_df.loc[
-                            classrooms_df['classroom_id'] == subject['classroom_id'], 'classroom_name'
-                        ].values[0]
-                    except IndexError:
-                        teacher_name = '---'
-
-                    if subject['number_of_groups'] > 1:
-                        message += f"gr.{subject['group']} | {subject_name} | {teacher_name} | class: {classroom_name}\n"
-                    else:
-                        message += f"{subject_name} | {teacher_name} | class: {classroom_name}"
-
-                ws[f'{columns[i + 1]}{j + 2}'] = message
-
-    wb.save(f'{file_path}.xlsx')

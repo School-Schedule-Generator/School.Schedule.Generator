@@ -2,7 +2,6 @@ import copy
 import numpy as np
 import pandas as pd
 from ..debug_log import debug_log
-from ..load_data import schedule_to_json
 from ..tkinter_schedule_vis import tkinter_schedule_vis
 from math import ceil
 from ..subject import Subject
@@ -106,7 +105,6 @@ class Schedule:
             s = []
             for teacher_id in teachers.keys():
                 for class_id in classes_id:
-                    print(type(class_id), type(teacher_id))
                     if len(subjects[teacher_id][class_id]) != 0:
                         count_of_subjects += len(subjects[teacher_id][class_id])
                         for sub in subjects[teacher_id][class_id]:
@@ -187,7 +185,7 @@ class Schedule:
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
                                             teachers_id=subject.teachers_id,
-                                            day_to=day,
+                                            day=day,
                                             lesson_index=first_lesson_index - 1
                                         )
                                 ):
@@ -203,7 +201,7 @@ class Schedule:
                                         and self.get_num_of_lessons(self.data[class_id][day], log_file_name) < conditions.data['max_lessons_per_day']
                                         and not self.are_teachers_taken(
                                             teachers_id=subject.teachers_id,
-                                            day_to=day,
+                                            day=day,
                                             lesson_index=lesson_index
                                         )
                                 ):
@@ -250,7 +248,7 @@ class Schedule:
     def split_to_groups(self, days, conditions, log_file_name):
         """
         :param days: list of days used in schedule
-        :param conditions: global conditions of schedule
+        :param conditions: conditions for schedule
         :param log_file_name: file name for run information
         :return: schedule with split subjects
         """

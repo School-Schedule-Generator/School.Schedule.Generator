@@ -1,0 +1,111 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/data_forms.css' %}">
+    <title>classes</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <div id="nie porztebny element ktory poporstu musi byc aby dzialalo tak jak dziala bez zmienienia wszystkiego"></div>
+
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>
+                        <button type="button" class="confirm-button" id="delete_btn">
+                            <img class="icon" src="{% static 'generatorApp/bin.svg' %}" alt="bin"/>
+                        </button>
+                    </th>
+                    <th>ID</th>
+                    <th>supervising_teacher_id</th>
+                    <th>grade</th>
+                    <th>class_signature</th>
+                    <th>starting_lesson_hour_id</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td>
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" class="delete-checkbox">
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.supervising_teacher_id }}</td>
+                        <td>{{ value.grade }}</td>
+                        <td>{{ value.class_signature }}</td>
+                        <td>{{ value.starting_lesson_hour_id }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        
+
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
+                {% csrf_token %}
+               <input class="file-input" type="file" name="file">
+                <div class="custom-file-input">Chose file</div>
+
+                <p class="file-name">File not chosen</p>
+
+                <input type="submit" value="Upload">
+            </form>
+        
+            <form method="POST" class="add-data-form">
+                {% csrf_token %}
+                <span>Add class</span>
+
+                {{ form.grade }}
+                    {{ form.class_signature }}
+
+                <select class="t" id="supervising-teacher" name="supervising-teacher">
+                    {% for object in teachers_queryset %}
+                        <option value="{{ object.in_id }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+
+                <select class="t" id="starting-lesson-hour" name="starting-lesson-hour">
+                    {% for object in lesson_hours_queryset %}
+                        <option value="{{ object.in_id }}">{{ object.start_hour }}</option>
+                    {% endfor %}
+                </select>
+
+                <input type="submit" value="Add">
+            </form>
+        </div>
+        
+    </main>
+    
+    <script>
+        let delete_btn = document.getElementById("delete_btn");
+        
+        delete_btn.addEventListener('click', () => {
+            let selected = [];
+            document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length > 0) {
+                // Join the selected items into a single string for the `q` parameter
+                let queryString = selected.map(item => `delete=${item}`).join('&');
+                // Update the popup with the new URL structure
+                popup.style.display = "flex";
+                popup_msg.innerHTML = "delete?";
+                popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
+            }
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
+    
+{% endblock %}

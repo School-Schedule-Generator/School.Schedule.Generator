@@ -20,11 +20,6 @@ def tkinter_schedule_vis(schedule, days, capture_name='tkCapture', dir_name='log
                         continue
                     if subject.group is not None and class_schedule_id == class_id and subject.group == group:
                         continue
-
-                    # print(len(subjects_list))
-                    # print(subject)
-                    # print(subject.teachers_id)
-                    # for teacher_id in subject.teachers_id:
                     same_time_teachers.append(subject.teachers_id[0])
 
                     if subject.classroom_id is not None:

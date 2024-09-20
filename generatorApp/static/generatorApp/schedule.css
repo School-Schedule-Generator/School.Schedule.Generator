@@ -1,0 +1,64 @@
+.content {
+    display: flex;
+    flex-direction: row;
+}
+
+body, html {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content ol {
+    list-style-type: disc;
+}
+
+.days, .groups {
+    display: flex;
+    flex-direction: row;
+}
+
+.schedule, .day, .subject {
+    background-color: #ffbbff11;
+}
+
+.schedule {
+    border-radius: 10px;
+}
+
+.day {
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+h3 {
+    text-transform: uppercase;
+}
+
+.subject {
+    height: 14em;
+    border-radius: 2px;
+    flex-grow: 1;
+    line-height: 1.4em;
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
+.class-switch {
+    background-color: #ffbbff11;
+    width: 40px;
+    height: 40px;
+    margin: 1ch 2ch 1ch 0;
+    border-radius: 10%;
+}
+
+#buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+#title {
+    font-size: 250%;
+}

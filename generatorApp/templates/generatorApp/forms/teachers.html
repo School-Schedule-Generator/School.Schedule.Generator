@@ -1,0 +1,194 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/data_forms.css' %}">
+    <title>teachers</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <div id="nie porztebny element ktory poporstu musi byc aby dzialalo tak jak dziala bez zmienienia wszystkiego"></div>
+
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>
+                        <button type="button" class="confirm-button" id="delete_btn">
+                            <img class="icon" src="{% static 'generatorApp/bin.svg' %}" alt="bin"/>
+                        </button>
+                    </th>
+                    <th>ID</th>
+                    <th>name</th>
+                    <th>surname</th>
+                    <th>main classroom</th>
+                    <th>possible subjects</th>
+                    <th class="table-menu-items">
+
+                        start hour
+
+                        <div>
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
+                    <th class="table-menu-items">
+
+                        end hour
+                        <div>
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
+                    <th class="table-menu-items">
+                        days
+
+                        <div>
+                            <span class="inline-day-item">Mon</span>
+                            <span class="inline-day-item">Tue</span>
+                            <span class="inline-day-item">Wen</span>
+                            <span class="inline-day-item">Thu</span>
+                            <span class="inline-day-item">Fri</span>
+                        </div>
+                    </th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" class="delete-checkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.name }}</td>
+                        <td>{{ value.surname }}</td>
+                        <td>{{ value.main_classroom_id }}</td>
+                        <td>{{ value.possible_subjects }}</td>
+                        <td class="menu-items">
+                            <div id="start-hours">
+                                {% for hour in value.start_hour_index %}
+                                    <span class="start-hour inline-day-item">{{ hour }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="menu-items">
+                            <div id="end-hours" >
+                                {% for hour in value.end_hour_index %}
+                                    <span class="end-hour inline-day-item">{{ hour }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="menu-items">
+                            <div id="days">
+                                {% for day in value.days %}
+                                    <span class="day inline-day-item">{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
+                {% csrf_token %}
+                <span>Upload file</span>
+                <input class="file-input" type="file" name="file">
+                <div class="custom-file-input">Chose file</div>
+
+                <p class="file-name">File not chosen</p>
+
+                <input type="submit" value="Upload">
+            </form>
+            
+            <form method="POST" class="add-data-form">
+                {% csrf_token %}
+                <span>Add teachers</span>
+    
+                {{ form.name }}
+                {{ form.surname }}
+    
+                <select class="t" id="main-classroom-id" name="main-classroom-id">
+                    <option value="None">None</option>
+                    {% for object in classrooms_queryset %}
+                        <option value="{{ object.in_id }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+
+                <select class="t" id="possible-subjects" name="possible-subjects" multiple="multiple">
+                    {% for object in subjects_queryset %}
+                        <option value="{{ object }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+
+                <hr class="full-row-adf-item">
+
+                {% with 'monday tuesday wednesday thursday friday' as days %}
+                    {% for day in days.split %}
+                        <div class="full-row-adf-item">
+                            <span>{{ day }}</span>
+                            <select class="t" id="start-hour-{{ day }}" name="start-hour-{{ day }}">
+                                {% for object in lesson_hours_queryset %}
+                                    <option value="{{ object }}">{{ object }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <select class="t" id="end-hour-{{ day }}" name="end-hour-{{ day }}">
+                                <option value="None">None</option>
+                                {% for object in lesson_hours_queryset %}
+                                    <option value="{{ object }}">{{ object }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+
+                <hr class="full-row-adf-item">
+
+                <select class="t" id="days" name="days" multiple="multiple">
+                    {% with 'monday tuesday wednesday thursday friday' as days %}
+                        {% for day in days.split %}
+                            <option value="{{ day }}" selected>{{ day }}</option>
+                        {% endfor %}
+                    {% endwith %}
+                </select>
+    
+                <input type="submit" value="Add">
+            </form>
+        </div>
+    
+    </main>
+    
+    <script>
+        let delete_btn = document.getElementById("delete_btn");
+        
+        delete_btn.addEventListener('click', () => {
+            let selected = [];
+            document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length > 0) {
+                // Join the selected items into a single string for the `q` parameter
+                let queryString = selected.map(item => `delete=${item}`).join('&');
+                // Update the popup with the new URL structure
+                popup.style.display = "flex";
+                popup_msg.innerHTML = "delete?";
+                popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
+            }
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
+    
+{% endblock %}

@@ -2,21 +2,14 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'nazwapliku.css' %}">
+    <link rel="stylesheet" href="{% static 'generatorApp/home.css' %}">
+    <title>home</title>
 {% endblock %}
 
 {% block content %}
 
-home
-<br>
-
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
+    <div class="home">
+        <h1>School Schedule Generator</h1>
+    </div>
 
 {% endblock %}

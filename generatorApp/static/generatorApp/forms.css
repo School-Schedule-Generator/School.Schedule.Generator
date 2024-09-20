@@ -1,0 +1,102 @@
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+}
+
+body, html {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    /*width: 15vw;*/
+    padding: 4rem 1.5rem 4rem 1.5rem;
+    /*background-color: #f7f7f7;*/
+    background-color: #DAD7CD;
+    border-radius: .8rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+form {
+    width: 23%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+    color: #3A5A40;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="submit"] {
+    width: 70%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: .3rem;
+    margin-top: 1rem;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #588157;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus{
+    outline: none;
+    border-color: #588157; /* Keep the border width the same, just change color */
+    background-color: #ffffff;
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: #A3B18A;
+    opacity: 0.7;
+}
+
+/* Checkbox and label styling */
+span {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+label {
+    color: #344E41;
+    font-weight: lighter;
+}
+
+/* Register link styling */
+p {
+    color: #3A5A40;
+    font-size: .9rem;
+    opacity: .8;
+    margin: 1rem;
+}
+
+p a {
+    color: #588157;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+p a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,135 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedule.css' %}">
+    <title>schedules</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+   {% include 'generatorApp/schedule_list.html' %}
+
+    <main class="main">
+
+        <div>
+            <h3 id="title">{{ schedule.name }}</h3>
+            <div>
+                <a class="confirm-button" id="delete_btn">Delete</a>  
+
+                <a href="{% url 'generatorApp:export_schedule' username=user.username schedule_name=schedule.name %}">Export</a>
+
+                <a href="{% url 'generatorApp:settings' username=user.username schedule_name=schedule.name %}">Settings</a>
+
+                <a href="{% url 'generatorApp:generate_schedule' username=user.username schedule_name=schedule.name %}">Generate</a>
+            </div>
+            <p>{{ schedule.description }}</p>
+        </div>
+
+        <div id="buttons">
+            {% for class in classes %}
+                <div class="class-switch" onclick="switch_class({{ class.in_id }})">
+                    {{ class.grade }}{{ class.class_signature }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <br>
+
+        <div class="schedules" id="schedules">
+            {% for class_id, days in schedule_content.items %}
+                <div id="{{ class_id }}" class="schedule" style="display: none">
+                    <h3 style="float: left; padding-right: 1ch">
+                        {% for class_name in schedule.classes_set.all%}
+                            {% if class_name == class_id %}
+                                <div>{{ class_name }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </h3>
+                    <div class="days">
+                        {%  for day, subjects in days.items %}
+                            <div class="day">
+                                <h3> {{ day }}</h3>
+                                <div class="subjects">
+                                    {% for subject_list in subjects %}
+                                        <div class="groups">
+                                            {% for subject in subject_list %}
+                                                <div class="subject">
+                                                    <div>Godzina {{ subject.lesson_hour_id }}</div>
+                                                    <div>Przedmiot: {{ subject.subject_name_id }}</div>
+                                                    <div>Nauczyciel: {{ subject.teachers_id }}</div>
+                                                    <div>Klasa: {{ subject.classroom_id }}</div>
+                                                    <div>Grupa: {{ subject.group }}</div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div style="clear: both"></div>
+
+    </main>
+
+    <script>
+        // Function to switch the visible class schedule
+        function switch_class(class_id) {
+            // Hide all class schedules
+            document.querySelectorAll('.schedule').forEach(schedule => {
+                schedule.style.display = 'none';
+            });
+
+            // Show the selected class schedule
+            document.getElementById(class_id).style.display = 'block';
+        }
+
+        // Set the first class to be visible on page load
+        window.onload = function() {
+            // Find the first class schedule div and make it visible
+            const firstClass = document.querySelector('.schedule');
+            if (firstClass) {
+                firstClass.style.display = 'block';
+            }
+
+            // Optionally, highlight the first button
+            const firstButton = document.querySelector('.class-switch');
+            if (firstButton) {
+                firstButton.classList.add('active');  // Add active class for visual feedback (e.g., highlight)
+            }
+        };
+
+        // Add click event listeners to switch buttons
+        document.querySelectorAll('.class-switch').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove 'active' class from all buttons
+                document.querySelectorAll('.class-switch').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add 'active' class to the clicked button
+                button.classList.add('active');
+
+                // Call the function to switch class schedules
+                switch_class(button.getAttribute('onclick').match(/\d+/)[0]);  // Get class ID from onclick attribute
+            });
+        });
+
+        let delete_btn = document.getElementById("delete_btn");
+
+        delete_btn.addEventListener('click', () => {
+            popup.style.display = "flex"
+            popup_msg.innerHTML = "delete?";
+            popup_confirm.href = "{{ request.get_full_path }}" + "delete"
+        })
+
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
+
+{% endblock %}

@@ -5,33 +5,34 @@
 }
 
 body {
-    font-family: "Josefin Sans", sans-serif;
+    font-family: "Josefin Sans", sans-serif; !important;
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
-    background: linear-gradient(to right bottom, #302030, #101020);
     width: 100vw;
-    min-height: 200vh;
-    color: white;
+    color: #344E41;
     overflow-X: hidden;
     background-attachment: fixed;
-
+    flex-direction: column;
+    background-color: #e3e2e2;
 }
 
 ::-webkit-scrollbar {
-    width: 10px;
-    background: #1a1a1a;
+    width: .6rem;
+    height: .6rem;
+    background: #819177;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #99c;
+    background-color: #588157;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #aab;
+    background-color: #669365;
 }
 
 .nav {
+    background-color: #e3e2e2;
     padding: 1.5rem;
     width: 100vw;
     position: fixed;
@@ -39,12 +40,17 @@ body {
     left: 0;
     transition: box-shadow .2s ease-in-out, background-color .2s ease-in-out;
     display: flex;
+    z-index: 100;
 }
 
 #logo {
-    color: #ffff00;
+    color: #3A5A40;
     font-weight: 700;
     font-size: 200%;
+}
+
+#logo:hover {
+    color: #588157;
 }
 
 #logo, .nav ul li {
@@ -53,13 +59,11 @@ body {
 }
 
 .nav-top {
-    box-shadow: inset 0 0px #2a2a2a;
-    background-color: #13131300;
+    box-shadow: inset 0 0 #DAD7CD;
 }
 
 .nav-scrolled {
-    background-color: #131313;
-    box-shadow: inset 0 -5px #2a2a2a;
+    box-shadow: inset 0 -2px #DAD7CD;
 }
 
 .nav ul {
@@ -74,42 +78,164 @@ body {
     display: inline-block;
 }
 
+.confirm-button {
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
 a {
-    color: #00ffff;
+    color: #3A5A40;
     text-decoration: none;
     position: relative;
     z-index: 1;
     transition: all .1s ease-in-out;
+    cursor: pointer;
 }
 
 a:hover {
-    color: #ccffff;
+    color: #588157;
 }
 
-a::before {
+.menu-item::before {
     content: "";
     position: absolute;
     width: 0;
     height: 10%;
-    background-color: #ffffff22;
+    background-color: #588157;
     bottom: 0;
     left: 0;
     z-index: -1;
     transition: all .1s ease-in-out;
 }
 
-a:hover::before {
+.menu-item:hover::before {
     width: 100%;
+}
+
+a div {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    border-radius: 0.5rem;
+}
+
+a .btn{
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    margin-left: -1.5rem;
+}
+
+a .btn:hover{
+    background-color: #588157;
+}
+
+.spacer{
+    background-color: #DAD7CD;
+    width: 2px;
+    height: 4vh;
+    border-radius: 10%;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 #now {
     display: none;
 }
 
+p {
+    color: rgba(33, 36, 33, 0.73);
+    font-weight: 400;
+}
+
 .content {
-    width: 100vw;
-    height: 100vh;
+    flex: 1;
+    width: 100%;
+    margin-top: 5rem;
+    min-height: 64vh;
+}
+
+footer {
+    min-height: 15vh;
+    font-weight: 200;
+    letter-spacing: 1px;
+    background-color: #344E41;
+    padding: 3rem;
+    margin-top: 3rem;
     display: flex;
     align-items: center;
+    justify-content: space-around;
+    color: #DAD7CD;
+    width: 100%;
+}
+
+footer div, footer a {
+    margin: 3rem;
+}
+
+footer a {
+    color: #DAD7CD;
+}
+
+footer a:hover {
+    color: #A3B18A;
+}
+
+.sticky-wrapper {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 6rem;
+}
+
+#popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000aa;
+    z-index: 300;
+    align-items: center;
     justify-content: center;
+    font-size: 200%;
+}
+
+#popup form {
+    background: linear-gradient(to right top, #aaaaaa22, #cccccc33);
+    color: white;
+    display: inherit;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 3rem;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+#popup form h2 {
+    margin: 1rem;
+}
+
+#popup form div {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.msg {
+    padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+}
+
+#msg-container {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    top: 5.4rem;
+    z-index: 200;
 }

@@ -26,7 +26,7 @@ class SchoolClass:
         """
         :param class_df: dataframe of all classes
         :param classes_id: list of classes ids
-        :return: returns dict of every class
+        :return: dict of every class
         """
         school_classes = [SchoolClass(
                 class_id=class_df.loc[i, 'class_id'],

@@ -2,21 +2,29 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'generatorApp/login_register.css' %}">
-    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'generatorApp/forms.css' %}">
+    <title>register</title>
 {% endblock %}
 
 {% block content %}
 
-<form method="POST" action="{% url 'generatorApp:login' %}">
-    {% csrf_token %}
-    <div>Register</div>
+{#{% if error_msg %}#}
+{#    <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>#}
+{#{% endif %}#}
 
-    {% for input in form %}
-        {{ input }}
-    {% endfor %}
-
-    <input type="submit" value="Register">
+<form method="POST">
+    <div class="form-container">
+            {% csrf_token %}
+            <h2 style="font-weight: 450;">Register</h2>
+            <div class="login">
+                <input type="text" class="t" id="login" name="login" placeholder="login" required>
+                <input type="email" class="t" id="email" name="email" placeholder="email" required>
+                <input type="password" class="t" id="password" name="password" placeholder="password" required>
+                <input type="password" class="t" id="rpassword" name="rpassword" placeholder="repeat password" required>
+                <p>Do you already have account? <a href="{% url 'generatorApp:login' %}">Sign in</a></p>
+                <input type="submit" value="Register">
+            </div>
+    </div>
 </form>
 
 {% endblock %}

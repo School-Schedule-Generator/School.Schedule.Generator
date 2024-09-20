@@ -1,0 +1,133 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/data_forms.css' %}">
+    <title>subjects</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <div id="nie porztebny element ktory poporstu musi byc aby dzialalo tak jak dziala bez zmienienia wszystkiego"></div>
+
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>
+                        <button type="button" class="confirm-button" id="delete_btn">
+                            <img class="icon" src="{% static 'generatorApp/bin.svg' %}" alt="bin"/>
+                        </button>
+                    </th>
+                    <th>ID</th>
+                    <th>classes</th>
+                    <th>subject name</th>
+                    <th>teachers</th>
+                    <th>subject count in week</th>
+                    <th>number of groups</th>
+                    <th>maximum les stack</th>
+                    <th>classroom types</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" class="delete-checkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.classes_id }}</td>
+                        <td>{{ value.subject_name_id }}</td>
+                        <td>
+                            {% for teacher in value.teachers_id %}
+                                <span style="font-size: 0.8rem; font-weight: 500"> {{ teacher }} </span>
+                            {% endfor %}
+                        </td>
+                        <td>{{ value.subject_count_in_week }}</td>
+                        <td>{{ value.number_of_groups }}</td>
+                        <td>{{ value.max_stack }}</td>
+                        <td>
+                             {% for classroom_type in value.classroom_types %}
+                                <span style="font-size: 0.8rem;"> {{ classroom_type }} </span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
+                {% csrf_token %}
+                <span>Upload file</span>
+                <input class="file-input" type="file" name="file">
+                <div class="custom-file-input">Chose file</div>
+
+                <p class="file-name">File not chosen</p>
+
+                <input type="submit" value="Upload">
+            </form>
+            
+            <form method="POST" class="add-data-form">
+                {% csrf_token %}
+                <span>Add subjects</span>
+    
+                <select class="t" id="class-id" name="class-id">
+                    {% for object in classes_queryset %}
+                        <option value="{{ object.in_id }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+    
+                <select class="t" id="subject-name" name="subject-name">
+                    {% for object in subject_names_queryset %}
+                        <option value="{{ object.in_id }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+    
+                <select class="t" id="teachers" name="teachers" multiple="multiple">
+                    {% for object in teachers_queryset %}
+                        <option value="{{ object.in_id }}" >{{ object }} </option>
+                    {% endfor %}
+                </select>
+    
+                {{ form.subject_count_in_week }}
+                {{ form.number_of_groups }}
+                {{ form.max_stack }}
+    
+                <select class="t" id="classroom-type-id" name="classroom-type-id" multiple="multiple">
+                    {% for object in classroom_types_queryset %}
+                        <option value="{{ object.in_id }}">{{ object }}</option>
+                    {% endfor %}
+                </select>
+    
+                <input type="submit" value="Add">
+            </form>
+        </div>
+
+    </main>
+    
+    <script>
+        let delete_btn = document.getElementById("delete_btn");
+        
+        delete_btn.addEventListener('click', () => {
+            let selected = [];
+            document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length > 0) {
+                // Join the selected items into a single string for the `q` parameter
+                let queryString = selected.map(item => `delete=${item}`).join('&');
+                // Update the popup with the new URL structure
+                popup.style.display = "flex";
+                popup_msg.innerHTML = "delete?";
+                popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
+            }
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
+
+{% endblock %}

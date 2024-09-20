@@ -1,0 +1,96 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/data_forms.css' %}">
+    <title>classrooms</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <div id="nie porztebny element ktory poporstu musi byc aby dzialalo tak jak dziala bez zmienienia wszystkiego"></div>
+
+        <div class="data-container">
+            <table>
+                <tr>
+                    <th>
+                        <button type="button" class="confirm-button" id="delete_btn">
+                            <img class="icon" src="{% static 'generatorApp/bin.svg' %}" alt="bin"/>
+                        </button>
+                    </th>
+                    <th>ID</th>
+                    <th>name</th>
+                    <th>type</th>
+                </tr>
+                {% for value in objects_list %}
+                    <tr>
+                        <td><input type="checkbox" id="delete-{{ forloop.counter }}" name="delete" value="{{ value.in_id }}" class="delete-checkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ value.name }}</td>
+                        <td>{{ value.type_id }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+        
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
+                {% csrf_token %}
+                <span>Upload file</span>
+                
+                <input class="file-input" type="file" name="file">
+                <div class="custom-file-input">Chose file</div>
+
+                <p class="file-name">File not chosen</p>
+
+                <input type="submit" value="Upload">
+            </form>
+        
+            <form method="POST" class="add-data-form">
+                {% csrf_token %}
+                <span>Add classrooms</span>
+    
+                {{ form.name }}
+                <select class="t" id="type-id" name="type-id">
+                    {% for object in queryset %}
+                        <option value="{{ object.in_id }}">{{ object.description }}</option>
+                    {% endfor %}
+                </select>
+    
+                <input type="submit" value="Add">
+            </form>
+        </div>
+        
+    </main>
+    
+    <script>
+        let delete_btn = document.getElementById("delete_btn");
+
+        delete_btn.addEventListener('click', () => {
+            let selected = [];
+            document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
+                selected.push(checkbox.value);
+            });
+        
+            if (selected.length > 0) {
+                // Join the selected items into a single string for the `q` parameter
+                let queryString = selected.map(item => `delete=${item}`).join('&');
+                // Update the popup with the new URL structure
+                popup.style.display = "flex";
+                popup_msg.innerHTML = "delete?";
+                popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
+            } 
+        });
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none";
+        });
+    </script>
+    
+{% endblock %}

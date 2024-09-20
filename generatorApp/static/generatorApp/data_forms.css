@@ -1,0 +1,184 @@
+.content {
+    display: flex;
+    flex-direction: row;
+}
+
+main {
+    /*margin-left: 2rem;*/
+
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    flex: 1;
+}
+
+main .data-container, .form-container{
+    /* padding: 4rem 1.5rem 4rem 1.5rem; */
+    border-radius: .8rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    gap: 15px;
+    /*overflow-x: clip;*/
+    margin-right: 2rem;
+}
+
+main .data-container{
+    margin-top: 2rem;
+    background-color: #DAD7CD;
+    overflow: auto;
+    max-width: 80%;
+    padding: 1rem 1.5rem 1rem 1.5rem;
+}
+
+main .form-container{
+    margin-top: 2rem;
+    background-color: #A3B18A;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1.5rem 3rem 1.5rem;
+    overflow: auto;
+}
+
+main form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    max-width: 12vw;
+    width: 12vw;
+}
+
+main input[type="text"],
+main input[type="submit"],
+main input[type="number"],
+main select{
+    width: 70%;
+    padding: 0.5rem;
+    border: 1px solid #A3B18A;
+    border-radius: .3rem;
+    box-sizing: border-box;
+    color: #3A5A40;
+    margin-top: .5rem;
+}
+
+main input[type="submit"] {
+    /*background-color: #3A5A40;*/
+    /*color: #DAD7CD;*/
+    background-color: #DAD7CD;
+    color: #344E41;
+    cursor: pointer;
+}
+
+main input[type="submit"]:hover {
+    background-color: #cecbc4;
+}
+
+main input[type="text"]:focus,
+main input[type="number"]:focus,
+select:focus{
+    outline: none;
+    border-color: #344E41;
+    background-color: #ffffff;
+}
+
+main select option{
+    padding: .3rem;
+}
+
+main select[multiple] {
+    overflow: hidden;
+    max-height: 6rem;
+}
+
+main select[multiple]:hover {
+    overflow: auto;
+}
+
+main ::placeholder {
+    color: #A3B18A;
+    opacity: 0.7;
+}
+
+main span {
+    font-weight: 450;
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+}
+
+main input[type="file"]{
+    display: none;
+}
+
+main .custom-file-input {
+    margin-top: .5rem;
+    width: 70%;
+    padding: 0.5rem;
+    border: 1px solid #A3B18A;
+    border-radius: .3rem;
+    box-sizing: border-box;
+    background-color: #DAD7CD;
+    color: #344E41;
+    cursor: pointer;
+}
+
+main .custom-file-input:hover {
+    background-color: #cecbc4;
+}
+
+main .file-name {
+    font-size: .8rem;
+}
+
+main .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+main th{
+    background-color: #A3B18A;
+    color: #DAD7CD;
+    padding: .5rem;
+    border-radius: .3rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+}
+
+main td{
+    padding: .4rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: .3rem;
+    margin-top: .3rem;
+    font-size: .8rem;
+}
+
+main .table-menu-items div, .menu-items div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: -1rem;
+}
+
+main .table-menu-items span, main .menu-items span{
+    font-size: 1rem;
+    padding: 0 .2rem 0 .2rem;
+    width: 2.5rem;
+}
+
+main .menu-items div{
+    margin-top: -1.5rem;
+}
+
+main .menu-items span{
+    font-size: 0.8rem;
+}
+
+main .menu-items span:nth-child(2n){
+    color: #588157;
+    font-weight: bold;
+}
+
+

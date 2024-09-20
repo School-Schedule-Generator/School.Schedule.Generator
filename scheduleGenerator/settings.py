@@ -70,6 +70,20 @@ TEMPLATES = [
             ],
         },
     },
+
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        }
+    },
 ]
 
 WSGI_APPLICATION = "scheduleGenerator.wsgi.application"
@@ -132,6 +146,14 @@ INTERNAL_IPS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = './generatorApp/media'
+MEDIA_ROOT = './generatorApp/media/'
 
-LOGIN_URL = 'login-register/'
+LOGIN_URL = 'accounts/login/'
+
+LOGIN_REDIRECT_URL = 'home/'
+
+LOGOUT_REDIRECT_URL = 'home/'
+
+SESSION_COOKIE_AGE = 43200  # 1 dzień
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

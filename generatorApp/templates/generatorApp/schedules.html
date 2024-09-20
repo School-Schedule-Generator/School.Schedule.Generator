@@ -1,0 +1,28 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
+    <title>schedules</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'generatorApp/schedule_list.html' %}
+
+    <main>
+        <form method="POST" id="new-schedule-form">
+            <div class="container">
+                {% csrf_token %}
+                <h2 style="font-weight: 450;">Create new schedule</h2>
+
+                {{ form.name }}
+                {{ form.description }}
+
+                <input type="submit" value="Create">
+            </div>
+        </form>
+    </main>
+    
+{% endblock %}

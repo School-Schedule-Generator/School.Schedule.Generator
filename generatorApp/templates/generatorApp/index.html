@@ -1,36 +1,106 @@
-<!--jesli ta linijka bedzie powodowala blad przeniesz ja pod doctype, nie wiem czemu w pycharm podokresla-->
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- title link i font  -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'generatorApp/style.css' %}">
     {% block head %}
         <title>SSG</title>
     {% endblock %}
 </head>
 <body>
-<div class="nav nav-top">
-    <div id="logo">SSG</div>
-    <ul>
-        <li><a href="">Log in</a></li>
-        <li><a href="">Documentation</a></li>
-        <li><a href="">Schedules</a></li>
-    </ul>
-</div>
+    <div class="nav nav-top">
+        <a href="{% url 'generatorApp:home' %}" id="logo">SSG</a>
+        <ul>
+            {% if user.is_authenticated %}
+                <li>
+                    <a id="logout" class="menu-item">
+                        Logout
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'generatorApp:register' %}">
+                        <div class="btn">Sign up</div>
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item" href="{% url 'generatorApp:login' %}">
+                         Sign in
+                    </a>
+                </li>
 
-<div class="content">
-    {% block content %}
-    {% endblock %}
-</div>
+            {% endif %}
 
-<script src="{% static 'generatorApp/script.js' %}"></script>
+            <div class="spacer"></div>
+
+            <li>
+                <a class="menu-item" href="{% url 'generatorApp:docs' lang='eng' file='intro' %}">Documentation</a>
+            </li>
+
+            <li>
+                <a class="menu-item" {% if user.is_authenticated %} href="{% url 'generatorApp:schedules' username=user.username %}"
+                {% else %} href="{% url 'generatorApp:login' %}" {% endif %}>Schedules</a>
+            </li>
+        </ul>
+    </div>
+    
+    <div id="msg-container">
+        {% if warning_msg or request.session.warning_msg %}
+            <p class="msg" style="background-color: #e8d873; color: #a48509;">{{ request.session.warning_msg }}</p>
+        {% endif %}
+        {% if error_msg or request.session.error_msg %}
+            <p class="msg" style="background-color: #e87373; color: #a90f0f;">{{ request.session.error_msg }}</p>
+        {% endif %}
+    </div>
+
+    <div id="popup">
+        <form id="popup-form" method="GET">
+            {% csrf_token %}
+            <h2 id="popup-msg"></h2>
+            <div>
+                <a id="popup-confirm" href="">yes</a>
+                <a href="">no</a>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+ 
+    <footer>
+        <div>&copy 2024</div>
+        <a class="menu-item" href="">donate us 🙏</a>
+        <a class="menu-item" href="https://github.com/School-Schedule-Generator/School.Schedule.Generator" target="_blank">github</a>
+    </footer>
+
+    <script src="{% static 'generatorApp/script.js' %}"></script>
+    <script src="{% static 'generatorApp/file_input.js' %}"></script>
+
+    <script>
+        const logout = document.getElementById("logout");
+        const popup = document.getElementById("popup");
+        const popup_msg = document.getElementById('popup-msg')
+        const popup_confirm = document.getElementById('popup-confirm')
+        
+        logout.addEventListener('click', () => {
+            popup.style.display = "flex"
+            popup_msg.innerHTML = "logout?";
+            popup_confirm.href = "{% url 'generatorApp:logout' %}"
+        })
+        
+        popup.addEventListener('click', () => {
+            popup.style.display = "none"
+        })
+    </script>
 
 </body>
 </html>
