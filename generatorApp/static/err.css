@@ -1,0 +1,29 @@
+#container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    text-align: center;
+}
+
+#content {
+    transform: translate(0, 10%);
+}
+
+#content h1 {
+    font-size: 2000% !important;
+}
+
+#content p {
+    padding-top: 5rem;
+    line-height: 1.7rem;
+    font-size: 110%;
+}
+
+footer {
+    display: none;
+}

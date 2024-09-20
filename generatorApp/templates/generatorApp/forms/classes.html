@@ -46,7 +46,6 @@
             </table>
         </div>
 
-        
 
         <div class="form-container">
             <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
@@ -58,13 +57,13 @@
 
                 <input type="submit" value="Upload">
             </form>
-        
+
             <form method="POST" class="add-data-form">
                 {% csrf_token %}
                 <span>Add class</span>
 
                 {{ form.grade }}
-                    {{ form.class_signature }}
+                {{ form.class_signature }}
 
                 <select class="t" id="supervising-teacher" name="supervising-teacher">
                     {% for object in teachers_queryset %}
@@ -81,12 +80,14 @@
                 <input type="submit" value="Add">
             </form>
         </div>
-        
+
     </main>
-    
+{% endblock %}
+
+{% block js %}
     <script>
         let delete_btn = document.getElementById("delete_btn");
-        
+
         delete_btn.addEventListener('click', () => {
             let selected = [];
             document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
@@ -102,10 +103,9 @@
                 popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
             }
         })
-        
+
         popup.addEventListener('click', () => {
             popup.style.display = "none"
         })
     </script>
-    
 {% endblock %}

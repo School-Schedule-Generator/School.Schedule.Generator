@@ -52,19 +52,20 @@
             <input type="submit" value="Create">
         </form>
     </main>
+{% endblock %}
 
-
-<script>
-    $(document).ready(()=>{
-        $('#sort_by').change(()=>{
-            $('#sortForm').submit()
+{% block js %}
+    <script>
+        $(document).ready(()=>{
+            $('#sort_by').change(()=>{
+                $('#sortForm').submit()
+            })
         })
-    })
 
-    const urlParams = new URLSearchParams(window.location.search)
-    const sortBy = urlParams.get('sort_by')
-    if(sortBy){
-        $('#sort_by').val(sortBy)
-    }
-</script>
+        const urlParams = new URLSearchParams(window.location.search)
+        const sortBy = urlParams.get('sort_by')
+        if(sortBy){
+            $('#sort_by').val(sortBy)
+        }
+    </script>
 {% endblock %}

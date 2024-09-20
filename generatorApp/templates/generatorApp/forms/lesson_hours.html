@@ -40,29 +40,31 @@
         <div class="form-container">
             <form class="upload-form" method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
                     {% csrf_token %}
-                
+
                     <span>Upload file</span>
-    
+
                     <input class="file-input" type="file" name="file">
                     <div class="custom-file-input">Chose file</div>
-    
+
                     <p class="file-name">File not chosen</p>
-    
+
                     <input type="submit" value="Upload">
             </form>
-    
+
                 <form class="add-form" id="add-form" method="POST" class="add-data-form">
                     {% csrf_token %}
                     <span>Add lesson hours</span>
-    
+
                     {{ form.start_hour }}
-    
+
                     <input type="submit" value="Add">
                 </form>
         </div>
     </main>
-    
-    <script>
+{% endblock %}
+
+{% block js %}
+        <script>
         let delete_btn = document.getElementById("delete_btn");
         
         delete_btn.addEventListener('click', () => {
@@ -80,10 +82,9 @@
                 popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
             }
         })
-        
+
         popup.addEventListener('click', () => {
             popup.style.display = "none"
         })
     </script>
-    
 {% endblock %}

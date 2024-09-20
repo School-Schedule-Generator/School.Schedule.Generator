@@ -43,7 +43,7 @@
             <form method="POST" enctype="multipart/form-data" action="{{ request.get_full_path }}/upload">
                 {% csrf_token %}
                 <span>Upload file</span>
-                
+
                 <input class="file-input" type="file" name="file">
                 <div class="custom-file-input">Chose file</div>
 
@@ -63,8 +63,10 @@
         </div>
 
     </main>
+{% endblock %}
 
-    <script>
+{% block js %}
+        <script>
         let delete_btn = document.getElementById("delete_btn");
 
         delete_btn.addEventListener('click', () => {
@@ -87,5 +89,4 @@
             popup.style.display = "none"
         })
     </script>
-    
 {% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'generatorApp/index.html' %}
+{% load static %}
+
+{% block head %}
+    <title>404 :(</title>
+    <link rel="stylesheet" href="{% static 'err.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <div id="content">
+            <h1>
+                404
+            </h1>
+            <p>
+                Got Lost Buddy? 
+                <br>
+                <a href="{% url 'generatorApp:home' %}">Homepage</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

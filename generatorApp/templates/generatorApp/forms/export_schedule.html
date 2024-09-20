@@ -21,7 +21,7 @@
         <form method="post">
             {% csrf_token %}
 
-            <input class="t" id="title" name="title" type="text" placeholder="title" required>
+            <input class="t" id="title" name="title" type="text" placeholder="title" value={{ title }} required>
 
             <input type="submit" value="Export">
         </form>

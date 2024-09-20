@@ -230,7 +230,6 @@ def update_min_day_len(self, conditions, days, teachers, log_file_name):
                     break
 
             if self.get_num_of_lessons(schedule_at_day, log_file_name) < conditions.data['min_lessons_per_day']:
-                print('*' * 10, '\n', self.valid, '*' * 10, '\n', )
                 self.valid = False
                 return self
 
