@@ -3,41 +3,40 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'generatorApp/schedules.css' %}">
-    <title>settings</title>
+    <title>schedules</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 {% endblock %}
 
 {% block content %}
-    
+
     {% include 'generatorApp/schedule_list.html' %}
 
     <main>
-        <h2><b>{{ file_name }}</b></h2>
-    
-        {% if error_msg %}
-            <p style="background-color: #e87373; color: #a90f0f; padding: 10px">{{ error_msg }}</p>
-        {% endif %}
+        <form method="POST" id="new-schedule-form">
+            <div class="container">
+                {% csrf_token %}
+                <h2 style="font-weight: 450;">Create new schedule</h2>
 
-        <form method="post">
-            {% csrf_token %}
+                {{ form.name }}
+                {{ form.description }}
+                
+                <label for="min-lessons">minimum number of lessons (per day)</label>
+                <input required class="t" id="min-lessons" name="min-lessons" type="number" min="1" max="100" value={{ min_lessons }}>
+                <label for="max-lessons">maximum number of lessons (per day)</label>
+                <input required class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
             
-            <label for="min-lessons">minimum number of lessons (per day)</label>
-            <input class="t" id="min-lessons" name="min-lessons" type="number" min="1" max="100" value={{ min_lessons }}>
-            <label for="max-lessons">maximum number of lessons (per day)</label>
-            <input class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
-        
-            <label for="days">Days with lessons</label>
-            <select class="t" id="days" name="days" multiple="multiple">
-                {% with "monday tuesday wednesday thursday friday" as days_options %}
-                    {% for day in days_options.split %}
-                        <option value="{{ day }}" {% if day in days %}selected {% endif %}>{{ day }}</option>
-                    {% endfor %}
-                {% endwith %}
-            </select>
+                <label for="days">Days with lessons</label>
+                <select class="t" id="days" name="days" multiple="multiple" required>
+                    {% with "monday tuesday wednesday thursday friday" as days_options %}
+                        {% for day in days_options.split %}
+                            <option value="{{ day }}" {% if day in days %}selected {% endif %}>{{ day }}</option>
+                        {% endfor %}
+                    {% endwith %}
+                </select>
 
-            <input type="submit" value="Update">
+                <input type="submit" value="Update">
+            </div>
         </form>
-
     </main>
     
 {% endblock %}

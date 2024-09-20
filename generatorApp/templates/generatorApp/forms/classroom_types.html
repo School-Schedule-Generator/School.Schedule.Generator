@@ -51,8 +51,10 @@
             <input type="submit" value="Add">
         </form>
     </main>
+{% endblock %}
 
-    <script>
+{% block js %}
+        <script>
         let delete_btn = document.getElementById("delete_btn");
 
         delete_btn.addEventListener('click', () => {
@@ -75,5 +77,4 @@
             popup.style.display = "none"
         })
     </script>
-    
 {% endblock %}

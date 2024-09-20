@@ -45,7 +45,9 @@
     <button id="toggleAside" class="toggle-btn">
         <span id="arrow">←</span>
     </button>
+</aside>
 
+{% block js %}
     <script>
         $(document).ready(()=>{
             $('#sort_by').change(()=>{
@@ -75,4 +77,4 @@
             }
         });
     </script>
-</aside>
+{% endblock %}

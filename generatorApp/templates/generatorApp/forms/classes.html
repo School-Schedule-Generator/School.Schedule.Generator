@@ -68,10 +68,12 @@
             <input type="submit" value="Add">
         </form>
     </main>
-    
+{% endblock %}
+
+{% block js %}
     <script>
         let delete_btn = document.getElementById("delete_btn");
-        
+
         delete_btn.addEventListener('click', () => {
             let selected = [];
             document.querySelectorAll('.delete-checkbox:checked').forEach((checkbox) => {
@@ -87,10 +89,9 @@
                 popup_confirm.href = "{{ request.get_full_path }}" + "delete/?" + queryString;
             }
         })
-        
+
         popup.addEventListener('click', () => {
             popup.style.display = "none"
         })
     </script>
-    
 {% endblock %}

@@ -1,7 +1,8 @@
 class views:
     from .general import (
         home,
-        DocsView
+        DocsView,
+        remove_message
     )
     from .schedule import (
         SchedulesListView,

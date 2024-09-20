@@ -4,6 +4,10 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.views import View
 from django.conf import settings
+from django.conf import settings
+from django.http import JsonResponse, HttpResponseNotFound
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def home(request):
@@ -25,4 +29,18 @@ class DocsView(View):
                 reverse('generatorApp:docs', kwargs={'lang': selected_language, 'file': 'intro'}))
         return render(request, 'generatorApp/docs.html', {'lang': selected_language, 'file_content': file_context})
 
-# generic views
+
+@csrf_exempt
+def remove_message(request):
+    if not settings.DEBUG:
+        # Return 404 if not in DEBUG mode
+        return HttpResponseNotFound("This endpoint is only available in DEBUG mode.")
+
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        msg_type = data.get('msg_type')
+        if msg_type and msg_type in request.session:
+            del request.session[msg_type]
+            request.session.modified = True
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

@@ -238,6 +238,21 @@ footer a:hover {
     padding: 0.2rem 0.5rem 0.2rem 0.5rem;
 }
 
+.close-btn {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
 #msg-container {
     flex: 1;
     width: 100%;

@@ -24,6 +24,10 @@ urlpatterns = [
     path('schedules/<str:username>/<str:schedule_name>/', views.ScheduleView.as_view(), name='schedule'),
     path('schedules/<str:username>/<str:schedule_name>/generate/', views.GenerateScheduleView.as_view(), name='generate_schedule'),
 
+    # settings
+    path('schedules/<str:username>/<str:schedule_name>/export_settings/', views.ExportScheduleView.as_view(), name='export_schedule'),
+    path('schedules/<str:username>/<str:schedule_name>/settings/', views.ScheduleSettingsView.as_view(), name='settings'),
+
     # forms to add data
     path('schedules/<str:username>/<str:schedule_name>/lesson_hours/', views.LessonHoursView.as_view(), name='lesson_hours'),
     path('schedules/<str:username>/<str:schedule_name>/classroom_types/', views.ClassroomTypesView.as_view(), name='classroom_types'),
@@ -36,16 +40,10 @@ urlpatterns = [
     # delete
     path('schedules/<str:username>/<str:schedule_name>/delete/', views.DeleteScheduleView.as_view(), name='delete_schedule'),
     path('schedules/<str:username>/<str:schedule_name>/<str:model>/delete/', views.DeleteDataView.as_view(), name='delete_data'),
+    path('remove-message/', views.remove_message, name='remove_message'),
 
     # upload data
     path('schedules/<str:username>/<str:schedule_name>/<str:model>/upload/', views.UploadDataView.as_view(), name='upload_data'),
-
-    # settings
-    path('schedules/<str:username>/<str:schedule_name>/export_settings/', views.ExportScheduleView.as_view(), name='export_schedule'),
-    path('schedules/<str:username>/<str:schedule_name>/settings/', views.ScheduleSettingsView.as_view(), name='settings'),
-
-
-    # path('create_schedule', views.create_schedule, name='create-schedule'),
 ]
 
 if settings.DEBUG:

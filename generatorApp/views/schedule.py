@@ -46,15 +46,37 @@ class SchedulesListView(LoginRequiredMixin, FormView):
     template_name = 'generatorApp/schedules.html'
     success_url = reverse_lazy('generatorApp:schedules_base')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context = update_context(self.request, self.kwargs, context)
+        return context
+
     def form_valid(self, form):
         name = form.cleaned_data.get('name')
         description = form.cleaned_data.get('description')
+        min_lessons = self.request.POST.get('min-lessons')
+        max_lessons = self.request.POST.get('max-lessons')
+        days = self.request.POST.getlist('days')
+        settings_dict = {
+            "min_lessons_per_day": int(min_lessons),
+            "max_lessons_per_day": int(max_lessons),
+            "days": days,
+        }
+
+        context = self.get_context_data(form=form)
+        context.update(settings_dict)
+        schedule_name = context['schedule_name']
 
         username = self.request.user.username
         self.success_url += f'{username}/{name}'
 
         if ScheduleList.objects.filter(user_id=self.request.user, name=name).exists():
-            raise ValidationError('Schedule with this name exist')
+            self.request.session['error_msg'] = "This name is already in use."
+            return self.render_to_response(context)
+
+        if int(min_lessons) >= int(max_lessons):
+            context['error_msg'] = "Min lessons per day must be lower than max lessons per day!"
+            return self.render_to_response(context)
 
         schedule = ScheduleList.objects.create(
             user_id=self.request.user,
@@ -62,13 +84,16 @@ class SchedulesListView(LoginRequiredMixin, FormView):
             description=description,
             content=''
         )
+
+        schedule_settings = ScheduleSettings(
+            schedule_id=schedule,
+            content=json.dumps(settings_dict)
+        )
+
+        self.request.session['error_msg'] = None
+        schedule_settings.save()
         schedule.save()
         return redirect(self.success_url)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context = update_context(self.request, self.kwargs, context)
-        return context
 
 
 class ScheduleView(LoginRequiredMixin, TemplateView):
@@ -509,6 +534,9 @@ class DeleteScheduleView(LoginRequiredMixin, View):
         schedule_name = context['schedule_name']
         ScheduleList.objects.get(user_id=self.request.user, name=schedule_name).delete()
 
+        self.request.session['warning_msg'] = None
+        self.request.session['error_msg'] = None
+
         return redirect('/schedules/')
 
 
@@ -535,10 +563,7 @@ class DeleteDataView(LoginRequiredMixin, View):
         schedule_name = context['schedule_name']
         schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
 
-        print(selected)
-
         if selected:
-            print(model.objects.filter(schedule_id=schedule, in_id__in=selected))
             model.objects.filter(schedule_id=schedule, in_id__in=selected).delete()
 
         return redirect(self.request.META.get('HTTP_REFERER'))
@@ -722,54 +747,104 @@ class UploadDataView(LoginRequiredMixin, View):
         return redirect(self.request.META.get('HTTP_REFERER'))
 
 
-class ScheduleSettingsView(LoginRequiredMixin, View):
+class ScheduleSettingsView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('generatorApp:login')
+    form_class = ScheduleListForm
     template_name = 'generatorApp/forms/settings.html'
 
+    def get_initial(self):
+        """
+        Returns the initial data to pre-fill the form fields.
+        """
+        initial = super().get_initial()
+
+        # Fetch the current schedule for the user
+        schedule_name = self.kwargs.get('schedule_name')  # Assuming the schedule name comes from the URL or context
+        schedule = ScheduleList.objects.filter(user_id=self.request.user, name=schedule_name).first()
+
+        if schedule:
+            initial['name'] = schedule.name
+            initial['description'] = schedule.description
+        return initial
+
     def get_context_data(self, **kwargs):
-        context = {}
+        context = super().get_context_data(**kwargs)
         context = update_context(self.request, self.kwargs, context)
 
-        schedule_name = context['schedule_name']
-        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
-        settings = ScheduleSettings.objects.get(schedule_id=schedule)
-        settings_dict = json.loads(settings.content)
-        context['min_lessons'] = settings_dict['min_lessons_per_day']
-        context['max_lessons'] = settings_dict['max_lessons_per_day']
-        context['days'] = settings_dict['days']
+        # Fetch the current schedule for the user and pre-fill the form data
+        schedule_name = context.get('schedule_name')  # Assume you pass schedule_name in context somehow
+        schedule = ScheduleList.objects.filter(user_id=self.request.user, name=schedule_name).first()
+
+        if schedule:
+            try:
+                schedule_settings = ScheduleSettings.objects.get(schedule_id=schedule)
+                settings_data = json.loads(schedule_settings.content)
+
+                # Add current settings to the context
+                context['min_lessons'] = settings_data.get('min_lessons_per_day', '')
+                context['max_lessons'] = settings_data.get('max_lessons_per_day', '')
+                context['days'] = settings_data.get('days', [])
+
+            except ScheduleSettings.DoesNotExist:
+                # No settings found, use default empty values
+                context['min_lessons'] = ''
+                context['max_lessons'] = ''
+                context['days'] = []
 
         return context
 
-    def get(self, *args, **kwargs):
-        context = self.get_context_data()
-        return render(self.request, self.template_name, context)
-
-    def post(self, *args, **kwargs):
-        context = self.get_context_data()
-        schedule_name = context['schedule_name']
-        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
-
+    def form_valid(self, form):
+        # Get form data
+        name = form.cleaned_data.get('name')
+        description = form.cleaned_data.get('description')
         min_lessons = self.request.POST.get('min-lessons')
         max_lessons = self.request.POST.get('max-lessons')
         days = self.request.POST.getlist('days')
 
-        if int(min_lessons) >= int(max_lessons):
-            context = self.get_context_data()
-            context['error_msg'] = 'Min lessons per day must be lower than max lessons per day!!!'
-            return render(self.request, self.template_name, context)
-
-        settings = ScheduleSettings.objects.get(schedule_id=schedule)
-        settings.content = json.dumps({
+        # Validate and save form data
+        settings_dict = {
             "min_lessons_per_day": int(min_lessons),
             "max_lessons_per_day": int(max_lessons),
             "days": days,
-        })
-        settings.save()
+        }
 
-        # Set the error message in the session
+        context = self.get_context_data(form=form)
+        context.update(settings_dict)
+        schedule_name = context['schedule_name']
+
+        # Validate that min_lessons is less than max_lessons
+        if int(min_lessons) >= int(max_lessons):
+            self.request.session['error_msg'] = "Min lessons per day must be lower than max lessons per day!"
+            return self.render_to_response(context)
+
+        # Get or create the schedule (assuming you're working with an existing schedule)
+        schedule = ScheduleList.objects.get(user_id=self.request.user, name=schedule_name)
+
+        # Check if the schedule settings already exist for this schedule
+        schedule_settings, created = ScheduleSettings.objects.get_or_create(schedule_id=schedule)
+
+        # Update schedule and settings
+        schedule.name = name
+        schedule.description = description
+        schedule_settings.content = json.dumps(settings_dict)
+
+        # Save the changes
+        schedule_settings.save()
+        schedule.save()
+
+        # Clear any error message in the session and set warning
+        self.request.session['error_msg'] = None
         self.request.session['warning_msg'] = f'Settings updated! Please regenerate your <a href="{self.request.get_full_path().split("""/settings""")[0]}">schedule</a>.'
 
-        return redirect(self.request.build_absolute_uri())
+        # Redirect after successful form submission
+        return redirect(self.get_success_url(schedule_name=name))
+
+    def get_success_url(self, schedule_name):
+        """
+        Define a success URL to redirect to after form submission.
+        """
+        username = self.request.user.username
+        return reverse_lazy('generatorApp:schedules_base') + f'{username}/{schedule_name}/settings'
 
 
 class ExportScheduleView(LoginRequiredMixin, View):
@@ -779,11 +854,23 @@ class ExportScheduleView(LoginRequiredMixin, View):
     def get_context_data(self, **kwargs):
         context = {}
         context = update_context(self.request, self.kwargs, context)
-        return context
 
+        # Fetch the current schedule for the user and pre-fill the form data
+        schedule_name = context.get('schedule_name')  # Assume you pass schedule_name in context somehow
+        schedule = ScheduleList.objects.filter(user_id=self.request.user, name=schedule_name).first()
+
+        if schedule:
+            context['title'] = schedule.name
+        else:
+            context['title'] = ''
+
+        return context
 
     def schedule_to_excel(self, schedule, export_settings):
         schedule_dict = json.loads(schedule.content)
+        if not os.path.exists(settings.MEDIA_ROOT):
+            os.mkdir(settings.MEDIA_ROOT)
+
         file_path = os.path.join(settings.MEDIA_ROOT, str(schedule.id)+'.xlsx')
 
         columns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -849,7 +936,6 @@ class ExportScheduleView(LoginRequiredMixin, View):
                     message = ''
                     for subject in schedule_dict[class_name][day][j]:
                         try:
-                            print(subject.keys())
                             subject_name = subject_names_df.get(in_id=subject['subject_name_id'])
                         except SubjectNames.DoesNotExist:
                             subject_name = {'name': '---'}
@@ -861,7 +947,7 @@ class ExportScheduleView(LoginRequiredMixin, View):
                             teacher_name = '---'
 
                         try:
-                            classroom_name = classrooms_df.get(in_id=subject['classroom_id'])['classroom_name']
+                            classroom_name = dict(classrooms_df.get(in_id=subject['classroom_id']))['name']
                         except Classrooms.DoesNotExist:
                             classroom_name = '---'
 

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
@@ -53,10 +54,16 @@
     
     <div id="msg-container" class="sticky-wrapper">
         {% if warning_msg or request.session.warning_msg %}
-            <p class="msg" style="background-color: #e8d873; color: #a48509;">{{ request.session.warning_msg|safe }}</p>
+            <p class="msg" style="background-color: #e8d873; color: #a48509;">
+                {{ request.session.warning_msg|safe }}
+                <span class="close-btn" onclick="closeMessage(this, 'warning_msg')">&times;</span>
+            </p>
         {% endif %}
         {% if error_msg or request.session.error_msg %}
-            <p class="msg" style="background-color: #e87373; color: #a90f0f;">{{ request.session.error_msg|safe }}</p>
+            <p class="msg" style="background-color: #e87373; color: #a90f0f;">
+                {{ request.session.error_msg|safe }}
+                <span class="close-btn" onclick="closeMessage(this, 'error_msg')">&times;</span>
+            </p>
         {% endif %}
     </div>
 
@@ -87,8 +94,10 @@
     
     <div class="lds-ellipsis" id="loader"><div></div><div></div><div></div><div></div></div>
 
-    <script src="{% static 'generatorApp/script.js' %}"></script>
+    {% block js %}
+    {% endblock %}
 
+    <script src="{% static 'generatorApp/script.js' %}"></script>
     <script>
         const logout = document.getElementById("logout");
         const popup = document.getElementById("popup");
@@ -110,6 +119,25 @@
         function show_loader() {
             document.getElementById("loader").style.display = "inline-block";
             empty_overlay.style.display = "flex"
+        }
+
+        function closeMessage(element, msgType) {
+            element.parentElement.style.display = 'none';
+            // Create an AJAX request to remove the message from the session
+            fetch('/remove-message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}' // Make sure you pass the CSRF token for security
+                },
+                body: JSON.stringify({ msg_type: msgType })
+            }).then(response => {
+                if (!response.ok) {
+                    console.error('Failed to remove the message from session.');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         }
     </script>
 

@@ -19,6 +19,20 @@
 
                 {{ form.name }}
                 {{ form.description }}
+                
+                <label for="min-lessons">minimum number of lessons (per day)</label>
+                <input required class="t" id="min-lessons" name="min-lessons" type="number" min="1" max="100" value={{ min_lessons }}>
+                <label for="max-lessons">maximum number of lessons (per day)</label>
+                <input required class="t" id="max-lessons" name="max-lessons" type="number" min="1" max="100" value={{ max_lessons }}>
+            
+                <label for="days">Days with lessons</label>
+                <select class="t" id="days" name="days" multiple="multiple" required>
+                    {% with "monday tuesday wednesday thursday friday" as days_options %}
+                        {% for day in days_options.split %}
+                            <option value="{{ day }}" {% if day in days %}selected {% endif %}>{{ day }}</option>
+                        {% endfor %}
+                    {% endwith %}
+                </select>
 
                 <input type="submit" value="Create">
             </div>

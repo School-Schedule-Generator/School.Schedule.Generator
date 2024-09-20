@@ -79,7 +79,9 @@
     {% endif %}
 
     </main>
+{% endblock %}
 
+{% block js %}
     <script>
         // Function to switch the visible class schedule
         function switch_class(class_id) {
@@ -131,5 +133,4 @@
             popup_confirm.href = "{{ request.get_full_path }}" + "delete"
         })
     </script>
-
 {% endblock %}
